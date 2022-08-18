@@ -1,0 +1,63 @@
+{
+  "id": "1",
+  "date": "2022-02-02 16:00",
+  "update": "2022-02-03 16:11",
+  "order_id": "47832945738",
+  "status": "결제완료",
+  "thumbnail": "https://firebasestorage.googleapis.com/v0/b/test-firebase-81571.appspot.com/o/productList.png?alt=media&token=65510080-0db4-40a8-845e-9b498b10fd54",
+  "storeOption": [
+    {
+      "id": "1",
+      "storeTitle": "안스리움 진짜 좋은거 팔아요.",
+      "optionTitle": "중품 - 최상",
+      "price": "100000",
+      "priceSale": "90000",
+      "amount": 1,
+      "thumbnail": "https://firebasestorage.googleapis.com/v0/b/test-firebase-81571.appspot.com/o/productList.png?alt=media&token=65510080-0db4-40a8-845e-9b498b10fd54",
+      "storeId": "1",
+      "status": "결제완료"
+    },
+    {
+      "id": "1",
+      "storeTitle": "안스리움 진짜 좋은거 팔아요.",
+      "optionTitle": "대품 - 최상",
+      "price": "100000",
+      "priceSale": "90000",
+      "amount": 1,
+      "thumbnail": "https://firebasestorage.googleapis.com/v0/b/test-firebase-81571.appspot.com/o/productList.png?alt=media&token=65510080-0db4-40a8-845e-9b498b10fd54",
+      "storeId": "1",
+      "status": "결제완료"
+    },
+    {
+      "id": "1",
+      "storeTitle": "안스리움 진짜 좋은거 팔아요.",
+      "optionTitle": "중품 - 중상",
+      "price": "100000",
+      "priceSale": "90000",
+      "amount": 1,
+      "thumbnail": "https://firebasestorage.googleapis.com/v0/b/test-firebase-81571.appspot.com/o/productList.png?alt=media&token=65510080-0db4-40a8-845e-9b498b10fd54",
+      "storeId": "1",
+      "status": "결제완료"
+    }
+  ],
+  "delivery": {
+    "address": "서울시 서대문구 연희동",
+    "phone": "01012345678",
+    "req": "문앞",
+    "name": "홍길동",
+    "invoiceNumber": "364310432011",
+    "company": "CJ대한통운"
+  },
+  "buyer": {
+    "name": "홍길동",
+    "phone": "01012345678"
+  },
+  "payment": {
+    "way": "신용카드",
+    "totalStorePrice": 123214200,
+    "coupon": -5000,
+    "mileage": -6000,
+    "deliveryPrice": 3000,
+    "totalPrice": 130000020
+  }
+}

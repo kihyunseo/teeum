@@ -1,0 +1,12 @@
+{
+  "id": "1",
+  "nickname": "홍길동",
+  "role": "뿌리탈출",
+  "date": "2022-08-16 01:11",
+  "update": "2022-08-16 01:12",
+  "address": "서울 서대문구 연희동",
+  "bankAddress": "111-123-123421",
+  "bankName": "신한은행",
+  "image": "https://firebasestorage.googleapis.com/v0/b/test-firebase-81571.appspot.com/o/photo.png?alt=media&token=df5f70a4-27e2-403e-bd68-738d55473257",
+  "mileage": 1232134
+}

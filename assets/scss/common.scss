@@ -1,0 +1,66 @@
+/*font*/
+
+/*color*/
+$primary: #3182f5;
+$lightBlue: #f2f3f5;
+$stroke: rgba(0, 0, 0, 0.03);
+$iconPaleBlue: rgba(0, 69, 155, 0.1);
+$iconOutline: #313131;
+$textBlack: #111111;
+$textLight: #90949d;
+$bglightGray: #f2f3f5;
+$myBt: rgba(0, 69, 155, 0.1);
+
+/*shadow*/
+$onPicShadow: 0px 1px 4px 0px rgba(0, 0, 0, 0.25);
+$iconShadow: 0px 3px 10px 2px rgba(56, 60, 89, 0.09);
+$pageShadow: 0px -4px 11px 0px rgba(0, 0, 0, 0.02);
+
+/*ck에디터 높이*/
+.ck-content {
+  height: 500px;
+}
+.my_bg {
+  background: $lightBlue;
+}
+
+.flex {
+  display: flex;
+  align-items: center;
+}
+.flex-child-ml-auto {
+  margin-left: auto;
+}
+.flex-child-mr-auto {
+  margin-right: auto;
+}
+
+select {
+  padding: 10px 5px;
+  border-radius: 10px;
+  background-color: $bglightGray;
+  border-color: $lightBlue;
+  max-width: 150px;
+  color: $textLight;
+}
+
+select:focus {
+  outline: none;
+}
+
+img {
+  max-width: 100%;
+}
+
+input[type='number'] {
+  width: 100%;
+  border: 0;
+  background: #f2f3f5;
+  border-radius: 12px;
+  padding: 12px;
+  box-sizing: border-box;
+}
+
+button {
+  border-style: none;
+}

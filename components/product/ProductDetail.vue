@@ -1,0 +1,86 @@
+<template>
+  <div>
+    <h2 class="title">
+      {{ items.title }}
+    </h2>
+    <p class="span_comma">
+      <span
+        v-for="category in items.category"
+        :key="category.id"
+        class="font_sub_text"
+        >{{ category.title }}</span
+      >
+    </p>
+    <div v-html="items.detail" class="detail"></div>
+    <div class="flex">
+      <div class="span_comma view">
+        <span class="font_sub_text">{{
+          items.date | moment('from', 'now')
+        }}</span>
+        <span class="font_sub_text">조회 수 {{ items.view }}</span>
+      </div>
+      <div v-if="type != 'store'" class="declaration">
+        <nuxt-link
+          class="font_title_contents"
+          :to="{
+            path: '/declaration/editor',
+            query: { type: type, id: items.id },
+          }"
+        >
+          이 게시글 신고하기
+        </nuxt-link>
+      </div>
+    </div>
+  </div>
+</template>
+
+<script>
+export default {
+  props: {
+    items: {
+      type: Object,
+      required: true,
+    },
+    type: {
+      type: String,
+      required: true,
+    },
+  },
+}
+</script>
+
+<style lang="scss" scoped>
+.title {
+  font-size: 20px;
+  color: $textBlack;
+  font-weight: bold;
+  line-height: 1.3;
+  margin-bottom: 12px;
+}
+.span_comma > span {
+  color: $textBlack;
+}
+.span_comma > span:first-child::after {
+  content: ' · ';
+}
+
+.span_comma.view > span {
+  color: $textLight;
+}
+
+.detail {
+  margin: 12px 0;
+  line-height: 1.4;
+  color: $textBlack;
+  font-size: 14px;
+}
+.flex {
+  display: flex;
+}
+.declaration {
+  margin-left: auto;
+}
+.declaration a {
+  color: $primary;
+}
+</style>

@@ -1,0 +1,97 @@
+{
+  "id": 1,
+  "title": "정성스럽게 키운 안스리움, 소중히 키워 주실 분에게 분양합니다.",
+  "detail": "<p>gfjriwoafjeroiasfjo</p><img src='https://firebasestorage.googleapis.com/v0/b/test-firebase-81571.appspot.com/o/banner.png?alt=media&token=53f07aa8-edf6-4aa3-b240-bf78bc2b7939'>  <p>gfjriwoafjeroiasfjo</p>  <p>gfjriwoafjeroiasfjo</p>  <p>gfjriwoafjeroiasfjo</p>  <p>gfjriwoafjeroiasfjo</p>  <p>gfjriwoafjeroiasfjo</p>",
+  "date": "2022-06-12 19:00",
+  "user": {
+    "id": "1",
+    "nickname": "틔움",
+    "image": ""
+  },
+  "view": 324,
+  "like": [
+    {
+      "id": "1",
+      "userId": "23",
+      "productId": "1",
+      "date": "2022-06-12 19:00"
+    },
+    {
+      "id": "1",
+      "userId": "5",
+      "productId": "1",
+      "user": {
+        "id": "1",
+        "nickname": "홍길동1"
+      },
+      "date": "2022-06-12 19:00"
+    },
+    {
+      "id": "1",
+      "userId": "5",
+      "productId": "1",
+      "user": {
+        "id": "1",
+        "nickname": "홍길동2"
+      },
+      "date": "2022-06-12 19:00"
+    }
+  ],
+  "comment": [
+    {
+      "id": 1,
+      "detail": " 따뜻한 같지 발휘하기 그리하였는가? 구하기 지혜는 얼마나 어디 새가 구할    옷을 과실이 것이다. 이상, 인생에 수 산야에 얼음 것이다. 뭇 든 긴지라   열락의 심장의 같이, 뼈 풀이 원대하고, 있으랴? 방황하였으며, 불어 때까지   이는 맺어, 없는 두기 풀이 사람은 것이다. 소담스러운 끓는 그들의 그들에게   용기가 우리의 바이며, 뿐이다. 얼음이 청춘 봄바람을 가슴이 별과 쓸쓸하랴?산야에 관현악이며, 있으며, 것이다. 위하여, 그들의 스며들어 있는 때문이다. 청춘의 주는 싶이 그리하였는가?",
+      "date": "2022-06-12 19:00",
+      "update": "2022-06-12 19:00",
+      "image": {
+        "id": "1",
+        "src": "",
+        "type": "comment",
+        "link": "",
+        "postId": "1"
+      },
+      "user": {
+        "id": "1",
+        "nickname": "틔움",
+        "image": "https://firebasestorage.googleapis.com/v0/b/test-firebase-81571.appspot.com/o/photo.png?alt=media&token=df5f70a4-27e2-403e-bd68-738d55473257",
+        "role": "뿌리탈출"
+      }
+    },
+    {
+      "id": 1,
+      "detail": " 따뜻한 같지 발휘하기 그리하였는가? 구하기 지혜는 얼마나 어디 새가 구할    옷을 과실이 것이다. 이상, 인생에 수 산야에 얼음 것이다. 뭇 든 긴지라   열락의 심장의 같이, 뼈 풀이 원대하고, 있으랴? 방황하였으며, 불어 때까지   이는 맺어, 없는 두기 풀이 사람은 것이다. 소담스러운 끓는 그들의 그들에게   용기가 우리의 바이며, 뿐이다. 얼음이 청춘 봄바람을 가슴이 별과 쓸쓸하랴?산야에 관현악이며, 있으며, 것이다. 위하여, 그들의 스며들어 있는 때문이다. 청춘의 주는 싶이 그리하였는가?",
+      "date": "2022-06-12 19:00",
+      "update": "2022-06-12 19:00",
+      "image": {
+        "id": "1",
+        "src": "https://firebasestorage.googleapis.com/v0/b/test-firebase-81571.appspot.com/o/photo.png?alt=media&token=df5f70a4-27e2-403e-bd68-738d55473257",
+        "type": "comment",
+        "link": "",
+        "postId": "1"
+      },
+      "user": {
+        "id": "1",
+        "nickname": "틔움",
+        "image": ""
+      }
+    },
+    {
+      "id": 1,
+      "detail": " 따뜻한 같지 발휘하기 그리하였는가? 구하기 지혜는 얼마나 어디 새가 구할    옷을 과실이 것이다. 이상, 인생에 수 산야에 얼음 것이다. 뭇 든 긴지라   열락의 심장의 같이, 뼈 풀이 원대하고, 있으랴? 방황하였으며, 불어 때까지   이는 맺어, 없는 두기 풀이 사람은 것이다. 소담스러운 끓는 그들의 그들에게   용기가 우리의 바이며, 뿐이다. 얼음이 청춘 봄바람을 가슴이 별과 쓸쓸하랴?산야에 관현악이며, 있으며, 것이다. 위하여, 그들의 스며들어 있는 때문이다. 청춘의 주는 싶이 그리하였는가?",
+      "date": "2022-06-12 19:00",
+      "update": "2022-06-12 19:00",
+      "image": {
+        "id": "1",
+        "src": "https://firebasestorage.googleapis.com/v0/b/test-firebase-81571.appspot.com/o/photo.png?alt=media&token=df5f70a4-27e2-403e-bd68-738d55473257",
+        "type": "comment",
+        "link": "",
+        "postId": "1"
+      },
+      "user": {
+        "id": "1",
+        "nickname": "틔움",
+        "image": ""
+      }
+    }
+  ]
+}
