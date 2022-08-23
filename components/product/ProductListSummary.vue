@@ -35,14 +35,14 @@ export default {
   data() {
     return {
       page: 1,
-    }
+    };
   },
   created() {},
 
   mounted() {},
 
   methods: {},
-}
+};
 </script>
 
 <style lang="scss" scoped>
@@ -55,8 +55,8 @@ li > a {
   align-items: center;
 }
 li .left {
-  width: 110px;
-  height: 110px;
+  width: 50px;
+  height: 50px;
   background-size: cover;
   flex-shrink: 0;
   margin-right: 16px;

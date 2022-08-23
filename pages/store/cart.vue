@@ -2,8 +2,8 @@
   <div>
     <HistoryHeader>장바구니</HistoryHeader>
     <div
-      v-for="cartItem in 2"
-      :key="cartItem.index"
+      v-for="item in cartData"
+      :key="item.index"
       class="cart_item flex content"
     >
       <div class="checkbox">
@@ -13,27 +13,29 @@
       <div>
         <ProductListSummary />
         <div class="select_item">
-          <div v-for="item in options" :key="item.id" class="select_item_box">
+          <div class="select_item_box">
             <div class="title_close">
               <p class="title font_title_contents">
-                {{ item.productOptionTitle }}
+                {{ item.option[0].productOptionTitle }}
               </p>
             </div>
             <div class="amount_price">
               <div class="left">
                 <span @click="changeProductAmountMinus('0')"
                   ><img
-                    :class="{ amount_disabled: item.amount <= 1 }"
+                    :class="{ amount_disabled: item.option[0].amount <= 1 }"
                     src="@/assets/svg/circle_minus.svg"
                     alt=""
                 /></span>
-                <input v-model="item.amount" type="text" />
+                <input v-model="item.option[0].amount" type="text" />
                 <span @click="changeProductAmountPlus('0')"
                   ><img src="@/assets/svg/circle_plus.svg" alt=""
                 /></span>
               </div>
               <div class="right">
-                <p>{{ (item.price * item.amount) | comma }}원</p>
+                <p>
+                  {{ (item.option[0].price * item.option[0].amount) | comma }}원
+                </p>
               </div>
             </div>
           </div>
@@ -78,9 +80,14 @@
 </template>
 
 <script>
+import cart from '@/data/cart.json';
 export default {
-  name: 'TeeumFrontendCart',
   layout: 'empty',
+
+  asyncData() {
+    const cartData = cart;
+    return { cartData };
+  },
 
   data() {
     return {
@@ -90,47 +97,36 @@ export default {
       },
       buyData: [],
       selected: '',
-      options: [
-        {
-          productOptionTitle: '대한구떡 200만',
-          productOptionId: '1',
-          price: '50000',
-          salePrice: '40000',
-          productId: '1',
-          amount: 1,
-          salePercent: 10,
-        },
-      ],
-    }
+    };
   },
 
   mounted() {},
 
   methods: {
     buyDataPush(event, selectedIndex) {
-      const data = this.selected
+      const data = this.selected;
       const index = this.buyData.findIndex(
         (v) => v.productOptionId === data.productOptionId
-      )
+      );
       if (index === -1 && data !== '') {
-        this.buyData.push(data)
+        this.buyData.push(data);
       }
     },
     changeProductAmountPlus(index) {
-      const amount = this.buyData[index].amount
-      this.buyData[index].amount = amount + 1
+      const amount = this.buyData[index].amount;
+      this.buyData[index].amount = amount + 1;
     },
     changeProductAmountMinus(index) {
-      const amount = this.buyData[index].amount
+      const amount = this.buyData[index].amount;
       if (amount > 1) {
-        this.buyData[index].amount = amount - 1
+        this.buyData[index].amount = amount - 1;
       }
     },
     removeProudctBuyData(index) {
-      this.options.splice(index, 1)
+      this.options.splice(index, 1);
     },
   },
-}
+};
 </script>
 
 <style lang="scss" scoped>

@@ -33,7 +33,7 @@
 </template>
 
 <script>
-import StoreList from '@/data/StoreList.json';
+import StoreList from '@/data/storeList.json';
 export default {
   asyncData() {
     const StoreListData = StoreList;

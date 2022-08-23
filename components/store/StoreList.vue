@@ -1,7 +1,7 @@
 <template>
   <div>
     <li>
-      <nuxt-link :to="`${view}/${items.id}`">
+      <nuxt-link :to="`store/${items.id}`">
         <div
           class="left"
           :style="{
@@ -19,11 +19,10 @@
           <p class="price font_mid">{{ items.price | comma }}원</p>
           <div class="bottom">
             <div class="teeum_product">
-              <span
-                v-for="delivery in items.delivery"
-                :key="delivery.index"
-                class="delivery"
-                >{{ delivery.title }}</span
+              <span class="delivery">{{ items.delivery.methods }}</span>
+              <span class="delivery">{{ items.delivery.deliveryMoney }}원</span>
+              <span class="teeum_mall"
+                ><img src="@/assets/images/teeum.png" alt="로고" />티몰</span
               >
             </div>
           </div>
@@ -38,10 +37,6 @@ export default {
   props: {
     items: {
       type: Object,
-      required: true,
-    },
-    view: {
-      type: String,
       required: true,
     },
   },
@@ -135,7 +130,6 @@ li .teeum_product img {
 
 li .bottom {
   margin-top: auto;
-  width: 100%;
 }
 
 li .delivery {

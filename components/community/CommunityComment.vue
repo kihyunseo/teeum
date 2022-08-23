@@ -35,22 +35,22 @@
               }"
             ></div>
             <div class="right">
-              <p class="nickname font_sub_text">{{ item.user.nickname }}</p>
-              <p class="role font_sub_text">{{ item.user.role }}</p>
+              <p class="nickname font_sub_text">{{ item.user.name }}</p>
+              <!-- <p class="role font_sub_text">{{ item.user.role }}</p> -->
             </div>
           </div>
           <div class="review_content">
             <p class="review_detail">
               {{ item.detail }}
             </p>
-            <div v-if="item.image.src" class="review_image_wrap">
+            <!-- <div v-if="item.image.src" class="review_image_wrap">
               <div
                 class="review_image"
                 :style="{
                   'background-image': `url(${item.image.src})`,
                 }"
               ></div>
-            </div>
+            </div> -->
             <div class="review_mod">
               <span @click="commentMod(index)"> 수정 </span>
               <span v-if="true" class="font_sub_text" @click="reviewDelete"
@@ -66,8 +66,8 @@
       </div>
       <!--댓글 리스트 끝-->
       <div class="community_footer">
-        <div class="heart">
-          <img src="@/assets/svg/Heart.svg" alt="하트" />
+        <div class="heart" @click="likeOnClick">
+          <img :src="heartIcon" alt="하트" />
         </div>
         <div class="comment" @click="onClickCommentMove">댓글달기</div>
       </div>
@@ -80,6 +80,10 @@ export default {
   props: {
     items: {
       type: Array,
+      required: true,
+    },
+    heartIcon: {
+      type: String,
       required: true,
     },
   },
@@ -99,7 +103,9 @@ export default {
     },
   },
 
-  mounted() {},
+  mounted() {
+    console.log(this.heartIcon);
+  },
 
   methods: {
     reviewDelete() {
@@ -110,6 +116,9 @@ export default {
     },
     commentMod(index) {
       this.commentActive = index;
+    },
+    likeOnClick() {
+      this.$emit('likeOnClick');
     },
   },
 };

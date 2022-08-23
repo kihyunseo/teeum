@@ -1,22 +1,22 @@
 <template>
   <div>
     <div class="slide">
-      <Slider :items="bannerData" />
+      <Slider :items="banner" />
     </div>
     <div class="content" style="padding-top: 12px">
       <AuctionInfo
-        :items="auctionDetailData"
+        :items="auction"
         :alarm="alarmIcon"
         @alarmControl="alarmOnClick"
       />
-      <AuctionBidding :items="auctionDetailData" />
+      <AuctionBidding :items="auction" />
       <div class="bidding_more">
         <nuxt-link :to="`${$route.params.id}/bidding`">
           입찰현황 더보기
         </nuxt-link>
       </div>
-      <UserInfo :items="auctionDetailData.user" />
-      <ProductDetail :items="auctionDetailData" :type="'auction'" />
+      <UserInfo :items="auction.user" />
+      <ProductDetail :items="auction" :type="'auction'" />
       <div class="border_bglight_gray"></div>
       <div class="footer_auction">
         <div class="heart" @click="likeOnClick">
@@ -40,19 +40,22 @@
           </p>
         </div>
         <div class="price">
-          <div class="left">
+          <div class="left" @click="minusPrice">
             <img src="@/assets/svg/circle_minus.svg" alt="" />
           </div>
           <div class="center">
-            <input type="text" placeholder="현재가 110,000원" />
+            <div class="fake_input">
+              {{ price | comma }}
+            </div>
+            <input v-model="price" type="hidden" />
           </div>
-          <div class="right">
+          <div class="right" @click="plusPrice">
             <img src="@/assets/svg/circle_plus.svg" alt="" />
           </div>
         </div>
         <div class="button">
           <div><nuxt-link to="/chat">채팅하기</nuxt-link></div>
-          <div><p>입찰하기</p></div>
+          <div @click="submit"><p>입찰하기</p></div>
         </div>
       </Popup>
     </div>
@@ -60,90 +63,106 @@
 </template>
 
 <script>
-import banner from '@/data/banner.json'
-import auctionDetail from '@/data/auctionDetail.json'
+import banner from '@/data/banner.json';
+import auction from '@/data/auction.json';
 export default {
   layout: 'document',
   asyncData() {
-    const bannerData = banner
-    const auctionDetailData = auctionDetail
-
-    return { bannerData, auctionDetailData }
+    return { banner, auction };
   },
+
   data() {
     return {
       store: '',
       dialog: false,
       nowDate: '',
-    }
+      price: 0,
+    };
   },
-  async fetch() {},
+  fetch() {
+    this.price = this.auction.latestPrice;
+  },
   computed: {
+    latestPrice() {
+      return String(this.auction.latestPrice).replace(
+        /\B(?=(\d{3})+(?!\d))/g,
+        ','
+      );
+    },
     like() {
-      const meId = '23'
-      const auctionLike = this.auctionDetailData.like
-      return !!(auctionLike || []).find((v) => v.userId === meId)
+      const meId = '23';
+      const auctionLike = this.auction.like;
+      return !!(auctionLike || []).find((v) => v.userId === meId);
     },
     heartIcon() {
       return this.like
         ? require('@/assets/svg/Heart_fill.svg')
-        : require('@/assets/svg/Heart.svg')
+        : require('@/assets/svg/Heart.svg');
     },
     alarm() {
-      const meId = '23'
-      const auctionAlarm = this.auctionDetailData.alarm
-      return !!(auctionAlarm || []).find((v) => v.userId === meId)
+      const meId = '23';
+      const auctionAlarm = this.auction.alarm;
+      return !!(auctionAlarm || []).find((v) => v.userId === meId);
     },
     alarmIcon() {
       return this.alarm
         ? require('@/assets/svg/alarm_fill.svg')
-        : require('@/assets/svg/alarm_color.svg')
+        : require('@/assets/svg/alarm_color.svg');
     },
   },
   mounted() {
-    this.nowDate = this.$moment().format('YYYY-MM-DD HH:mm:ss')
+    this.nowDate = this.$moment().format('YYYY-MM-DD HH:mm:ss');
   },
   methods: {
     popupControl() {
-      this.dialog = !this.dialog
+      this.dialog = !this.dialog;
     },
     likeOnClick() {
-      const meId = '23'
-      const auctionLike = this.auctionDetailData.like
-      const res = auctionLike.findIndex((v) => v.userId === meId)
+      const meId = '23';
+      const auctionLike = this.auction.like;
+      const res = auctionLike.findIndex((v) => v.userId === meId);
       if (this.like) {
-        this.auctionDetailData.like.splice(res, 1)
+        this.auction.like.splice(res, 1);
       } else {
-        this.auctionDetailData.like.push({
+        this.auction.like.push({
           id: '1',
           userId: '23',
           productId: '1',
           date: '2022-06-12 19:00',
-        })
+        });
       }
     },
     alarmOnClick() {
-      const check = this.$moment(this.nowDate).isBefore(
-        this.auctionDetailData.startDate
-      )
-      const meId = '23'
-      const auctionAlarm = this.auctionDetailData.alarm
-      const res = auctionAlarm.findIndex((v) => v.userId === meId)
+      const check = this.$moment(this.nowDate).isBefore(this.auction.startDate);
+      const meId = '23';
+      const auctionAlarm = this.auction.alarm;
+      const res = auctionAlarm.findIndex((v) => v.userId === meId);
       if (this.alarm && check) {
-        this.auctionDetailData.alarm.splice(res, 1)
+        this.auction.alarm.splice(res, 1);
       } else if (!this.alarm) {
-        this.auctionDetailData.alarm.push({
+        this.auction.alarm.push({
           id: '1',
           userId: '23',
           productId: '1',
           date: '2022-06-12 19:00',
-        })
+        });
       } else {
-        alert('경매가 시작된 이후에는 취소할 수 없습니다.')
+        alert('경매가 시작된 이후에는 취소할 수 없습니다.');
       }
     },
+    minusPrice() {
+      if (this.auction.latestPrice < this.price - 1000) {
+        this.price = this.price - 1000;
+      }
+    },
+    plusPrice() {
+      this.price = this.price + 1000;
+    },
+    submit() {
+      const price = this.price;
+    },
   },
-}
+};
 </script>
 
 <style lang="scss" scoped>
@@ -242,12 +261,18 @@ export default {
 }
 .popup .price .center {
   margin: 0 12px;
+  flex: 1;
 }
-.popup .price .center input {
+.popup .price .center .fake_input {
   font-size: 20px;
   font-weight: bold;
   text-align: right;
 }
+// .popup .price .center input {
+//   font-size: 20px;
+//   font-weight: bold;
+//   text-align: right;
+// }
 .popup .button {
   display: flex;
   margin-top: 24px;

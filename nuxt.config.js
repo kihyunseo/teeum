@@ -20,6 +20,16 @@ export default {
     ],
     script: [
       // 다음 주소 검색 API
+      {
+        src: '//t1.daumcdn.net/mapjsapi/bundle/postcode/prod/postcode.v2.js',
+      },
+      // 카카오톡 로그인
+      {
+        src: 'https://developers.kakao.com/sdk/js/kakao.js',
+      },
+      {
+        src: 'https://code.jquery.com/jquery-3.5.1.min.js',
+      },
     ],
   },
 
@@ -34,11 +44,10 @@ export default {
   plugins: [
     '@/plugins/use.js',
     '@/plugins/filters.js',
-    { src: '@/plugins/infiniteLoading.js', mode: 'client' },
+    { src: '@/plugins/infiniteLoading.js', mode: 'client', ssr: false },
     { src: '@/plugins/daumAddressSearch.js', mode: 'client' },
     { src: '@/plugins/quill.js', mode: 'client' },
-
-    { src: '~plugins/iamport.js', ssr: false, injectAs: 'IMP' },
+    { src: '@/plugins/iamport.js', ssr: false, injectAs: 'IMP' },
   ],
 
   // Auto import components: https://go.nuxtjs.dev/config-components
@@ -62,12 +71,15 @@ export default {
   styleResources: {
     scss: ['@/assets/scss/*.scss'],
   },
-
+  ssr: true,
+  target: 'server',
   // Modules: https://go.nuxtjs.dev/config-modules
   modules: [
     // https://go.nuxtjs.dev/axios
     '@nuxtjs/axios',
     '@nuxtjs/style-resources',
+    // With options
+    ['cookie-universal-nuxt', { alias: 'cookiz' }],
   ],
 
   // Axios module configuration: https://go.nuxtjs.dev/config-axios
@@ -78,13 +90,11 @@ export default {
 
   // Build Configuration: https://go.nuxtjs.dev/config-build
   build: {},
-  script: [
-    // 다음 주소 검색 API
-    {
-      src: '//t1.daumcdn.net/mapjsapi/bundle/postcode/prod/postcode.v2.js',
-    },
-  ],
+
   server: {
     port: 8765,
+  },
+  router: {
+    middleware: ['auth'],
   },
 };

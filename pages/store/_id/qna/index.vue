@@ -2,23 +2,22 @@
   <div>
     <HistoryHeader>질문&답변</HistoryHeader>
     <div class="content" style="padding-top: 12px">
-      <ProductQna :items="storeDetailData.qna" :arrow="false" />
+      <ProductQna :items="store.qna" :arrow="false" />
     </div>
   </div>
 </template>
 
 <script>
-import storeDetail from '@/data/storeDetail.json'
+import store from '@/data/store.json';
 export default {
   layout: 'empty',
   asyncData() {
-    const storeDetailData = storeDetail
-    return { storeDetailData }
+    return { store };
   },
   data() {},
 
   computed: {},
   mounted() {},
   methods: {},
-}
+};
 </script>

@@ -1,21 +1,21 @@
 <template>
   <div>
     <div class="slide">
-      <Slider :items="productDetailData.images" />
+      <Slider :items="product.images" />
     </div>
     <div class="content" style="padding-top: 12px">
-      <UserInfo :items="productDetailData.user" />
-      <ProductDetail :items="productDetailData" />
+      <UserInfo :items="product.user" />
+      <ProductDetail :items="product" :type="`product`" />
       <div class="border_bglight_gray"></div>
-      <ProductReivew :items="productDetailData.review" />
+      <ProductReivew :total-count="totalCount" :items="product.reviews" />
     </div>
     <div class="footer_chat">
       <div class="heart" @click="likeOnClick">
         <img :src="heartIcon" alt="" />
       </div>
-      <div class="money">{{ productDetailData.price | comma }}원</div>
+      <div class="money">{{ product.price | comma }}원</div>
       <div class="chat_apply">
-        <nuxt-link :to="{ path: '/chat', query: { id: productDetailData.id } }">
+        <nuxt-link :to="{ path: '/chat', query: { id: product.id } }">
           채팅하기
         </nuxt-link>
       </div>
@@ -24,51 +24,49 @@
 </template>
 
 <script>
-import productDetail from '@/data/productDetail.json'
+import product from '@/data/product.json';
 export default {
   layout: 'document',
   asyncData() {
-    const productDetailData = productDetail
-    return { productDetailData }
+    const totalCount = 100;
+    return { product, totalCount };
   },
   data() {
-    return { dialog: false }
+    return { dialog: false };
   },
 
   computed: {
     like() {
-      const meId = '23'
-      const productLike = this.productDetailData.like
-      return !!(productLike || []).find((v) => v.userId === meId)
+      const meId = this.$store.state.user.me.id;
+      const like = this.product.like;
+      return !!(like || []).find((v) => v.userId === meId);
     },
     heartIcon() {
       return this.like
         ? require('@/assets/svg/Heart_fill.svg')
-        : require('@/assets/svg/Heart.svg')
+        : require('@/assets/svg/Heart.svg');
     },
   },
   mounted() {},
   methods: {
     popupControl() {
-      this.dialog = !this.dialog
+      this.dialog = !this.dialog;
     },
     likeOnClick() {
-      const meId = '23'
-      const productLike = this.productDetailData.like
-      const res = productLike.findIndex((v) => v.userId === meId)
+      const meId = this.$store.state.user.me.id;
+      const product = this.product.like;
+      const res = product.findIndex((v) => v.userId === meId);
       if (this.like) {
-        this.productDetailData.like.splice(res, 1)
+        this.product.like.splice(res, 1);
       } else {
-        this.productDetailData.like.push({
-          id: '1',
-          userId: '23',
-          productId: '1',
+        this.product.like.push({
+          userId: meId,
           date: '2022-06-12 19:00',
-        })
+        });
       }
     },
   },
-}
+};
 </script>
 
 <style lang="scss" scoped>

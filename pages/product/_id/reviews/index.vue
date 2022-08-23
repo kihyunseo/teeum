@@ -2,23 +2,27 @@
   <div>
     <HistoryHeader>리뷰</HistoryHeader>
     <div class="content" style="padding-top: 12px">
-      <ProductReivew :items="productDetailData.review" :arrow="false" />
+      <ProductReivew
+        :items="product.reviews"
+        :total-count="totalCount"
+        :arrow="false"
+      />
     </div>
   </div>
 </template>
 
 <script>
-import productDetail from '@/data/productDetail.json'
+import product from '@/data/product.json';
 export default {
   layout: 'empty',
   asyncData() {
-    const productDetailData = productDetail
-    return { productDetailData }
+    const totalCount = 100;
+    return { product, totalCount };
   },
   data() {},
 
   computed: {},
   mounted() {},
   methods: {},
-}
+};
 </script>

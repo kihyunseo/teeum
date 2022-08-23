@@ -23,13 +23,13 @@
 </template>
 
 <script>
-import { Navigation, Pagination } from 'swiper'
-import { SwiperCore, Swiper, SwiperSlide } from 'swiper-vue2'
+import { Navigation, Pagination } from 'swiper';
+import { SwiperCore, Swiper, SwiperSlide } from 'swiper-vue2';
 
 // Import Swiper styles
-import 'swiper/swiper-bundle.css'
+import 'swiper/swiper-bundle.css';
 
-SwiperCore.use([Navigation, Pagination])
+SwiperCore.use([Navigation, Pagination]);
 
 export default {
   components: {
@@ -43,7 +43,7 @@ export default {
     loop: { type: Boolean, default: true },
     pagination: { type: Boolean, default: true },
   },
-}
+};
 </script>
 
 <style scoped>

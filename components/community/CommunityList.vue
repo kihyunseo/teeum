@@ -5,15 +5,15 @@
         <p>
           {{ items.title }}
         </p>
-        <span>{{ items.user.nickname }}</span>
+        <span>{{ items.user.name }}</span>
         <span>{{ items.date | moment('from', 'now') }}</span>
-        <span>댓글 {{ items.comment.length }}</span>
+        <span>댓글 {{ comment }}</span>
         <span>조회 {{ items.view }}</span>
       </div>
       <div
         class="right"
         :style="{
-          'background-image': `url(${items.images[0].src})`,
+          'background-image': `url(${image[1]})`,
         }"
       ></div>
     </nuxt-link>
@@ -21,6 +21,7 @@
 </template>
 
 <script>
+const reg = '<img[^>]*src=["\']?([^>"\']+)["\']?[^>]*>';
 export default {
   props: {
     items: {
@@ -31,8 +32,23 @@ export default {
   data() {
     return {};
   },
-  computed: {},
+  computed: {
+    image() {
+      const html = this.items.detail;
+      return html.match(reg) ? html.match(reg) : ['', ''];
+    },
+    comment() {
+      const length = this.items.comment.length;
+      let lengthSum = 0;
+      for (let i = 0; i < length; i++) {
+        lengthSum++;
+        lengthSum += this.items.comment[i].answer.length;
+      }
+      return lengthSum;
+    },
+  },
   mounted() {},
+  created() {},
   methods: {},
 };
 </script>
@@ -46,6 +62,7 @@ export default {
   margin-bottom: 12px;
   padding-bottom: 12px;
   border-bottom: 1px solid $bglightGray;
+  align-items: center;
 }
 .community_list .left {
   margin-right: 12px;
@@ -79,5 +96,6 @@ export default {
   background-size: cover;
   border-radius: 12px;
   flex-shrink: 0;
+  margin-left: auto;
 }
 </style>

@@ -16,14 +16,14 @@
       <div class="auction_bottom_info">
         <div class="left">
           <p>시작가</p>
-          <p>{{ items.startPrice | comma }}원</p>
+          <p>{{ items.startPrice | comma }} 원</p>
         </div>
         <div class="right">
           <p>{{ $moment(items.startDate).format('HH:mm') }}</p>
           <p>
             {{ $moment(items.startDate).format('YYYY') }}년
-            {{ $moment(items.startDate).format('DD') }}월
-            {{ $moment(items.startDate).format('MM') }}일
+            {{ $moment(items.startDate).format('MM') }}월
+            {{ $moment(items.startDate).format('DD') }}일
           </p>
         </div>
       </div>
@@ -36,8 +36,8 @@
           <p>{{ $moment(items.startDate).format('HH:mm') }}</p>
           <p>
             {{ $moment(items.startDate).format('YYYY') }}년
-            {{ $moment(items.startDate).format('DD') }}월
-            {{ $moment(items.startDate).format('MM') }}일
+            {{ $moment(items.startDate).format('MM') }}월
+            {{ $moment(items.startDate).format('DD') }}일
           </p>
         </div>
       </div>

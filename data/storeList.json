@@ -1,558 +1,61 @@
 [
   {
-    "id": 1,
-    "title": "정성스럽게 키운 안스리움, 소중히 키워 주실 분에게 분양합니다.",
-    "detail": "<p>gfjriwoafjeroiasfjo</p><img src='https://firebasestorage.googleapis.com/v0/b/test-firebase-81571.appspot.com/o/banner.png?alt=media&token=53f07aa8-edf6-4aa3-b240-bf78bc2b7939'>  <p>gfjriwoafjeroiasfjo</p>  <p>gfjriwoafjeroiasfjo</p>  <p>gfjriwoafjeroiasfjo</p>  <p>gfjriwoafjeroiasfjo</p>  <p>gfjriwoafjeroiasfjo</p>",
-    "date": "2022-06-12 19:00",
-    "user": {
-      "id": "1",
-      "nickname": "틔움",
-      "image": ""
-    },
-    "price": "48000",
+    "id": "1",
+    "date": "2022-07-11 11:11:11",
+    "update": "2022-07-12 12:12:12",
+    "title": "천냥금(백량금) 모던라인",
+    "detail": "내용입니다내용입니다내용입니다내용입니다내용입니다내용입니다내용입니다내용입니다내용입니다내용입니다내용입니다내용입니다내용입니다내용입니다",
+    "category": "대품",
+    "price": 40000,
     "address": "서울 강서구 화곡동",
-    "link": "/product/1",
-    "option": [
-      {
-        "id": "1",
-        "title": "소품",
-        "price": "100000",
-        "priceSale": "90000",
-        "stock": "100",
-        "amount": 1
-      },
-      {
-        "id": "1",
-        "title": "중품",
-        "price": "100000",
-        "priceSale": "90000",
-        "stock": "100",
-        "amount": 1
-      },
-      {
-        "id": "1",
-        "title": "대품",
-        "price": "100000",
-        "priceSale": "90000",
-        "stock": "100",
-        "amount": 1
-      }
-    ],
-    "like": [
-      {
-        "id": "1",
-        "userId": "23",
-        "productId": "1",
-        "date": "2022-06-12 19:00"
-      },
-      {
-        "id": "1",
-        "userId": "5",
-        "productId": "1",
-        "user": {
-          "id": "1",
-          "nickname": "홍길동1"
-        },
-        "date": "2022-06-12 19:00"
-      },
-      {
-        "id": "1",
-        "userId": "5",
-        "productId": "1",
-        "user": {
-          "id": "1",
-          "nickname": "홍길동2"
-        },
-        "date": "2022-06-12 19:00"
-      }
-    ],
+    "view": 5,
+    "user": {
+      "id": "62fef931d5ebd8fe76665ab1",
+      "name": "틔움",
+      "level": 1,
+      "image": "http://k.kakaocdn.net/dn/bsxjRw/btrJXBn9Qf4/H7x1GJuAfpMCBAhNRerL3k/img_110x110.jpg"
+    },
+    "like": [{ "userId": "23", "date": "2022-06-12 19:00" }],
     "images": [
       {
-        "id": "1",
-        "src": "https://firebasestorage.googleapis.com/v0/b/test-firebase-81571.appspot.com/o/photo.png?alt=media&token=df5f70a4-27e2-403e-bd68-738d55473257",
-        "type": "banner",
-        "link": ""
-      },
-      {
-        "id": "1",
-        "src": "https://firebasestorage.googleapis.com/v0/b/test-firebase-81571.appspot.com/o/photo.png?alt=media&token=df5f70a4-27e2-403e-bd68-738d55473257",
-        "type": "banner",
-        "link": ""
-      },
-      {
-        "id": "1",
-        "src": "https://firebasestorage.googleapis.com/v0/b/test-firebase-81571.appspot.com/o/photo.png?alt=media&token=df5f70a4-27e2-403e-bd68-738d55473257",
-        "type": "banner",
-        "link": ""
-      },
-      {
-        "id": "1",
-        "src": "https://firebasestorage.googleapis.com/v0/b/test-firebase-81571.appspot.com/o/photo.png?alt=media&token=df5f70a4-27e2-403e-bd68-738d55473257",
-        "type": "banner",
-        "link": ""
-      },
-      {
-        "id": "1",
-        "src": "https://firebasestorage.googleapis.com/v0/b/test-firebase-81571.appspot.com/o/photo.png?alt=media&token=df5f70a4-27e2-403e-bd68-738d55473257",
-        "type": "banner",
-        "link": ""
+        "src": "https://firebasestorage.googleapis.com/v0/b/test-firebase-81571.appspot.com/o/photo.png?alt=media&token=df5f70a4-27e2-403e-bd68-738d55473257"
       }
     ],
-    "category": [
+    "option": [
       {
-        "id": "1",
-        "title": "카테고리1"
-      },
-      {
-        "id": "2",
-        "title": "카테고리2"
+        "title": "소품 - 레드",
+        "price": 100000,
+        "priceSale": 90000,
+        "stock": 100,
+        "amount": 1
       }
     ],
-    "view": "5",
-    "type": [
+    "reviews": [
       {
-        "id": "1",
-        "title": "직접 거래"
+        "user": {},
+        "detail": "리뷰내용리뷰내용리뷰내용",
+        "answer": {
+          "detail": "리뷰답변리뷰답변리뷰답변리뷰답변"
+        }
       }
     ],
-    "review": [
+    "qna": [
       {
-        "id": "23",
-        "title": "리뷰내용리뷰내용리뷰내용리뷰내용리뷰내용리뷰내용리뷰내용리뷰내용리뷰내용리뷰내용리뷰내용",
-        "user": {
-          "id": "23",
-          "nickname": "PlantLove",
-          "image": "https://firebasestorage.googleapis.com/v0/b/test-firebase-81571.appspot.com/o/profile_summary.png?alt=media&token=3d88a82f-a534-430f-86bf-5e0ea339eaa6",
-          "role": "뿌리탈출"
-        },
-        "averageStar": 4.5,
-        "images": [
-          {
-            "id": "1",
-            "url": "https://firebasestorage.googleapis.com/v0/b/test-firebase-81571.appspot.com/o/photo.png?alt=media&token=df5f70a4-27e2-403e-bd68-738d55473257"
-          },
-          {
-            "id": "2",
-            "url": "https://firebasestorage.googleapis.com/v0/b/test-firebase-81571.appspot.com/o/photo.png?alt=media&token=df5f70a4-27e2-403e-bd68-738d55473257"
-          }
-        ],
-        "totalCount": 255
-      },
-      {
-        "id": "2",
-        "title": "리뷰내용리뷰내용리뷰내용리뷰내용리뷰내용리뷰내용리뷰내용리뷰내용리뷰내용리뷰내용리뷰내용",
+        "detail": "안스리움 상해서 오면 환불 해주나요?",
+        "date": "2022-06-12 19:00",
+        "status": "답변완료",
         "user": {
           "id": "1",
           "nickname": "PlantLove",
           "image": "https://firebasestorage.googleapis.com/v0/b/test-firebase-81571.appspot.com/o/profile_summary.png?alt=media&token=3d88a82f-a534-430f-86bf-5e0ea339eaa6",
           "role": "새싹"
         },
-        "image": [
-          {
-            "id": "1",
-            "url": "https://firebasestorage.googleapis.com/v0/b/test-firebase-81571.appspot.com/o/photo.png?alt=media&token=df5f70a4-27e2-403e-bd68-738d55473257"
-          },
-          {
-            "id": "2",
-            "url": "https://firebasestorage.googleapis.com/v0/b/test-firebase-81571.appspot.com/o/photo.png?alt=media&token=df5f70a4-27e2-403e-bd68-738d55473257"
-          }
-        ]
+        "answer": {
+          "detail": "네 해드려요",
+          "date": "2022-06-12 19:00"
+        }
       }
     ],
-    "qna": {
-      "id": "2",
-      "detail": "안스리움 상해서 오면 환불 해주나요?",
-      "storeId": "123",
-      "date": "2022-06-12 19:00",
-      "status": "답변완료",
-      "user": {
-        "id": "1",
-        "nickname": "PlantLove",
-        "image": "https://firebasestorage.googleapis.com/v0/b/test-firebase-81571.appspot.com/o/profile_summary.png?alt=media&token=3d88a82f-a534-430f-86bf-5e0ea339eaa6",
-        "role": "새싹"
-      },
-      "answer": {
-        "id": "1",
-        "detail": "네 해드려요",
-        "date": "2022-06-12 19:00"
-      }
-    },
-    "delivery": {
-      "methods": "일반택배",
-      "deliveryMoney": "2500",
-      "addMoney": "6000",
-      "returnMoney": "6000",
-      "swapMoney": "6000",
-      "returnImpossible": "<p>안됩니당.</p>",
-      "returnResTime": "<p>구매후 7일 이내</p>"
-    }
-  },
-  {
-    "id": 1,
-    "title": "정성스럽게 키운 안스리움, 소중히 키워 주실 분에게 분양합니다.",
-    "detail": "<p>gfjriwoafjeroiasfjo</p><img src='https://firebasestorage.googleapis.com/v0/b/test-firebase-81571.appspot.com/o/banner.png?alt=media&token=53f07aa8-edf6-4aa3-b240-bf78bc2b7939'>  <p>gfjriwoafjeroiasfjo</p>  <p>gfjriwoafjeroiasfjo</p>  <p>gfjriwoafjeroiasfjo</p>  <p>gfjriwoafjeroiasfjo</p>  <p>gfjriwoafjeroiasfjo</p>",
-    "date": "2022-06-12 19:00",
-    "user": {
-      "id": "1",
-      "nickname": "틔움",
-      "image": ""
-    },
-    "price": "48000",
-    "address": "서울 강서구 화곡동",
-    "link": "/product/1",
-    "option": [
-      {
-        "id": "1",
-        "title": "소품",
-        "price": "100000",
-        "priceSale": "90000",
-        "stock": "100",
-        "amount": 1
-      },
-      {
-        "id": "1",
-        "title": "중품",
-        "price": "100000",
-        "priceSale": "90000",
-        "stock": "100",
-        "amount": 1
-      },
-      {
-        "id": "1",
-        "title": "대품",
-        "price": "100000",
-        "priceSale": "90000",
-        "stock": "100",
-        "amount": 1
-      }
-    ],
-    "like": [
-      {
-        "id": "1",
-        "userId": "23",
-        "productId": "1",
-        "date": "2022-06-12 19:00"
-      },
-      {
-        "id": "1",
-        "userId": "5",
-        "productId": "1",
-        "user": {
-          "id": "1",
-          "nickname": "홍길동1"
-        },
-        "date": "2022-06-12 19:00"
-      },
-      {
-        "id": "1",
-        "userId": "5",
-        "productId": "1",
-        "user": {
-          "id": "1",
-          "nickname": "홍길동2"
-        },
-        "date": "2022-06-12 19:00"
-      }
-    ],
-    "images": [
-      {
-        "id": "1",
-        "src": "https://firebasestorage.googleapis.com/v0/b/test-firebase-81571.appspot.com/o/photo.png?alt=media&token=df5f70a4-27e2-403e-bd68-738d55473257",
-        "type": "banner",
-        "link": ""
-      },
-      {
-        "id": "1",
-        "src": "https://firebasestorage.googleapis.com/v0/b/test-firebase-81571.appspot.com/o/photo.png?alt=media&token=df5f70a4-27e2-403e-bd68-738d55473257",
-        "type": "banner",
-        "link": ""
-      },
-      {
-        "id": "1",
-        "src": "https://firebasestorage.googleapis.com/v0/b/test-firebase-81571.appspot.com/o/photo.png?alt=media&token=df5f70a4-27e2-403e-bd68-738d55473257",
-        "type": "banner",
-        "link": ""
-      },
-      {
-        "id": "1",
-        "src": "https://firebasestorage.googleapis.com/v0/b/test-firebase-81571.appspot.com/o/photo.png?alt=media&token=df5f70a4-27e2-403e-bd68-738d55473257",
-        "type": "banner",
-        "link": ""
-      },
-      {
-        "id": "1",
-        "src": "https://firebasestorage.googleapis.com/v0/b/test-firebase-81571.appspot.com/o/photo.png?alt=media&token=df5f70a4-27e2-403e-bd68-738d55473257",
-        "type": "banner",
-        "link": ""
-      }
-    ],
-    "category": [
-      {
-        "id": "1",
-        "title": "카테고리1"
-      },
-      {
-        "id": "2",
-        "title": "카테고리2"
-      }
-    ],
-    "view": "5",
-    "type": [
-      {
-        "id": "1",
-        "title": "직접 거래"
-      }
-    ],
-    "review": [
-      {
-        "id": "23",
-        "title": "리뷰내용리뷰내용리뷰내용리뷰내용리뷰내용리뷰내용리뷰내용리뷰내용리뷰내용리뷰내용리뷰내용",
-        "user": {
-          "id": "23",
-          "nickname": "PlantLove",
-          "image": "https://firebasestorage.googleapis.com/v0/b/test-firebase-81571.appspot.com/o/profile_summary.png?alt=media&token=3d88a82f-a534-430f-86bf-5e0ea339eaa6",
-          "role": "뿌리탈출"
-        },
-        "averageStar": 4.5,
-        "images": [
-          {
-            "id": "1",
-            "url": "https://firebasestorage.googleapis.com/v0/b/test-firebase-81571.appspot.com/o/photo.png?alt=media&token=df5f70a4-27e2-403e-bd68-738d55473257"
-          },
-          {
-            "id": "2",
-            "url": "https://firebasestorage.googleapis.com/v0/b/test-firebase-81571.appspot.com/o/photo.png?alt=media&token=df5f70a4-27e2-403e-bd68-738d55473257"
-          }
-        ],
-        "totalCount": 255
-      },
-      {
-        "id": "2",
-        "title": "리뷰내용리뷰내용리뷰내용리뷰내용리뷰내용리뷰내용리뷰내용리뷰내용리뷰내용리뷰내용리뷰내용",
-        "user": {
-          "id": "1",
-          "nickname": "PlantLove",
-          "image": "https://firebasestorage.googleapis.com/v0/b/test-firebase-81571.appspot.com/o/profile_summary.png?alt=media&token=3d88a82f-a534-430f-86bf-5e0ea339eaa6",
-          "role": "새싹"
-        },
-        "image": [
-          {
-            "id": "1",
-            "url": "https://firebasestorage.googleapis.com/v0/b/test-firebase-81571.appspot.com/o/photo.png?alt=media&token=df5f70a4-27e2-403e-bd68-738d55473257"
-          },
-          {
-            "id": "2",
-            "url": "https://firebasestorage.googleapis.com/v0/b/test-firebase-81571.appspot.com/o/photo.png?alt=media&token=df5f70a4-27e2-403e-bd68-738d55473257"
-          }
-        ]
-      }
-    ],
-    "qna": {
-      "id": "2",
-      "detail": "안스리움 상해서 오면 환불 해주나요?",
-      "storeId": "123",
-      "date": "2022-06-12 19:00",
-      "status": "답변완료",
-      "user": {
-        "id": "1",
-        "nickname": "PlantLove",
-        "image": "https://firebasestorage.googleapis.com/v0/b/test-firebase-81571.appspot.com/o/profile_summary.png?alt=media&token=3d88a82f-a534-430f-86bf-5e0ea339eaa6",
-        "role": "새싹"
-      },
-      "answer": {
-        "id": "1",
-        "detail": "네 해드려요",
-        "date": "2022-06-12 19:00"
-      }
-    },
-    "delivery": {
-      "methods": "일반택배",
-      "deliveryMoney": "2500",
-      "addMoney": "6000",
-      "returnMoney": "6000",
-      "swapMoney": "6000",
-      "returnImpossible": "<p>안됩니당.</p>",
-      "returnResTime": "<p>구매후 7일 이내</p>"
-    }
-  },
-  {
-    "id": 1,
-    "title": "정성스럽게 키운 안스리움, 소중히 키워 주실 분에게 분양합니다.",
-    "detail": "<p>gfjriwoafjeroiasfjo</p><img src='https://firebasestorage.googleapis.com/v0/b/test-firebase-81571.appspot.com/o/banner.png?alt=media&token=53f07aa8-edf6-4aa3-b240-bf78bc2b7939'>  <p>gfjriwoafjeroiasfjo</p>  <p>gfjriwoafjeroiasfjo</p>  <p>gfjriwoafjeroiasfjo</p>  <p>gfjriwoafjeroiasfjo</p>  <p>gfjriwoafjeroiasfjo</p>",
-    "date": "2022-06-12 19:00",
-    "user": {
-      "id": "1",
-      "nickname": "틔움",
-      "image": ""
-    },
-    "price": "48000",
-    "address": "서울 강서구 화곡동",
-    "link": "/product/1",
-    "option": [
-      {
-        "id": "1",
-        "title": "소품",
-        "price": "100000",
-        "priceSale": "90000",
-        "stock": "100",
-        "amount": 1
-      },
-      {
-        "id": "1",
-        "title": "중품",
-        "price": "100000",
-        "priceSale": "90000",
-        "stock": "100",
-        "amount": 1
-      },
-      {
-        "id": "1",
-        "title": "대품",
-        "price": "100000",
-        "priceSale": "90000",
-        "stock": "100",
-        "amount": 1
-      }
-    ],
-    "like": [
-      {
-        "id": "1",
-        "userId": "23",
-        "productId": "1",
-        "date": "2022-06-12 19:00"
-      },
-      {
-        "id": "1",
-        "userId": "5",
-        "productId": "1",
-        "user": {
-          "id": "1",
-          "nickname": "홍길동1"
-        },
-        "date": "2022-06-12 19:00"
-      },
-      {
-        "id": "1",
-        "userId": "5",
-        "productId": "1",
-        "user": {
-          "id": "1",
-          "nickname": "홍길동2"
-        },
-        "date": "2022-06-12 19:00"
-      }
-    ],
-    "images": [
-      {
-        "id": "1",
-        "src": "https://firebasestorage.googleapis.com/v0/b/test-firebase-81571.appspot.com/o/photo.png?alt=media&token=df5f70a4-27e2-403e-bd68-738d55473257",
-        "type": "banner",
-        "link": ""
-      },
-      {
-        "id": "1",
-        "src": "https://firebasestorage.googleapis.com/v0/b/test-firebase-81571.appspot.com/o/photo.png?alt=media&token=df5f70a4-27e2-403e-bd68-738d55473257",
-        "type": "banner",
-        "link": ""
-      },
-      {
-        "id": "1",
-        "src": "https://firebasestorage.googleapis.com/v0/b/test-firebase-81571.appspot.com/o/photo.png?alt=media&token=df5f70a4-27e2-403e-bd68-738d55473257",
-        "type": "banner",
-        "link": ""
-      },
-      {
-        "id": "1",
-        "src": "https://firebasestorage.googleapis.com/v0/b/test-firebase-81571.appspot.com/o/photo.png?alt=media&token=df5f70a4-27e2-403e-bd68-738d55473257",
-        "type": "banner",
-        "link": ""
-      },
-      {
-        "id": "1",
-        "src": "https://firebasestorage.googleapis.com/v0/b/test-firebase-81571.appspot.com/o/photo.png?alt=media&token=df5f70a4-27e2-403e-bd68-738d55473257",
-        "type": "banner",
-        "link": ""
-      }
-    ],
-    "category": [
-      {
-        "id": "1",
-        "title": "카테고리1"
-      },
-      {
-        "id": "2",
-        "title": "카테고리2"
-      }
-    ],
-    "view": "5",
-    "type": [
-      {
-        "id": "1",
-        "title": "직접 거래"
-      }
-    ],
-    "review": [
-      {
-        "id": "23",
-        "title": "리뷰내용리뷰내용리뷰내용리뷰내용리뷰내용리뷰내용리뷰내용리뷰내용리뷰내용리뷰내용리뷰내용",
-        "user": {
-          "id": "23",
-          "nickname": "PlantLove",
-          "image": "https://firebasestorage.googleapis.com/v0/b/test-firebase-81571.appspot.com/o/profile_summary.png?alt=media&token=3d88a82f-a534-430f-86bf-5e0ea339eaa6",
-          "role": "뿌리탈출"
-        },
-        "averageStar": 4.5,
-        "images": [
-          {
-            "id": "1",
-            "url": "https://firebasestorage.googleapis.com/v0/b/test-firebase-81571.appspot.com/o/photo.png?alt=media&token=df5f70a4-27e2-403e-bd68-738d55473257"
-          },
-          {
-            "id": "2",
-            "url": "https://firebasestorage.googleapis.com/v0/b/test-firebase-81571.appspot.com/o/photo.png?alt=media&token=df5f70a4-27e2-403e-bd68-738d55473257"
-          }
-        ],
-        "totalCount": 255
-      },
-      {
-        "id": "2",
-        "title": "리뷰내용리뷰내용리뷰내용리뷰내용리뷰내용리뷰내용리뷰내용리뷰내용리뷰내용리뷰내용리뷰내용",
-        "user": {
-          "id": "1",
-          "nickname": "PlantLove",
-          "image": "https://firebasestorage.googleapis.com/v0/b/test-firebase-81571.appspot.com/o/profile_summary.png?alt=media&token=3d88a82f-a534-430f-86bf-5e0ea339eaa6",
-          "role": "새싹"
-        },
-        "image": [
-          {
-            "id": "1",
-            "url": "https://firebasestorage.googleapis.com/v0/b/test-firebase-81571.appspot.com/o/photo.png?alt=media&token=df5f70a4-27e2-403e-bd68-738d55473257"
-          },
-          {
-            "id": "2",
-            "url": "https://firebasestorage.googleapis.com/v0/b/test-firebase-81571.appspot.com/o/photo.png?alt=media&token=df5f70a4-27e2-403e-bd68-738d55473257"
-          }
-        ]
-      }
-    ],
-    "qna": {
-      "id": "2",
-      "detail": "안스리움 상해서 오면 환불 해주나요?",
-      "storeId": "123",
-      "date": "2022-06-12 19:00",
-      "status": "답변완료",
-      "user": {
-        "id": "1",
-        "nickname": "PlantLove",
-        "image": "https://firebasestorage.googleapis.com/v0/b/test-firebase-81571.appspot.com/o/profile_summary.png?alt=media&token=3d88a82f-a534-430f-86bf-5e0ea339eaa6",
-        "role": "새싹"
-      },
-      "answer": {
-        "id": "1",
-        "detail": "네 해드려요",
-        "date": "2022-06-12 19:00"
-      }
-    },
     "delivery": {
       "methods": "일반택배",
       "deliveryMoney": "2500",

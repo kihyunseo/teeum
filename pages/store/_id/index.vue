@@ -4,22 +4,26 @@
       <Slider :items="bannerData" />
     </div>
     <div class="content" style="padding-top: 12px">
-      <ProductDetail :items="storeDetailData" :type="'store'" />
+      <ProductDetail :items="store" :type="'store'" />
       <div class="border_bglight_gray"></div>
-      <ProductReivew :items="storeDetailData.review" />
-      <ProductQna :items="storeDetailData.qna" />
-      <Delivery :items="storeDetailData.delivery" />
+      <ProductReivew
+        :average-star="averageStar"
+        :total-count="totalCount"
+        :items="store.reviews"
+      />
+      <ProductQna :items="store.qna" />
+      <Delivery :items="store.delivery" />
       <div class="store_footer">
         <div class="heart" @click="likeOnClick">
           <img :src="heartIcon" alt="" />
         </div>
         <div class="money">
-          <p>{{ storeDetailData.price | comma }}원</p>
+          <p>{{ store.price | comma }}원</p>
         </div>
         <div class="payment" @click="popupControl">구매하기</div>
       </div>
       <Popup :dialog="dialog" @popupClose="popupControl">
-        <BuyPopup :items="storeDetailData.option" />
+        <BuyPopup :items="store.option" />
       </Popup>
     </div>
   </div>
@@ -28,17 +32,20 @@
 <script>
 import banner from '@/data/banner.json';
 import productCategory from '@/data/productCategory.json';
-import storeDetail from '@/data/storeDetail.json';
+import store from '@/data/store.json';
 export default {
   layout: 'document',
   asyncData() {
     const bannerData = banner;
     const productCategoryData = productCategory;
-    const storeDetailData = storeDetail;
+    const totalCount = 100;
+    const averageStar = 4.5;
     return {
       bannerData,
       productCategoryData,
-      storeDetailData,
+      store,
+      totalCount,
+      averageStar,
     };
   },
 
@@ -52,8 +59,8 @@ export default {
   computed: {
     like() {
       const meId = '23';
-      const productLike = this.storeDetailData.like;
-      return !!(productLike || []).find((v) => v.userId === meId);
+      const like = this.store.like;
+      return !!(like || []).find((v) => v.userId === meId);
     },
     heartIcon() {
       return this.like
@@ -65,12 +72,12 @@ export default {
   methods: {
     likeOnClick() {
       const meId = '23';
-      const productLike = this.storeDetailData.like;
-      const res = productLike.findIndex((v) => v.userId === meId);
+      const like = this.store.like;
+      const res = like.findIndex((v) => v.userId === meId);
       if (this.like) {
-        this.storeDetailData.like.splice(res, 1);
+        this.store.like.splice(res, 1);
       } else {
-        this.storeDetailData.like.push({
+        this.store.like.push({
           id: '1',
           userId: '23',
           productId: '1',

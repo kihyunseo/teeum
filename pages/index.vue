@@ -1,13 +1,13 @@
 <template>
   <div>
-    <Slider :items="bannerData" />
+    <Slider :items="banner" />
     <div class="content">
       <MobileTopMenu />
       <div class="flex">
         <div class="left">
           <select @change="categoryChange($event)">
             <option>카테고리</option>
-            <option v-for="item in productCategoryData" :key="item.index">
+            <option v-for="item in productCategory" :key="item.index">
               {{ item.title }}
             </option>
           </select>
@@ -19,28 +19,33 @@
           />
         </div>
       </div>
-      <div v-for="item in productListData" :key="item.index">
+      <div v-for="item in product" :key="item.index">
         <ul>
-          <ProductList view="product" :type="teeumFilter" :items="item" />
+          <ProductList
+            v-if="item.user.name !== '틔움' && !teeumFilter"
+            view="product"
+            :items="item"
+          />
+          <StoreList v-if="item.user.name === '틔움'" :items="item" />
         </ul>
       </div>
     </div>
 
     <!-- 인피니티 스크롤 -->
-    <InfiniteLoading @infinite="infiniteHandler"></InfiniteLoading>
+    <client-only>
+      <InfiniteLoading @infinite="infiniteHandler"></InfiniteLoading>
+    </client-only>
   </div>
 </template>
 
 <script>
 import banner from '@/data/banner.json';
 import productCategory from '@/data/productCategory.json';
-import productList from '@/data/productList.json';
+import product from '@/data/productList.json';
+import store from '@/data/storeList.json';
 export default {
   asyncData() {
-    const bannerData = banner;
-    const productCategoryData = productCategory;
-    const productListData = productList;
-    return { bannerData, productCategoryData, productListData };
+    return { banner, productCategory, product, store };
   },
 
   data() {
@@ -59,9 +64,8 @@ export default {
     infiniteHandler($state) {
       try {
         if (this.page < 10) {
-          this.productListData = this.productListData.concat(
-            this.productListData
-          );
+          this.product = this.product.concat(this.product);
+          this.product = this.product.concat(this.store);
           this.page = this.page + 1;
           $state.loaded();
         } else {

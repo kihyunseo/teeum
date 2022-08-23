@@ -1,11 +1,13 @@
-export const state = () => ({})
+import Vue from 'vue';
 
-export const mutations = {
-  Slide({ context, payload }) {
-    return 'aa'
+export const state = () => ({});
+
+export const mutations = {};
+
+export const actions = {
+  nuxtServerInit({ commit, dispatch, state }, { req }) {
+    return dispatch('user/loadUser');
   },
-}
+};
 
-export const actions = {}
-
-export const getters = {}
+export const getters = {};

@@ -29,6 +29,10 @@
           <img src="@/assets/svg/arrow_right.svg" alt="" />
         </div>
       </div>
+      <TeeumProductFilter
+        :type="teeumFilter"
+        @teeumFilter="teeumFilter = !teeumFilter"
+      />
       <div v-for="item in productListData" :key="item.index">
         <ul>
           <ProductList view="product" :type="teeumFilter" :items="item" />
@@ -46,7 +50,9 @@ export default {
     return { productListData };
   },
   data() {
-    return {};
+    return {
+      teeumFilter: false,
+    };
   },
 
   mounted() {},

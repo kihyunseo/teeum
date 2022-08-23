@@ -16,8 +16,8 @@
     </nuxt-link>
     <div class="right">
       <div class="box_left">
-        <p class="title">{{ items.nickname }}</p>
-        <p class="detail font_sub_text">{{ items.role }}</p>
+        <p class="title">{{ items.name }}</p>
+        <!-- <p class="detail font_sub_text">{{ items.level }}</p> -->
       </div>
       <div class="box_right">
         <nuxt-link :to="{ path: `/my/user/${items.id}` }">

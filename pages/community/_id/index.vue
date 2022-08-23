@@ -1,27 +1,29 @@
 <template>
   <div>
     <div class="slide">
-      <Slider :items="communityDetailData.images" />
+      <Slider :items="banner" />
     </div>
     <div class="content" style="padding-top: 12px">
-      <UserInfo :items="communityDetailData.user" />
-      <ProductDetail :items="communityDetailData" :type="`community`" />
+      <UserInfo :items="community.user" />
+      <ProductDetail :items="community" :type="`community`" />
       <div class="border_bglight_gray"></div>
       <CommunityComment
-        :items="communityDetailData.comment"
+        :items="community.comment"
+        :heart-icon="heartIcon"
         @changeDetail="changeDetail"
+        @likeOnClick="likeOnClick"
       />
     </div>
   </div>
 </template>
 
 <script>
-import communityDetail from '@/data/communityDetail.json';
+import banner from '@/data/banner.json';
+import community from '@/data/community.json';
 export default {
   layout: 'document',
   asyncData() {
-    const communityDetailData = communityDetail;
-    return { communityDetailData };
+    return { community, banner };
   },
   data() {
     return { dialog: false };
@@ -29,9 +31,9 @@ export default {
 
   computed: {
     like() {
-      const meId = '23';
-      const communityLike = this.communityDetailData.like;
-      return !!(communityLike || []).find((v) => v.userId === meId);
+      const meId = this.$store.state.user.me.id;
+      const like = this.community.like;
+      return !!(like || []).find((v) => v.userId === meId);
     },
     heartIcon() {
       return this.like
@@ -45,16 +47,14 @@ export default {
       this.dialog = !this.dialog;
     },
     likeOnClick() {
-      const meId = '23';
-      const communityLike = this.communityDetailData.like;
-      const res = communityLike.findIndex((v) => v.userId === meId);
+      const meId = this.$store.state.user.me.id;
+      const like = this.community.like;
+      const res = like.findIndex((v) => v.userId === meId);
       if (this.like) {
-        this.communityDetailData.like.splice(res, 1);
+        this.community.like.splice(res, 1);
       } else {
-        this.communityDetailData.like.push({
-          id: '1',
-          userId: '23',
-          productId: '1',
+        this.community.like.push({
+          userId: meId,
           date: '2022-06-12 19:00',
         });
       }

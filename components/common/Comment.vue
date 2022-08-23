@@ -30,9 +30,11 @@
 export default {
   props: {
     items: {
-      type: Array,
+      type: Object,
       required: false,
-      default: () => [{}],
+      default: () => {
+        return {};
+      },
     },
     index: {
       type: String,

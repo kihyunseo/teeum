@@ -6,7 +6,7 @@
           <p>{{ item.date }}</p>
         </div>
         <div>
-          <p>{{ item.nickname }}</p>
+          <p>{{ item.name }}</p>
         </div>
         <div>
           <p>{{ item.money | comma }}원</p>

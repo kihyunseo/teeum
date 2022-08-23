@@ -1,27 +1,25 @@
 <template>
   <div>
     <HistoryHeader>입찰</HistoryHeader>
-    <AuctionBidding :items="auctionDetailData" />
+    <AuctionBidding :items="auction" />
   </div>
 </template>
 
 <script>
-import auctionDetail from '@/data/auctionDetail.json'
+import auction from '@/data/auction.json';
 export default {
   layout: 'empty',
   asyncData() {
-    const auctionDetailData = auctionDetail
-
-    return { auctionDetailData }
+    return { auction };
   },
   data() {
-    return {}
+    return {};
   },
 
   mounted() {},
 
   methods: {},
-}
+};
 </script>
 
 <style lang="scss" scoped>

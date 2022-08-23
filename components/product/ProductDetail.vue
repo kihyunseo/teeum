@@ -3,15 +3,10 @@
     <h2 class="title">
       {{ items.title }}
     </h2>
-    <p class="span_comma">
-      <span
-        v-for="category in items.category"
-        :key="category.id"
-        class="font_sub_text"
-        >{{ category.title }}</span
-      >
+    <p>
+      <span class="font_sub_text">카테고리: {{ items.category }}</span>
     </p>
-    <div v-html="items.detail" class="detail"></div>
+    <div class="detail" v-html="items.detail"></div>
     <div class="flex">
       <div class="span_comma view">
         <span class="font_sub_text">{{
@@ -46,7 +41,7 @@ export default {
       required: true,
     },
   },
-}
+};
 </script>
 
 <style lang="scss" scoped>

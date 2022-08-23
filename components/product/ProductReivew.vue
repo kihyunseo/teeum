@@ -1,11 +1,11 @@
 <template>
   <div>
     <div class="top">
-      <div class="title font_mid">판매자 후기 ({{ items[0].totalCount }})</div>
+      <div class="title font_mid">판매자 후기 ({{ totalCount }})</div>
       <div class="star-ratings">
         <div
           class="star-ratings-fill space-x-2 text-lg"
-          :style="{ width: `${items[0].averageStar * 20}%` }"
+          :style="{ width: `${averageStar} * 20}%` }"
         >
           <span>★</span><span>★</span><span>★</span><span>★</span><span>★</span>
         </div>
@@ -42,15 +42,15 @@
           ></div>
 
           <div class="right">
-            <p class="nickname font_sub_text">{{ review.user.nickname }}</p>
-            <p class="role font_sub_text">{{ review.user.role }}</p>
+            <p class="nickname font_sub_text">{{ review.user.name }}</p>
+            <!-- <p class="role font_sub_text">{{ review.user.role }}</p> -->
           </div>
         </div>
         <div class="review_content">
           <p class="review_detail">
-            {{ review.title }}
+            {{ review.detail }}
           </p>
-          <div class="review_image_wrap">
+          <!-- <div class="review_image_wrap">
             <div
               v-for="image in review.images"
               :key="image.id"
@@ -59,7 +59,7 @@
                 'background-image': `url(${image.url})`,
               }"
             ></div>
-          </div>
+          </div> -->
         </div>
       </div>
     </div>
@@ -77,16 +77,24 @@ export default {
       type: Boolean,
       default: true,
     },
+    totalCount: {
+      type: Number,
+      required: false,
+      default: 0,
+    },
+    averageStar: {
+      type: Number,
+      required: false,
+      default: 0,
+    },
   },
   data() {
-    return {
-      averageStar: 0,
-    }
+    return {};
   },
 
   computed: {
     paramsId() {
-      return this.$route.params.id
+      return this.$route.params.id;
     },
   },
 
@@ -94,10 +102,10 @@ export default {
 
   methods: {
     reviewDelete() {
-      alert('삭제')
+      alert('삭제');
     },
   },
-}
+};
 </script>
 
 <style lang="scss" scoped>
@@ -148,11 +156,11 @@ export default {
   align-items: center;
 }
 .user_info .left {
-  width: 40px;
-  height: 40px;
+  width: 25px;
+  height: 25px;
   border-radius: 50%;
   background-size: cover;
-  margin-right: 12px;
+  margin-right: 6px;
 }
 .bottom .user_info .role {
   color: $textLight;

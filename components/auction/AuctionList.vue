@@ -31,13 +31,23 @@
         </div>
 
         <div class="date">
-          <p v-if="$moment(nowDate).isBefore(items.startDate)" class="active">
+          <p
+            v-if="
+              $moment(nowDate).isAfter(items.startDate) &&
+              $moment(nowDate).isBefore(items.endDate)
+            "
+            class="active"
+          >
             {{ $moment(items.endDate).fromNow(true) }}
             후 종료 ( {{ items.endDate }} )
           </p>
-          <p v-else>
+          <p v-if="$moment(nowDate).isBefore(items.startDate)">
             {{ $moment(items.startDate).fromNow(true) }}
             후 오픈 ( {{ items.startDate }} )
+          </p>
+          <p v-if="$moment(nowDate).isAfter(items.endDate)">
+            {{ $moment(items.startDate).fromNow(true) }}
+            전 종료됨 ( {{ items.startDate }} )
           </p>
         </div>
       </div>
@@ -62,7 +72,6 @@ export default {
 
   mounted() {
     this.nowDate = this.$moment().format('YYYY-MM-DD HH:mm:ss');
-
     const isAfter = this.$moment(this.nowDate).isAfter(this.items.startDate);
 
     // moment('2010-10-20').isBetween('2010-10-19', '2010-10-25')

@@ -1,0 +1,65 @@
+{
+  "id": 1,
+  "title": "안스리움 키우는법 알려주세요",
+  "detail": "궁금해요 어떻게 키우시는지들 ㅎㅎ<img src='http://k.kakaocdn.net/dn/bsxjRw/btrJXBn9Qf4/H7x1GJuAfpMCBAhNRerL3k/img_110x110.jpg' alt='ㅎㅎ'>",
+  "date": "2022-06-12 19:00",
+  "user": {
+    "id": "62fef931d5ebd8fe76665ab1",
+    "name": "서기현",
+    "level": 1,
+    "image": "http://k.kakaocdn.net/dn/bsxjRw/btrJXBn9Qf4/H7x1GJuAfpMCBAhNRerL3k/img_110x110.jpg"
+  },
+  "comment": [
+    {
+      "detail": " 따뜻한 같지 발휘하기 그리하였는가? 구하기 지혜는 얼마나 어디 새가 구할    옷을 과실이 것이다. 이상, 인생에 수 산야에 얼음 것이다. 뭇 든 긴지라   열락의 심장의 같이, 뼈 풀이 원대하고, 있으랴? 방황하였으며, 불어 때까지   이는 맺어, 없는 두기 풀이 사람은 것이다. 소담스러운 끓는 그들의 그들에게   용기가 우리의 바이며, 뿐이다. 얼음이 청춘 봄바람을 가슴이 별과 쓸쓸하랴?산야에 관현악이며, 있으며, 것이다. 위하여, 그들의 스며들어 있는 때문이다. 청춘의 주는 싶이 그리하였는가?",
+      "date": "2022-06-12 19:00",
+      "update": "2022-06-12 19:00",
+      "user": {
+        "id": "62fef931d5ebd8fe76665ab1",
+        "name": "서기현",
+        "level": 1,
+        "image": "http://k.kakaocdn.net/dn/bsxjRw/btrJXBn9Qf4/H7x1GJuAfpMCBAhNRerL3k/img_110x110.jpg"
+      },
+      "answer": [
+        {
+          "detail": "@홍길동 ㅎㅎ 네 그런거 같아요",
+          "date": "2022-06-12 19:00",
+          "update": "2022-06-12 19:00",
+          "user": {
+            "id": "62fef931d5ebd8fe76665ab1",
+            "name": "서기현",
+            "level": 1,
+            "image": "http://k.kakaocdn.net/dn/bsxjRw/btrJXBn9Qf4/H7x1GJuAfpMCBAhNRerL3k/img_110x110.jpg"
+          }
+        }
+      ]
+    },
+    {
+      "detail": " 따뜻한 같지 발휘하기 그리하였는가? 구하기 지혜는 얼마나 어디 새가 구할    옷을 과실이 것이다. 이상, 인생에 수 산야에 얼음 것이다. 뭇 든 긴지라   열락의 심장의 같이, 뼈 풀이 원대하고, 있으랴? 방황하였으며, 불어 때까지   이는 맺어, 없는 두기 풀이 사람은 것이다. 소담스러운 끓는 그들의 그들에게   용기가 우리의 바이며, 뿐이다. 얼음이 청춘 봄바람을 가슴이 별과 쓸쓸하랴?산야에 관현악이며, 있으며, 것이다. 위하여, 그들의 스며들어 있는 때문이다. 청춘의 주는 싶이 그리하였는가?",
+      "date": "2022-06-12 19:00",
+      "update": "2022-06-12 19:00",
+      "user": {
+        "id": "62fef931d5ebd8fe76665ab1",
+        "name": "서기현",
+        "level": 1,
+        "image": "http://k.kakaocdn.net/dn/bsxjRw/btrJXBn9Qf4/H7x1GJuAfpMCBAhNRerL3k/img_110x110.jpg"
+      },
+      "answer": [
+        {
+          "detail": "@홍길동 ㅎㅎ 네 그런거 같아요",
+          "date": "2022-06-12 19:00",
+          "update": "2022-06-12 19:00",
+          "user": {
+            "id": "62fef931d5ebd8fe76665ab1",
+            "name": "서기현",
+            "level": 1,
+            "image": "http://k.kakaocdn.net/dn/bsxjRw/btrJXBn9Qf4/H7x1GJuAfpMCBAhNRerL3k/img_110x110.jpg"
+          }
+        }
+      ]
+    }
+  ],
+  "like": [{ "userId": "23", "date": "2022-06-12 19:00" }],
+  "category": [{ "id": "1", "title": "자유게시판" }],
+  "view": "5"
+}
