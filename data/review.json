@@ -1,0 +1,35 @@
+[
+  {
+    "user": {
+      "id": "62fef931d5ebd8fe76665ab1",
+      "name": "서기현",
+      "level": 1,
+      "image": "http://k.kakaocdn.net/dn/bsxjRw/btrJXBn9Qf4/H7x1GJuAfpMCBAhNRerL3k/img_110x110.jpg"
+    },
+    "type": "product",
+    "status": "리뷰",
+    "detail": "리뷰리뷰리뷰리뷰리뷰리뷰리뷰리뷰리뷰리뷰리뷰리뷰리뷰리뷰리뷰"
+  },
+  {
+    "user": {
+      "id": "62fef931d5ebd8fe76665ab1",
+      "name": "서기현",
+      "level": 1,
+      "image": "http://k.kakaocdn.net/dn/bsxjRw/btrJXBn9Qf4/H7x1GJuAfpMCBAhNRerL3k/img_110x110.jpg"
+    },
+    "type": "store",
+    "status": "리뷰",
+    "detail": "리뷰리뷰리뷰리뷰리뷰리뷰리뷰리뷰리뷰리뷰리뷰리뷰리뷰리뷰리뷰"
+  },
+  {
+    "user": {
+      "id": "62fef931d5ebd8fe76665ab1",
+      "name": "서기현",
+      "level": 1,
+      "image": "http://k.kakaocdn.net/dn/bsxjRw/btrJXBn9Qf4/H7x1GJuAfpMCBAhNRerL3k/img_110x110.jpg"
+    },
+    "type": "auction",
+    "status": "리뷰",
+    "detail": "리뷰리뷰리뷰리뷰리뷰리뷰리뷰리뷰리뷰리뷰리뷰리뷰리뷰리뷰리뷰"
+  }
+]

@@ -35,7 +35,7 @@
         </li>
       </ul>
       <MyBorderRadius>
-        <div v-for="(item, index) in auctionListData" :key="item.index">
+        <div v-for="(item, index) in auctionList" :key="item.index">
           <ul>
             <AuctionList :items="item" />
             <div class="admin_replay_title">상태:{{ item.status }}</div>
@@ -74,8 +74,7 @@
 import auctionList from '@/data/auctionList.json';
 export default {
   asyncData() {
-    const auctionListData = auctionList;
-    return { auctionListData };
+    return { auctionList };
   },
 
   data() {

@@ -20,37 +20,34 @@
       </div>
     </div>
     <div class="bottom">
-      <div
-        v-for="review in items"
-        :key="review.id"
-        class="review_list border_bglight_gray"
-      >
-        <div class="user_info">
-          <div
-            v-if="review.image"
-            class="left"
-            :style="{
-              'background-image': `url(https://firebasestorage.googleapis.com/v0/b/test-firebase-81571.appspot.com/o/profile_summary.png?alt=media&token=3d88a82f-a534-430f-86bf-5e0ea339eaa6)`,
-            }"
-          ></div>
-          <div
-            v-else
-            class="left"
-            :style="{
-              'background-image': `url(${require('@/assets/svg/profile.svg')})`,
-            }"
-          ></div>
+      <div v-for="review in items" :key="review.index">
+        <div v-if="review.type === type" class="item_list border_bglight_gray">
+          <div class="user_info">
+            <div
+              v-if="review.user.image"
+              class="left"
+              :style="{
+                'background-image': `url(${review.user.image})`,
+              }"
+            ></div>
+            <div
+              v-else
+              class="left"
+              :style="{
+                'background-image': `url(${require('@/assets/svg/profile.svg')})`,
+              }"
+            ></div>
 
-          <div class="right">
-            <p class="nickname font_sub_text">{{ review.user.name }}</p>
-            <!-- <p class="role font_sub_text">{{ review.user.role }}</p> -->
+            <div class="right">
+              <p class="nickname font_sub_text">{{ review.user.name }}</p>
+              <!-- <p class="role font_sub_text">{{ review.user.role }}</p> -->
+            </div>
           </div>
-        </div>
-        <div class="review_content">
-          <p class="review_detail">
-            {{ review.detail }}
-          </p>
-          <!-- <div class="review_image_wrap">
+          <div class="review_content">
+            <p class="review_detail">
+              {{ review.detail }}
+            </p>
+            <!-- <div class="review_image_wrap">
             <div
               v-for="image in review.images"
               :key="image.id"
@@ -60,6 +57,7 @@
               }"
             ></div>
           </div> -->
+          </div>
         </div>
       </div>
     </div>
@@ -86,6 +84,10 @@ export default {
       type: Number,
       required: false,
       default: 0,
+    },
+    type: {
+      type: String,
+      required: true,
     },
   },
   data() {

@@ -7,12 +7,18 @@
       <UserInfo :items="community.user" />
       <ProductDetail :items="community" :type="`community`" />
       <div class="border_bglight_gray"></div>
-      <CommunityComment
+      <!-- <CommunityComment
         :items="community.comment"
         :heart-icon="heartIcon"
         @changeDetail="changeDetail"
         @likeOnClick="likeOnClick"
-      />
+        @commentRemove="commentRemove"
+        @commentAdd="commentAdd"
+        @commentMod="commentMod"
+        @commentAnswerAdd="commentAnswerAdd"
+        @commentAnswerRemove="commentAnswerRemove"
+        @commentAnswerMod="commentAnswerMod"
+      /> -->
     </div>
   </div>
 </template>
@@ -60,15 +66,30 @@ export default {
       }
     },
     changeDetail({ item, val, index }) {
-      if (index === '') {
+      if (!index) {
         console.log('새로발행');
-        console.log(val);
       } else {
         console.log('수정발행');
-        console.log(val);
-        console.log(item);
-        console.log(index);
       }
+    },
+    commentRemove(index) {
+      this.community.comment.splice(index, 1);
+      // this.community.comment[index].splice(index, 1);
+    },
+    commentAdd(index) {
+      alert('추가');
+    },
+    commentMod(index) {
+      alert('수정');
+    },
+    commentAnswerAdd(index, indexAnswer) {
+      console.log(index, indexAnswer);
+    },
+    commentAnswerRemove(index, indexAnswer) {
+      console.log(index, indexAnswer);
+    },
+    commentAnswerMod(index, indexAnswer) {
+      console.log(payload.index, payload.indexAnswer);
     },
   },
 };

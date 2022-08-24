@@ -7,7 +7,7 @@
       <UserInfo :items="product.user" />
       <ProductDetail :items="product" :type="`product`" />
       <div class="border_bglight_gray"></div>
-      <ProductReivew :total-count="totalCount" :items="product.reviews" />
+      <ProductReivew :total-count="totalCount" :items="review" type="product" />
     </div>
     <div class="footer_chat">
       <div class="heart" @click="likeOnClick">
@@ -25,11 +25,12 @@
 
 <script>
 import product from '@/data/product.json';
+import review from '@/data/review.json';
 export default {
   layout: 'document',
   asyncData() {
     const totalCount = 100;
-    return { product, totalCount };
+    return { product, totalCount, review };
   },
   data() {
     return { dialog: false };

@@ -18,6 +18,7 @@
       <UserInfo :items="auction.user" />
       <ProductDetail :items="auction" :type="'auction'" />
       <div class="border_bglight_gray"></div>
+      <ProductReivew :total-count="100" :items="review" type="auction" />
       <div class="footer_auction">
         <div class="heart" @click="likeOnClick">
           <img :src="heartIcon" alt="" />
@@ -65,10 +66,11 @@
 <script>
 import banner from '@/data/banner.json';
 import auction from '@/data/auction.json';
+import review from '@/data/review.json';
 export default {
   layout: 'document',
   asyncData() {
-    return { banner, auction };
+    return { banner, auction, review };
   },
 
   data() {

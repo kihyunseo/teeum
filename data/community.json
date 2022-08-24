@@ -31,6 +31,28 @@
             "level": 1,
             "image": "http://k.kakaocdn.net/dn/bsxjRw/btrJXBn9Qf4/H7x1GJuAfpMCBAhNRerL3k/img_110x110.jpg"
           }
+        },
+        {
+          "detail": "@홍길동 ㅎㅎ 네 그런거 같아요",
+          "date": "2022-06-12 19:00",
+          "update": "2022-06-12 19:00",
+          "user": {
+            "id": "62fef931d5ebd8fe76665ab1",
+            "name": "서기현",
+            "level": 1,
+            "image": "http://k.kakaocdn.net/dn/bsxjRw/btrJXBn9Qf4/H7x1GJuAfpMCBAhNRerL3k/img_110x110.jpg"
+          }
+        },
+        {
+          "detail": "@홍길동 ㅎㅎ 네 그런거 같아요",
+          "date": "2022-06-12 19:00",
+          "update": "2022-06-12 19:00",
+          "user": {
+            "id": "62fef931d5ebd8fe76665ab1",
+            "name": "서기현",
+            "level": 1,
+            "image": "http://k.kakaocdn.net/dn/bsxjRw/btrJXBn9Qf4/H7x1GJuAfpMCBAhNRerL3k/img_110x110.jpg"
+          }
         }
       ]
     },
@@ -60,6 +82,6 @@
     }
   ],
   "like": [{ "userId": "23", "date": "2022-06-12 19:00" }],
-  "category": [{ "id": "1", "title": "자유게시판" }],
+  "category": "자유게시판",
   "view": "5"
 }

@@ -41,6 +41,11 @@ export default {
       required: false,
       default: '',
     },
+    indexAnswer: {
+      type: String,
+      required: false,
+      default: '',
+    },
   },
   data() {
     return {};
@@ -66,6 +71,7 @@ export default {
         item: this.items,
         val: e.target.value,
         index: this.index,
+        indexAnswer: this.indexAnswer,
       });
     },
     focusComment() {

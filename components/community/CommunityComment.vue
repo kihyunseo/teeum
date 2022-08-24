@@ -20,7 +20,7 @@
         :key="item.index"
         class="review_list border_bglight_gray"
       >
-        <div v-if="commentActive !== index">
+        <div v-if="commentModActive !== index">
           <div class="user_info">
             <div
               v-if="item.user.image"
@@ -53,15 +53,87 @@
             </div> -->
             <div class="review_mod">
               <span @click="commentMod(index)"> 수정 </span>
-              <span v-if="true" class="font_sub_text" @click="reviewDelete"
+              <span
+                v-if="true"
+                class="font_sub_text"
+                @click="commentRemove(index)"
                 >삭제</span
               >
-              <span class="font_sub_text" @click="reviewDelete">댓글</span>
+              <span class="font_sub_text" @click="commentAdd(index)">댓글</span>
             </div>
           </div>
         </div>
         <div v-else>
           <Comment :items="item" :index="index.toString()" />
+        </div>
+
+        <div
+          v-for="(answer, indexAnswer) in items[index].answer"
+          :key="answer.indexAnswer"
+          class="review_list border_bglight_gray"
+        >
+          <div class="answer">
+            <div class="user_info">
+              <div
+                v-if="answer.user.image"
+                class="left"
+                :style="{ 'background-image': `url(${answer.user.image})` }"
+              ></div>
+              <div
+                v-else
+                class="left"
+                :style="{
+                  'background-image': `url(${require('@/assets/svg/profile.svg')})`,
+                }"
+              ></div>
+              <div class="right">
+                <p class="nickname font_sub_text">{{ answer.user.name }}</p>
+                <!-- <p class="role font_sub_text">{{ answer.user.role }}</p> -->
+              </div>
+            </div>
+            <div class="review_content">
+              <p class="review_detail">
+                {{ answer.detail }}
+              </p>
+              <!-- <div v-if="answer.image.src" class="review_image_wrap">
+                <div
+                  class="review_image"
+                  :style="{
+                    'background-image': `url(${answer.image.src})`,
+                  }"
+                ></div>
+              </div> -->
+              <div class="review_mod">
+                <span @click="commentAnswerMod(index, indexAnswer)">
+                  수정
+                </span>
+                <span
+                  v-if="true"
+                  class="font_sub_text"
+                  @click="commentAnswerRemove(index, indexAnswer)"
+                  >삭제</span
+                >
+                <span
+                  class="font_sub_text"
+                  @click="commentAnswerAdd(index, indexAnswer)"
+                  >댓글</span
+                >
+              </div>
+            </div>
+          </div>
+          <div
+            v-if="
+              commentModAnswerActive[0] === index &&
+              commentModAnswerActive[1] === indexAnswer
+            "
+            class="comment_answer_comment"
+          >
+            <Comment
+              :items="content"
+              :index="index.toString()"
+              :index-answer="indexAnswer.toString()"
+            />
+          </div>
         </div>
       </div>
       <!--댓글 리스트 끝-->
@@ -89,8 +161,10 @@ export default {
   },
   data() {
     return {
-      commentActive: '',
+      commentModActive: '',
       content: '',
+      commentAddIndex: '',
+      commentModAnswerActive: [],
     };
   },
   computed: {
@@ -103,19 +177,47 @@ export default {
     },
   },
 
-  mounted() {
-    console.log(this.heartIcon);
-  },
+  mounted() {},
 
   methods: {
-    reviewDelete() {
-      alert('삭제');
+    contentReset() {
+      this.content = '';
     },
     onClickCommentMove() {
       this.$refs.focusComment.focusComment();
     },
+    commentRemove(index) {
+      this.$emit('commentRemove', index);
+    },
     commentMod(index) {
-      this.commentActive = index;
+      this.commentModActive = index;
+    },
+    commentAdd(index) {
+      this.commentAddIndex = index;
+      // this.$emit('commentAdd', index);
+    },
+    commentAnswerRemove(index, indexAnswer) {
+      this.$emit('commentAnswerRemove', index, indexAnswer);
+    },
+    commentAnswerMod(index, indexAnswer) {
+      this.$emit('commentAnswerMod', index, indexAnswer);
+    },
+    commentAnswerAdd(index, indexAnswer) {
+      // 댓글 > 답변
+      this.contentReset();
+      const data = this.commentModAnswerActive;
+      if (Array.isArray(data) && data.length === 0) {
+        data.push(index);
+        data.push(indexAnswer);
+      } else if (data[0] === index && data[1] === indexAnswer) {
+        data.splice(0, 2);
+      } else {
+        data.splice(0, 2);
+        data.push(index);
+        data.push(indexAnswer);
+      }
+
+      this.$emit('commentAnswerAdd', index, indexAnswer);
     },
     likeOnClick() {
       this.$emit('likeOnClick');
@@ -248,5 +350,16 @@ export default {
 
 .community_editor {
   margin-bottom: 24px;
+}
+
+.answer {
+  background-color: $lightBlue;
+  padding: 20px;
+  margin-top: 10px;
+  border-radius: 12px;
+}
+
+.comment_answer_comment {
+  margin: 10px 0;
 }
 </style>
