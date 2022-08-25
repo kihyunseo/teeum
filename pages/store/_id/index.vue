@@ -6,7 +6,7 @@
     <div class="content" style="padding-top: 12px">
       <ProductDetail :items="store" :type="'store'" />
       <div class="border_bglight_gray"></div>
-      <ProductReivew
+      <StoreReview
         :average-star="averageStar"
         :total-count="totalCount"
         :items="store.reviews"

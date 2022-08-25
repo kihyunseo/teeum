@@ -82,7 +82,7 @@ export default {
     };
   },
   fetch() {
-    this.price = this.auction.latestPrice;
+    this.price = this.auction.latestPrice + 1000;
   },
   computed: {
     latestPrice() {

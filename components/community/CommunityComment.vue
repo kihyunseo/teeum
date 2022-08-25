@@ -1,8 +1,7 @@
 <template>
   <div>
-    댓글 수정,삭제 시작
     <div class="community_editor">
-      <h2>댓글 수정/작성</h2>
+      <h2>댓글 작성</h2>
       <Comment ref="focusComment" />
     </div>
     <!--댓글 수정 삭제 끝-->
@@ -43,14 +42,6 @@
             <p class="review_detail">
               {{ item.detail }}
             </p>
-            <!-- <div v-if="item.image.src" class="review_image_wrap">
-              <div
-                class="review_image"
-                :style="{
-                  'background-image': `url(${item.image.src})`,
-                }"
-              ></div>
-            </div> -->
             <div class="review_mod">
               <span @click="commentMod(index)"> 수정 </span>
               <span
@@ -64,7 +55,14 @@
           </div>
         </div>
         <div v-else>
-          <Comment :items="item" :index="index.toString()" />
+          <div class="comment_close">
+            <img
+              src="@/assets/svg/close.svg"
+              alt=""
+              @click="commentModActive = ''"
+            />
+          </div>
+          <Comment :items="item.detail" :index="index.toString()" />
         </div>
 
         <div
@@ -95,14 +93,6 @@
               <p class="review_detail">
                 {{ answer.detail }}
               </p>
-              <!-- <div v-if="answer.image.src" class="review_image_wrap">
-                <div
-                  class="review_image"
-                  :style="{
-                    'background-image': `url(${answer.image.src})`,
-                  }"
-                ></div>
-              </div> -->
               <div class="review_mod">
                 <span @click="commentAnswerMod(index, indexAnswer)">
                   수정
@@ -128,6 +118,13 @@
             "
             class="comment_answer_comment"
           >
+            <div class="comment_close">
+              <img
+                src="@/assets/svg/close.svg"
+                alt=""
+                @click="commentModAnswerActive = []"
+              />
+            </div>
             <Comment
               :items="content"
               :index="index.toString()"
@@ -209,8 +206,6 @@ export default {
       if (Array.isArray(data) && data.length === 0) {
         data.push(index);
         data.push(indexAnswer);
-      } else if (data[0] === index && data[1] === indexAnswer) {
-        data.splice(0, 2);
       } else {
         data.splice(0, 2);
         data.push(index);
@@ -361,5 +356,9 @@ export default {
 
 .comment_answer_comment {
   margin: 10px 0;
+}
+
+.comment_close {
+  text-align: right;
 }
 </style>

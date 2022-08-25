@@ -7,7 +7,7 @@
       <UserInfo :items="community.user" />
       <ProductDetail :items="community" :type="`community`" />
       <div class="border_bglight_gray"></div>
-      <!-- <CommunityComment
+      <CommunityComment
         :items="community.comment"
         :heart-icon="heartIcon"
         @changeDetail="changeDetail"
@@ -18,7 +18,7 @@
         @commentAnswerAdd="commentAnswerAdd"
         @commentAnswerRemove="commentAnswerRemove"
         @commentAnswerMod="commentAnswerMod"
-      /> -->
+      />
     </div>
   </div>
 </template>
