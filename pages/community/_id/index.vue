@@ -13,10 +13,11 @@
         @changeDetail="changeDetail"
         @likeOnClick="likeOnClick"
         @commentRemove="commentRemove"
+        @commentAnswerRemove="commentAnswerRemove"
         @commentAdd="commentAdd"
         @commentMod="commentMod"
+        @commentAnswer="commentAnswer"
         @commentAnswerAdd="commentAnswerAdd"
-        @commentAnswerRemove="commentAnswerRemove"
         @commentAnswerMod="commentAnswerMod"
       />
     </div>
@@ -76,20 +77,62 @@ export default {
       this.community.comment.splice(index, 1);
       // this.community.comment[index].splice(index, 1);
     },
-    commentAdd(index) {
-      alert('추가');
+    commentAdd(value) {
+      // 댓글 작성시
+      this.community.comment.push({
+        detail: value,
+        date: '2022-06-12 19:00',
+        update: '2022-06-12 19:00',
+        user: {
+          id: '62fef931d5ebd8fe76665ab1',
+          name: '서기현',
+          level: 1,
+          image:
+            'http://k.kakaocdn.net/dn/bsxjRw/btrJXBn9Qf4/H7x1GJuAfpMCBAhNRerL3k/img_110x110.jpg',
+        },
+      });
     },
-    commentMod(index) {
-      alert('수정');
+    commentMod({ index, value }) {
+      // 댓글 수정시
+      this.community.comment[index].detail = value;
     },
-    commentAnswerAdd(index, indexAnswer) {
-      console.log(index, indexAnswer);
+    commentAnswer({ index, value }) {
+      // 댓글 > 댓글 작성시
+      this.community.comment[index].answer.push({
+        detail: value,
+        date: '2022-06-12 19:00',
+        update: '2022-06-12 19:00',
+        user: {
+          id: '62fef931d5ebd8fe76665ab1',
+          name: '서기현',
+          level: 1,
+          image:
+            'http://k.kakaocdn.net/dn/bsxjRw/btrJXBn9Qf4/H7x1GJuAfpMCBAhNRerL3k/img_110x110.jpg',
+        },
+      });
+    },
+    commentAnswerAdd({ index, indexAnswer, value, user }) {
+      // 댓글 > 댓글 > 댓글 작성
+      this.community.comment[index].answer.push({
+        detail: value,
+        date: '2022-06-12 19:00',
+        update: '2022-06-12 19:00',
+        user: {
+          id: '62fef931d5ebd8fe76665ab1',
+          name: '서기현',
+          level: 1,
+          image:
+            'http://k.kakaocdn.net/dn/bsxjRw/btrJXBn9Qf4/H7x1GJuAfpMCBAhNRerL3k/img_110x110.jpg',
+        },
+      });
     },
     commentAnswerRemove(index, indexAnswer) {
-      console.log(index, indexAnswer);
+      // 댓글 > 댓글 삭제
+      this.community.comment[index].answer.splice(indexAnswer, 1);
     },
-    commentAnswerMod(index, indexAnswer) {
-      console.log(payload.index, payload.indexAnswer);
+    commentAnswerMod({ index, indexAnswer, value }) {
+      // 댓글 > 댓글 수정
+      this.community.comment[index].answer[indexAnswer].detail = value;
     },
   },
 };

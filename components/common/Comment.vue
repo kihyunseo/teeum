@@ -7,14 +7,6 @@
       @input="changeDetail"
     >
     </textarea>
-
-    <div class="community_editor_button">
-      <div class="add_image" @click="onClickImageUpload">
-        <img src="@/assets/svg/photo.svg" alt="이미지 등록" />
-        <input ref="imageInput" type="file" hidden @change="onChangeImages" />
-      </div>
-      <div class="community_editor_submit" @click="onClickSubmit">작성</div>
-    </div>
   </div>
 </template>
 
@@ -41,31 +33,19 @@ export default {
     return {};
   },
 
-  mounted() {},
+  mounted() {
+    this.$emit('changeDetail', this.items);
+  },
 
   methods: {
-    onClickImageUpload() {
-      this.$refs.imageInput.click();
-    },
-    onChangeImages(e) {
-      const imageFormData = new FormData();
-      [].forEach.call(e.target.files, (f) => {
-        imageFormData.append('image', f);
-      });
-    },
-    onClickSubmit(e) {
-      // this.$emit('changeDetail', e.target.value)
-    },
-    changeDetail(e) {
-      this.$parent.$emit('changeDetail', {
-        item: this.items,
-        val: e.target.value,
-        index: this.index,
-        indexAnswer: this.indexAnswer,
-      });
-    },
     focusComment() {
       this.$refs.comment.focus();
+    },
+    removeContent() {
+      this.$refs.comment.value = '';
+    },
+    changeDetail(e) {
+      this.$emit('changeDetail', e.target.value);
     },
   },
 };
@@ -74,35 +54,5 @@ export default {
 <style lang="scss" scoped>
 textarea {
   min-height: 120px;
-}
-.community_editor_add_image {
-  width: 40px;
-  height: 40px;
-  background-size: cover;
-  border-radius: 12px;
-  margin: 6px 0;
-  display: flex;
-}
-.community_editor .community_editor_button .add_image span {
-  margin-top: 3px;
-  display: inline-block;
-  position: relative;
-}
-.community_editor .community_editor_button .add_image img {
-  vertical-align: middle;
-}
-.community_editor_button {
-  display: flex;
-  align-items: center;
-  margin-top: 12px;
-}
-.community_editor_submit {
-  margin-left: auto;
-  padding: 10px 20px;
-  border-radius: 12px;
-  background-color: $primary;
-  color: white;
-  text-align: center;
-  font-weight: bold;
 }
 </style>

@@ -2,7 +2,12 @@
   <div>
     <div class="community_editor">
       <h2>댓글 작성</h2>
-      <Comment ref="focusComment" />
+      <Comment ref="focusComment" @changeDetail="changeDetail" />
+      <div class="community_editor_button">
+        <div class="community_editor_submit" @click="onClickCommentAdd">
+          작성
+        </div>
+      </div>
     </div>
     <!--댓글 수정 삭제 끝-->
     <div class="top">
@@ -50,7 +55,9 @@
                 @click="commentRemove(index)"
                 >삭제</span
               >
-              <span class="font_sub_text" @click="commentAdd(index)">댓글</span>
+              <span class="font_sub_text" @click="commentAnswer(index)"
+                >댓글</span
+              >
             </div>
           </div>
         </div>
@@ -62,7 +69,34 @@
               @click="commentModActive = ''"
             />
           </div>
-          <Comment :items="item.detail" :index="index.toString()" />
+          <Comment :items="item.detail" @changeDetail="changeDetail" />
+          <div class="community_editor_button">
+            <div
+              class="community_editor_submit"
+              @click="onClickCommentMod(index)"
+            >
+              작성
+            </div>
+          </div>
+        </div>
+
+        <div v-if="commentAnswerIndex === index" class="comment_add">
+          <div class="comment_close">
+            <img
+              src="@/assets/svg/close.svg"
+              alt=""
+              @click="commentAnswerIndex = ''"
+            />
+          </div>
+          <Comment @changeDetail="changeDetail" />
+          <div class="community_editor_button">
+            <div
+              class="community_editor_submit"
+              @click="onClickCommentAnswer(index)"
+            >
+              작성
+            </div>
+          </div>
         </div>
 
         <div
@@ -70,7 +104,13 @@
           :key="answer.indexAnswer"
           class="review_list border_bglight_gray"
         >
-          <div class="answer">
+          <div
+            v-if="
+              commentModAnswerActive[0] !== index ||
+              commentModAnswerActive[1] !== indexAnswer
+            "
+            class="answer"
+          >
             <div class="user_info">
               <div
                 v-if="answer.user.image"
@@ -86,7 +126,6 @@
               ></div>
               <div class="right">
                 <p class="nickname font_sub_text">{{ answer.user.name }}</p>
-                <!-- <p class="role font_sub_text">{{ answer.user.role }}</p> -->
               </div>
             </div>
             <div class="review_content">
@@ -111,13 +150,7 @@
               </div>
             </div>
           </div>
-          <div
-            v-if="
-              commentModAnswerActive[0] === index &&
-              commentModAnswerActive[1] === indexAnswer
-            "
-            class="comment_answer_comment"
-          >
+          <div v-else>
             <div class="comment_close">
               <img
                 src="@/assets/svg/close.svg"
@@ -125,11 +158,42 @@
                 @click="commentModAnswerActive = []"
               />
             </div>
+            <Comment :items="answer.detail" @changeDetail="changeDetail" />
+            <div class="community_editor_button">
+              <div
+                class="community_editor_submit"
+                @click="onClickCommentAnswerMod(index, indexAnswer)"
+              >
+                작성
+              </div>
+            </div>
+          </div>
+          <div
+            v-if="
+              commentAddAnswerActive[0] === index &&
+              commentAddAnswerActive[1] === indexAnswer
+            "
+            class="comment_answer_comment"
+          >
+            <div class="comment_close">
+              <img
+                src="@/assets/svg/close.svg"
+                alt=""
+                @click="commentAddAnswerActive = []"
+              />
+            </div>
             <Comment
-              :items="content"
-              :index="index.toString()"
-              :index-answer="indexAnswer.toString()"
+              :items="`@${answer.user.name} `"
+              @changeDetail="changeDetail"
             />
+            <div class="community_editor_button">
+              <div
+                class="community_editor_submit"
+                @click="onClickCommentAnswerAdd(index, indexAnswer)"
+              >
+                작성
+              </div>
+            </div>
           </div>
         </div>
       </div>
@@ -160,8 +224,9 @@ export default {
     return {
       commentModActive: '',
       content: '',
-      commentAddIndex: '',
+      commentAnswerIndex: '',
       commentModAnswerActive: [],
+      commentAddAnswerActive: [],
     };
   },
   computed: {
@@ -180,6 +245,12 @@ export default {
     contentReset() {
       this.content = '';
     },
+    changeDetail(value) {
+      this.content = value;
+    },
+    onClickSubmit() {
+      console.log(this.content);
+    },
     onClickCommentMove() {
       this.$refs.focusComment.focusComment();
     },
@@ -189,19 +260,15 @@ export default {
     commentMod(index) {
       this.commentModActive = index;
     },
-    commentAdd(index) {
-      this.commentAddIndex = index;
-      // this.$emit('commentAdd', index);
+    commentAnswer(index) {
+      this.commentAnswerIndex = index;
     },
     commentAnswerRemove(index, indexAnswer) {
       this.$emit('commentAnswerRemove', index, indexAnswer);
     },
     commentAnswerMod(index, indexAnswer) {
-      this.$emit('commentAnswerMod', index, indexAnswer);
-    },
-    commentAnswerAdd(index, indexAnswer) {
-      // 댓글 > 답변
-      this.contentReset();
+      // 댓글 > 수정
+      this.content = '';
       const data = this.commentModAnswerActive;
       if (Array.isArray(data) && data.length === 0) {
         data.push(index);
@@ -211,11 +278,54 @@ export default {
         data.push(index);
         data.push(indexAnswer);
       }
-
-      this.$emit('commentAnswerAdd', index, indexAnswer);
+    },
+    commentAnswerAdd(index, indexAnswer) {
+      // 댓글 > 답변
+      this.content = '';
+      const data = this.commentAddAnswerActive;
+      if (Array.isArray(data) && data.length === 0) {
+        data.push(index);
+        data.push(indexAnswer);
+      } else {
+        data.splice(0, 2);
+        data.push(index);
+        data.push(indexAnswer);
+      }
     },
     likeOnClick() {
       this.$emit('likeOnClick');
+    },
+    onClickCommentAdd() {
+      // 댓글 작성
+      this.$refs.focusComment.removeContent();
+      this.$emit('commentAdd', this.content);
+    },
+    onClickCommentMod(index) {
+      // 댓글 수정
+      this.commentModActive = '';
+      this.$emit('commentMod', { index, value: this.content });
+    },
+    onClickCommentAnswer(index) {
+      // 댓글 > 댓글
+      this.commentAnswerIndex = '';
+      this.$emit('commentAnswer', { index, value: this.content });
+    },
+    onClickCommentAnswerMod(index, indexAnswer) {
+      // 댓글 > 수정
+      this.commentModAnswerActive = [];
+      this.$emit('commentAnswerMod', {
+        index,
+        indexAnswer,
+        value: this.content,
+      });
+    },
+    onClickCommentAnswerAdd(index, indexAnswer) {
+      this.commentAddAnswerActive = [];
+      this.$emit('commentAnswerAdd', {
+        index,
+        indexAnswer,
+        value: this.content,
+      });
     },
   },
 };
@@ -360,5 +470,23 @@ export default {
 
 .comment_close {
   text-align: right;
+}
+
+.community_editor_button {
+  display: flex;
+  align-items: center;
+  margin-top: 12px;
+}
+.community_editor_submit {
+  margin-left: auto;
+  padding: 10px 20px;
+  border-radius: 12px;
+  background-color: $primary;
+  color: white;
+  text-align: center;
+  font-weight: bold;
+}
+.comment_add {
+  margin: 10px 0;
 }
 </style>
