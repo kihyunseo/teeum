@@ -6,7 +6,7 @@
     <p>
       <span class="font_sub_text">카테고리: {{ items.category }}</span>
     </p>
-    <div class="detail" v-html="items.detail"></div>
+    <div class="detail" v-html="items.content"></div>
     <div class="flex">
       <div class="span_comma view">
         <span class="font_sub_text">{{

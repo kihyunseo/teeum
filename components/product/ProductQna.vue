@@ -1,7 +1,7 @@
 <template>
   <div>
     <div class="top">
-      <div class="title font_mid">질문&답변 (90)</div>
+      <div class="title font_mid">질문&답변 ({{ items.length }})</div>
       <div v-if="arrow" class="right">
         <nuxt-link :to="{ path: `${this.paramsId}/qna` }">
           <img src="@/assets/svg/arrow_right.svg" alt="더보기" />

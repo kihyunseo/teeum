@@ -26,7 +26,8 @@ export const actions = {
         context.commit('me', res.data);
         return res.data;
       } catch (error) {
-        return this.$cookiz.remove('user');
+        console.log(error);
+        // return this.$cookiz.remove('user');
       }
     } else {
       console.log('토큰없음');

@@ -1,41 +1,43 @@
 <template>
   <div>
     <HistoryHeader>장바구니</HistoryHeader>
-    <div
-      v-for="item in cartData"
-      :key="item.index"
-      class="cart_item flex content"
-    >
-      <div class="checkbox">
+
+    <div class="content">
+      <div
+        v-for="(item, index) in cartData"
+        :key="item.index"
+        class="cart_item"
+      >
+        <!-- <div class="checkbox">
         <input id="1" type="checkbox" />
         <label for="1"></label>
-      </div>
-      <div>
-        <ProductListSummary />
-        <div class="select_item">
-          <div class="select_item_box">
-            <div class="title_close">
-              <p class="title font_title_contents">
-                {{ item.option[0].productOptionTitle }}
-              </p>
-            </div>
-            <div class="amount_price">
-              <div class="left">
-                <span @click="changeProductAmountMinus('0')"
-                  ><img
-                    :class="{ amount_disabled: item.option[0].amount <= 1 }"
-                    src="@/assets/svg/circle_minus.svg"
-                    alt=""
-                /></span>
-                <input v-model="item.option[0].amount" type="text" />
-                <span @click="changeProductAmountPlus('0')"
-                  ><img src="@/assets/svg/circle_plus.svg" alt=""
-                /></span>
-              </div>
-              <div class="right">
-                <p>
-                  {{ (item.option[0].price * item.option[0].amount) | comma }}원
+      </div> -->
+        <div>
+          <ProductListSummary :items="item" />
+          <div class="select_item">
+            <div class="select_item_box">
+              <div class="title_close">
+                <p class="title font_title_contents">
+                  {{ item.optionTitle }}
                 </p>
+              </div>
+              <div class="amount_price">
+                <div class="left">
+                  <span @click="changeProductAmountMinus(index)"
+                    ><img
+                      :class="{ amount_disabled: item.amount <= 1 }"
+                      src="@/assets/svg/circle_minus.svg"
+                      alt=""
+                  /></span>
+                  <input v-model="item.amount" type="text" />
+                  <span @click="changeProductAmountPlus(index)"
+                    ><img src="@/assets/svg/circle_plus.svg" alt=""
+                  /></span>
+                </div>
+
+                <div class="right">
+                  <p>{{ (item.optionSalePrice * item.amount) | comma }}원</p>
+                </div>
               </div>
             </div>
           </div>
@@ -45,20 +47,20 @@
     <div class="total_bg">
       <div>
         <p>총 상품가</p>
-        <p>220,000원</p>
+        <p>{{ totalPrice | comma }}원</p>
       </div>
       <div>
         <p>총 배송비</p>
-        <p>3,000원</p>
+        <p>2,500원</p>
       </div>
-      <div>
+      <!-- <div>
         <p>쿠폰 할인</p>
         <p>-5,000원</p>
       </div>
       <div>
         <p>마일리지 사용</p>
         <p>-5,000원</p>
-      </div>
+      </div> -->
       <div class="total">
         <p>총 결제 예상 금액</p>
         <p>223,000원</p>
@@ -71,65 +73,132 @@
         ></label>
       </div>
       <div class="mt text">전체</div>
-      <div class="mt money">223,000원</div>
-      <div class="mt button">
-        <nuxt-link to="/store/order">구매하기 (3)</nuxt-link>
+      <div class="mt money">{{ totalPrice | comma }}원</div>
+      <div class="mt button" @click="submit">
+        구매하기 ({{ cartData.length }})
       </div>
     </div>
+    <Popup :dialog="popup" :height="`90vh`" @popupClose="popupControl">
+      <vue-daum-postcode @complete="oncomplete" />
+    </Popup>
   </div>
 </template>
 
 <script>
-import cart from '@/data/cart.json';
+import axios from 'axios';
 export default {
   layout: 'empty',
 
-  asyncData() {
-    const cartData = cart;
-    return { cartData };
-  },
+  asyncData() {},
 
   data() {
     return {
-      total: {
-        price: 0,
-        amount: 0,
-      },
       buyData: [],
+      cartData: [],
       selected: '',
     };
   },
 
-  mounted() {},
+  async fetch() {
+    const { data } = await axios.get(`http://localhost:4001/v0/list/carts`, {
+      headers: {
+        Authorization: `Bearer ${this.$cookiz.get('user')}`,
+      },
+    });
+
+    if (data) {
+      for (let i = 0; i < data.length; i++) {
+        const storesData = await axios.get(
+          `http://localhost:4001/v0/get/stores/${data[i].id}`,
+          {
+            headers: {
+              Authorization: `Bearer ${this.$cookiz.get('user')}`,
+            },
+          }
+        );
+
+        for (let s = 0; s < data[i].option.length; s++) {
+          this.cartData.push({
+            id: data[i].id,
+            amount: data[i].option[s].amount,
+            optionSalePrice: data[i].option[s].salePrice,
+            optionStock: data[i].option[s].stock,
+            optionTitle: data[i].option[s].title,
+            title: storesData.data.title,
+            delivery: storesData.data.delivery,
+            images: storesData.data.images,
+          });
+        }
+      }
+    }
+    return 'a';
+  },
+
+  computed: {
+    totalPrice() {
+      let totalPrice = 0;
+      for (let i = 0; i < this.cartData.length; i++) {
+        totalPrice +=
+          this.cartData[i].optionSalePrice * this.cartData[i].amount;
+      }
+      return totalPrice;
+    },
+  },
+
+  async mounted() {},
 
   methods: {
-    buyDataPush(event, selectedIndex) {
-      const data = this.selected;
-      const index = this.buyData.findIndex(
-        (v) => v.productOptionId === data.productOptionId
-      );
-      if (index === -1 && data !== '') {
-        this.buyData.push(data);
-      }
-    },
     changeProductAmountPlus(index) {
-      const amount = this.buyData[index].amount;
-      this.buyData[index].amount = amount + 1;
+      const amount = this.cartData[index].amount;
+      this.cartData[index].amount = amount + 1;
     },
     changeProductAmountMinus(index) {
-      const amount = this.buyData[index].amount;
+      const amount = this.cartData[index].amount;
       if (amount > 1) {
-        this.buyData[index].amount = amount - 1;
+        this.cartData[index].amount = amount - 1;
       }
     },
     removeProudctBuyData(index) {
       this.options.splice(index, 1);
     },
+    async submit() {
+      const res = await axios.post(
+        `http://localhost:4001/v0/post/payment`,
+        {
+          data: this.cartData,
+          status: '승인',
+        },
+        {
+          headers: {
+            Authorization: `Bearer ${this.$cookiz.get('user')}`,
+          },
+        }
+      );
+
+      this.$router.push({
+        path: `/store/order`,
+        query: {
+          id: res.data._id,
+        },
+      });
+    },
+  },
+  oncomplete(result) {
+    if (result.userSelectedType === 'R') {
+      console.log(result);
+    }
+    this.popupControl();
+  },
+  popupControl() {
+    this.popup = !this.popup;
   },
 };
 </script>
 
 <style lang="scss" scoped>
+.cart_item {
+  margin-bottom: 40px;
+}
 .flex {
   display: flex;
   align-items: top;
@@ -159,7 +228,7 @@ export default {
   vertical-align: middle;
 }
 .select_item_box .left input {
-  max-width: 36px;
+  max-width: 60px;
   height: 30px;
   line-height: 30px;
   border-radius: 8px;
@@ -250,8 +319,6 @@ export default {
   padding: 15px 24px;
   background: #3182f5;
   border-radius: 12px;
-}
-.buy .button a {
   color: white;
   font-weight: bold;
 }

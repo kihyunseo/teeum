@@ -26,7 +26,7 @@
             :key="item.index"
             class="selected_image_list"
             :style="{
-              'background-image': `url(${item})`,
+              'background-image': `url(http://localhost:4001/v0${item.thumbnailpath})`,
             }"
           >
             <div class="close" @click="imageRemove(index)">
@@ -79,9 +79,25 @@
             </select>
           </div>
         </div>
+        <div class="start_date">
+          <datetime
+            v-model="startDate"
+            type="datetime"
+            use12-hour
+            placeholder="경매 시작일 입력"
+          ></datetime>
+        </div>
+        <div class="start_date">
+          <datetime
+            v-model="endDate"
+            type="datetime"
+            use12-hour
+            placeholder="경매 종료일 입력"
+          ></datetime>
+        </div>
         <div class="price">
           <input
-            v-model="price"
+            v-model="startPrice"
             type="number"
             placeholder="최소입찰가 ex)50000"
             required
@@ -108,7 +124,14 @@
 </template>
 
 <script>
+import Vue from 'vue';
+import axios from 'axios';
+import Datetime from 'vue-datetime';
+import 'vue-datetime/dist/vue-datetime.css';
+
 import productCategory from '@/data/productCategory.json';
+
+Vue.use(Datetime);
 
 export default {
   layout: 'empty',
@@ -122,11 +145,15 @@ export default {
       title: '',
       address: '',
       delivery: [],
-      price: '',
+      startPrice: '',
       content: '',
       images: [],
       category: [],
       popup: false,
+      startDate: '',
+      startTime: '',
+      endDate: '',
+      endDateTime: '',
     };
   },
   computed: {},
@@ -137,23 +164,36 @@ export default {
     onClickImageUpload() {
       this.$refs.imageInput.click();
     },
-    onChangeImages(e) {
-      const count = e.target.files.length;
-      const _this = this;
-      for (let i = 0; i < count; i++) {
-        const file = e.target.files[i];
-        const reader = new FileReader();
-        reader.onload = function (e) {
-          try {
-            if (_this.images.length < 5) {
-              _this.images.push(e.target.result);
-            }
-          } catch (error) {
-            return error;
-          }
-        };
-        reader.readAsDataURL(file);
-      }
+    async onChangeImages(e) {
+      let formData = new FormData();
+      for (let i = 0; i < event.target.files.length; i++)
+        formData.append('image', event.target.files[i]);
+      const { data } = await axios.post(
+        'http://localhost:4001/v0/upload/image',
+        formData,
+        {
+          headers: {
+            'Content-Type': 'multipart/form-data',
+            Authorization: `Bearer ${this.$cookiz.get('user')}`,
+          },
+
+          maxContentLength: Infinity,
+          maxBodyLength: Infinity,
+          onUploadProgress: (progress) => {
+            const { total, loaded } = progress;
+            const totalMB = total / 1024 / 1024;
+            const loadedMB = loaded / 1024 / 1024;
+            const uploaded = (loaded / total) * 100;
+            console.log('uploading', {
+              total: totalMB,
+              uploaded: loadedMB,
+              progress: uploaded,
+            });
+          },
+        }
+      );
+
+      this.images = this.images.concat(data);
     },
     imageRemove(index) {
       this.images.splice(index, 1);
@@ -162,16 +202,40 @@ export default {
       this.postOpen = true;
     },
 
-    submit(e) {
+    async submit(e) {
       e.preventDefault();
-      console.log(this.title);
-      console.log(this.address);
-      console.log(this.delivery);
-      console.log(this.price);
-      console.log(this.content);
-      console.log(this.images);
-      console.log(this.category);
-      console.log(this.share);
+      const data = {
+        title: this.title,
+        address: this.address,
+        delivery: this.delivery,
+        startPrice: this.startPrice,
+        latestPrice: this.startPrice,
+        content: this.content,
+        images: this.images,
+        share: this.share,
+        category: this.category,
+        status: '승인',
+        date: Date.now(),
+        upDate: Date.now(),
+        view: '0',
+        startDate: this.startDate,
+        endDate: this.endDate,
+        biddings: [],
+      };
+      const cookie = this.$cookiz.get('user');
+      const res = await axios.post(
+        `http://localhost:4001/v0/post/auctions`,
+        data,
+        {
+          headers: {
+            Authorization: `Bearer ${cookie}`,
+          },
+        }
+      );
+      if (res) {
+        alert('상품이 등록 되었습니다.');
+        this.$router.push('/');
+      }
     },
     oncomplete(result) {
       if (result.userSelectedType === 'R') {
@@ -322,5 +386,8 @@ export default {
   float: right;
   border-radius: 12px;
   margin-top: 12px;
+}
+.start_date {
+  margin-bottom: 10px;
 }
 </style>

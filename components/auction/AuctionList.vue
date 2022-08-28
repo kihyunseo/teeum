@@ -1,10 +1,10 @@
 <template>
   <li>
-    <nuxt-link :to="`/auction/${items.id}`">
+    <nuxt-link :to="`/auction/${items._id}`">
       <div
         class="left"
         :style="{
-          'background-image': `url(${items.images[0].src})`,
+          'background-image': `url(http://localhost:4001/v0${items.images[0].thumbnailpath})`,
         }"
       ></div>
       <div class="right">
@@ -39,15 +39,18 @@
             class="active"
           >
             {{ $moment(items.endDate).fromNow(true) }}
-            후 종료 ( {{ items.endDate }} )
+            후 종료 (
+            {{ $moment(items.endDate).format('YYYY-MM-DD HH:mm') }} )
           </p>
           <p v-if="$moment(nowDate).isBefore(items.startDate)">
             {{ $moment(items.startDate).fromNow(true) }}
-            후 오픈 ( {{ items.startDate }} )
+            후 오픈 (
+            {{ $moment(items.startDate).format('YYYY-MM-DD HH:mm') }} )
           </p>
           <p v-if="$moment(nowDate).isAfter(items.endDate)">
             {{ $moment(items.startDate).fromNow(true) }}
-            전 종료됨 ( {{ items.startDate }} )
+            전 종료됨 (
+            {{ $moment(items.startDate).format('YYYY-MM-DD HH:mm') }} )
           </p>
         </div>
       </div>

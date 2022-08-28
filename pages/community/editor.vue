@@ -9,7 +9,13 @@
           <option value="자유게시판">자유게시판</option>
         </select>
       </div>
-
+      <div class="category">
+        <input
+          v-model="title"
+          type="text"
+          placeholder="제목을 입력 해주세요."
+        />
+      </div>
       <div
         v-quill:myQuillEditor="editorOption"
         class="quill-editor"
@@ -26,11 +32,15 @@
 </template>
 
 <script>
+import axios from 'axios';
 export default {
   data() {
     return {
+      title: '',
       category: '',
       content: '',
+      date: Date.now(),
+      upDate: Date.now(),
       editorOption: {
         modules: {
           toolbar: [
@@ -48,9 +58,28 @@ export default {
   },
   mounted() {},
   methods: {
-    submit() {
-      console.log(this.content);
-      console.log(this.category);
+    async submit() {
+      const data = {
+        category: this.category,
+        title: this.title,
+        content: this.content,
+        status: '승인',
+        date: this.date,
+        upDate: this.upDate,
+      };
+      const res = await axios.post(
+        `http://localhost:4001/v0/post/communitys`,
+        data,
+        {
+          headers: {
+            Authorization: `Bearer ${this.$cookiz.get('user')}`,
+          },
+        }
+      );
+      if (res) {
+        alert('상품이 등록 되었습니다.');
+        this.$router.push('/');
+      }
     },
     onEditorChange(value) {
       this.content = value.html;

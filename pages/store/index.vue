@@ -1,6 +1,6 @@
 <template>
   <div>
-    <Slider :items="banner" />
+    <Slider :items="images" />
     <div class="content">
       <MobileTopMenu />
       <div class="flex">
@@ -13,20 +13,21 @@
           </select>
         </div>
       </div>
-      <div v-for="item in store" :key="item.index">
+      <div v-for="item in stores" :key="item.index">
         <ul>
           <StoreList :items="item" />
         </ul>
       </div>
     </div>
     <!-- 인피니티 스크롤 -->
-    <client-only>
+    <!-- <client-only>
       <InfiniteLoading @infinite="infiniteHandler"></InfiniteLoading>
-    </client-only>
+    </client-only> -->
   </div>
 </template>
 
 <script>
+import axios from 'axios';
 import banner from '@/data/banner.json';
 import productCategory from '@/data/productCategory.json';
 import store from '@/data/storeList.json';
@@ -39,10 +40,27 @@ export default {
     return {
       teeumFilter: false,
       page: 0,
+      stores: [],
+      images: [],
     };
   },
 
-  fetch() {},
+  async fetch() {
+    const { data } = await axios.get('http://localhost:4001/v0/list/stores', {
+      headers: {
+        Authorization: `Bearer ${this.$cookiz.get('user')}`,
+      },
+    });
+    const images = await axios.get('http://localhost:4001/v0/list/banner', {
+      headers: {
+        Authorization: `Bearer ${this.$cookiz.get('user')}`,
+      },
+    });
+
+    this.images = this.images.concat(images.data);
+
+    return (this.stores = this.stores.concat(data));
+  },
 
   computed: {},
   created() {},

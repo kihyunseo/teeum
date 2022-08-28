@@ -6,17 +6,18 @@
           <div
             class="left"
             :style="{
-              'background-image': `url(https://firebasestorage.googleapis.com/v0/b/test-firebase-81571.appspot.com/o/photo.png?alt=media&token=df5f70a4-27e2-403e-bd68-738d55473257)`,
+              'background-image': `url(http://localhost:4001/v0${items.images[0].thumbnailpath})`,
             }"
           ></div>
           <div class="right">
             <p class="title font_title_contents">
-              산스리움 정성스럽게 키웠습니다. 소중히 키워주실 분에게 분양
-              합니다.
+              {{ items.title }}
             </p>
             <p class="font_sub_text info">
-              <span class="nickname">무료배송</span>
-              <span class="nickname">핫딜</span>
+              <span class="nickname"
+                >{{ items.delivery.deliveryCompany }}
+              </span>
+              <span class="nickname"> {{ items.delivery.deliveryMoney }} </span>
             </p>
             <div class="close">
               <img src="@/assets/svg/close.svg" alt="" />
@@ -30,7 +31,12 @@
 
 <script>
 export default {
-  name: 'TeeumFrontendLayoutProductListSummary',
+  props: {
+    items: {
+      type: Object,
+      required: true,
+    },
+  },
 
   data() {
     return {

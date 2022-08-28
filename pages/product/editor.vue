@@ -26,7 +26,7 @@
             :key="item.index"
             class="selected_image_list"
             :style="{
-              'background-image': `url(${item})`,
+              'background-image': `url(http://localhost:4001/v0${item.thumbnailpath})`,
             }"
           >
             <div class="close" @click="imageRemove(index)">
@@ -67,7 +67,7 @@
         </div>
         <div class="category">
           <div>
-            <select v-model="category" @change="categoryPush">
+            <!-- <select v-model="category" @change="categoryPush">
               <option
                 v-for="item in productCategoryData"
                 :key="item.index"
@@ -75,7 +75,7 @@
               >
                 {{ item.title }}
               </option>
-            </select>
+            </select> -->
           </div>
           <div class="free">
             <input id="free" v-model="share" type="checkbox" :value="`나눔`" />
@@ -89,7 +89,7 @@
             type="number"
             placeholder="ex) 5000"
             required
-            :disabled="!share ? 'disabled' : false"
+            :disabled="share ? 'disabled' : false"
           />
           <p>원</p>
         </div>
@@ -113,6 +113,7 @@
 </template>
 
 <script>
+import axios from 'axios';
 import productCategory from '@/data/productCategory.json';
 
 export default {
@@ -150,23 +151,36 @@ export default {
     onClickImageUpload() {
       this.$refs.imageInput.click();
     },
-    onChangeImages(e) {
-      const count = e.target.files.length;
-      const _this = this;
-      for (let i = 0; i < count; i++) {
-        const file = e.target.files[i];
-        const reader = new FileReader();
-        reader.onload = function (e) {
-          try {
-            if (_this.images.length < 5) {
-              _this.images.push(e.target.result);
-            }
-          } catch (error) {
-            return error;
-          }
-        };
-        reader.readAsDataURL(file);
-      }
+    async onChangeImages(e) {
+      let formData = new FormData();
+      for (let i = 0; i < event.target.files.length; i++)
+        formData.append('image', event.target.files[i]);
+      const { data } = await axios.post(
+        'http://localhost:4001/v0/upload/image',
+        formData,
+        {
+          headers: {
+            'Content-Type': 'multipart/form-data',
+            Authorization: `Bearer ${this.$cookiz.get('user')}`,
+          },
+
+          maxContentLength: Infinity,
+          maxBodyLength: Infinity,
+          onUploadProgress: (progress) => {
+            const { total, loaded } = progress;
+            const totalMB = total / 1024 / 1024;
+            const loadedMB = loaded / 1024 / 1024;
+            const uploaded = (loaded / total) * 100;
+            console.log('uploading', {
+              total: totalMB,
+              uploaded: loadedMB,
+              progress: uploaded,
+            });
+          },
+        }
+      );
+
+      this.images = this.images.concat(data);
     },
     imageRemove(index) {
       this.images.splice(index, 1);
@@ -175,16 +189,45 @@ export default {
       this.postOpen = true;
     },
 
-    submit(e) {
+    async submit(e) {
+      // const res = await axios.get(
+      //   `http://localhost:4001/v0/image/62fef931d5ebd8fe76665ab1/2c46775b-8130-49f4-baa3-42763b201eaf.jpg`,
+      //   {
+      //     headers: {
+      //       Authorization: `Bearer ${this.$cookiz.get('user')}`,
+      //     },
+      //   }
+      // );
+      // console.log(res);
       e.preventDefault();
-      console.log(this.title);
-      console.log(this.address);
-      console.log(this.delivery);
-      console.log(this.price);
-      console.log(this.content);
-      console.log(this.images);
-      console.log(this.category);
-      console.log(this.share);
+      const data = {
+        title: this.title,
+        address: this.address,
+        delivery: this.delivery,
+        price: this.price,
+        content: this.content,
+        images: this.images,
+        share: this.share,
+        category: this.category,
+        status: '승인',
+        date: Date.now(),
+        upDate: Date.now(),
+        view: '0',
+      };
+      const cookie = this.$cookiz.get('user');
+      const res = await axios.post(
+        `http://localhost:4001/v0/post/product`,
+        data,
+        {
+          headers: {
+            Authorization: `Bearer ${cookie}`,
+          },
+        }
+      );
+      if (res) {
+        alert('상품이 등록 되었습니다.');
+        this.$router.push('/');
+      }
     },
     oncomplete(result) {
       if (result.userSelectedType === 'R') {

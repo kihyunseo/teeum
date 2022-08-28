@@ -3,8 +3,9 @@
     <HistoryHeader>리뷰</HistoryHeader>
     <div class="content" style="padding-top: 12px">
       <ProductReivew
-        :items="product.reviews"
-        :total-count="totalCount"
+        :total-count="reviews.length"
+        :items="reviews"
+        type="product"
         :arrow="false"
       />
     </div>
@@ -12,6 +13,7 @@
 </template>
 
 <script>
+import axios from 'axios';
 import product from '@/data/product.json';
 export default {
   layout: 'empty',
@@ -19,7 +21,22 @@ export default {
     const totalCount = 100;
     return { product, totalCount };
   },
-  data() {},
+  data() {
+    return { reviews: [] };
+  },
+  async fetch() {
+    const reviewsData = await axios.get(
+      `http://localhost:4001/v0/list/reviews`,
+      {
+        headers: {
+          Authorization: `Bearer ${this.$cookiz.get('user')}`,
+        },
+      }
+    );
+    this.reviews = this.reviews.concat(reviewsData.data);
+
+    return '';
+  },
 
   computed: {},
   mounted() {},

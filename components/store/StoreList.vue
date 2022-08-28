@@ -1,11 +1,11 @@
 <template>
   <div>
     <li>
-      <nuxt-link :to="`store/${items.id}`">
+      <nuxt-link :to="`store/${items._id}`">
         <div
           class="left"
           :style="{
-            'background-image': `url(${items.images[0].src})`,
+            'background-image': `url(http://localhost:4001/v0${items.images[0].thumbnailpath})`,
           }"
         ></div>
         <div class="right">
@@ -16,7 +16,9 @@
             <span class="nickname">{{ items.user.name }}</span>
             <span class="date">{{ items.date | moment('from', 'now') }}</span>
           </p>
-          <p class="price font_mid">{{ items.price | comma }}원</p>
+          <p class="price font_mid">
+            {{ items.option[0].salePrice | comma }}원
+          </p>
           <div class="bottom">
             <div class="teeum_product">
               <span class="delivery">{{ items.delivery.methods }}</span>

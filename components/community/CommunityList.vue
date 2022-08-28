@@ -1,19 +1,19 @@
 <template>
   <div class="community_list">
-    <nuxt-link to="/community/1">
+    <nuxt-link :to="`/community/${items._id}`">
       <div class="left">
         <p>
           {{ items.title }}
         </p>
         <span>{{ items.user.name }}</span>
         <span>{{ items.date | moment('from', 'now') }}</span>
-        <span>댓글 {{ comment }}</span>
+        <span>댓글 {{ reviews }}</span>
         <span>조회 {{ items.view }}</span>
       </div>
       <div
         class="right"
         :style="{
-          'background-image': `url(${image[1]})`,
+          'background-image': `url(${image[0]})`,
         }"
       ></div>
     </nuxt-link>
@@ -28,24 +28,28 @@ export default {
       type: Object,
       required: true,
     },
+    reviews: {
+      type: Number,
+      required: true,
+    },
   },
   data() {
     return {};
   },
   computed: {
     image() {
-      const html = this.items.detail;
+      const html = this.items.content;
       return html.match(reg) ? html.match(reg) : ['', ''];
     },
-    comment() {
-      const length = this.items.comment.length;
-      let lengthSum = 0;
-      for (let i = 0; i < length; i++) {
-        lengthSum++;
-        lengthSum += this.items.comment[i].answer.length;
-      }
-      return lengthSum;
-    },
+    // comment() {
+    //   const length = this.items.comment.length;
+    //   let lengthSum = 0;
+    //   for (let i = 0; i < length; i++) {
+    //     lengthSum++;
+    //     lengthSum += this.items.comment[i].answer.length;
+    //   }
+    //   return lengthSum;
+    // },
   },
   mounted() {},
   created() {},

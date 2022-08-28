@@ -14,20 +14,20 @@
         </div>
       </div>
       <div v-if="arrow" class="right">
-        <nuxt-link :to="{ path: `${this.paramsId}/reviews` }">
+        <nuxt-link :to="{ path: `${paramsId}/reviews` }">
           <img src="@/assets/svg/arrow_right.svg" alt="더보기" />
         </nuxt-link>
       </div>
     </div>
     <div class="bottom">
-      <div v-for="review in items" :key="review.index">
-        <div v-if="review.type === type" class="item_list border_bglight_gray">
+      <div v-for="item in items" :key="item.index">
+        <div v-if="item.type === type" class="item_list border_bglight_gray">
           <div class="user_info">
             <div
-              v-if="review.user.image"
+              v-if="item.user.image"
               class="left"
               :style="{
-                'background-image': `url(${review.user.image})`,
+                'background-image': `url(${item.user.image})`,
               }"
             ></div>
             <div
@@ -39,17 +39,17 @@
             ></div>
 
             <div class="right">
-              <p class="nickname font_sub_text">{{ review.user.name }}</p>
-              <!-- <p class="role font_sub_text">{{ review.user.role }}</p> -->
+              <p class="nickname font_sub_text">{{ item.user.name }}</p>
+              <!-- <p class="role font_sub_text">{{ item.user.role }}</p> -->
             </div>
           </div>
-          <div class="review_content">
-            <p class="review_detail">
-              {{ review.detail }}
+          <div class="item_content">
+            <p class="item_detail">
+              {{ item.detail }}
             </p>
             <!-- <div class="review_image_wrap">
             <div
-              v-for="image in review.images"
+              v-for="image in item.images"
               :key="image.id"
               class="review_image"
               :style="{

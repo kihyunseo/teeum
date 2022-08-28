@@ -20,7 +20,7 @@
         <!-- <p class="detail font_sub_text">{{ items.level }}</p> -->
       </div>
       <div class="box_right">
-        <nuxt-link :to="{ path: `/my/user/${items.id}` }">
+        <nuxt-link :to="{ path: `/my/user/${items._id}` }">
           <img src="@/assets/svg/arrow_right.svg" alt="더보기" />
         </nuxt-link>
       </div>

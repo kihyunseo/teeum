@@ -1,15 +1,15 @@
 <template>
   <div class="title">
-    <div class="code">{{ items.order_id }}</div>
+    <div class="code">{{ items._id }}</div>
     <div class="prime">
       <div class="name">
         <div class="date">
-          {{ $moment(items.date).format('YYYY-DD-MM HH:mm:ss') }}
+          {{ $moment(items.date).format('YYYY-DD-MM HH:mm') }}
         </div>
-        <div class="count">총 {{ items.storeOption.length }}건</div>
+        <div class="count">총 {{ items.store.data.length }}건</div>
       </div>
-      <div v-if="detail" class="detail">
-        <nuxt-link :to="`/my/teeum_mall/orders/${items.id}`">
+      <div class="detail">
+        <nuxt-link :to="`/my/teeum_mall/orders/${items._id}`">
           <div class="text">주문상세</div>
           <img src="@/assets/svg/arrow_right.svg" alt="" />
         </nuxt-link>

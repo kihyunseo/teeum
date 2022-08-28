@@ -1,6 +1,6 @@
 <template>
   <div>
-    <Slider :items="banner" />
+    <Slider :items="images" />
     <div class="content">
       <MobileTopMenu />
       <div class="flex">
@@ -13,41 +13,70 @@
           </select>
         </div>
       </div>
-      <div v-for="item in community" :key="item.index">
-        <CommunityList :items="item" />
+      <div v-for="item in communitys" :key="item.index">
+        <CommunityList :items="item" :reviews="reviews.length" />
       </div>
     </div>
 
     <!-- 인피니티 스크롤 -->
-    <client-only>
+    <!-- <client-only>
       <InfiniteLoading @infinite="infiniteHandler"></InfiniteLoading>
-    </client-only>
+    </client-only> -->
   </div>
 </template>
 
 <script>
+import axios from 'axios';
 import banner from '@/data/banner.json';
 import communityCategory from '@/data/communityCategory.json';
-import community from '@/data/communityList.json';
 export default {
   asyncData() {
-    return { banner, communityCategory, community };
+    return { banner, communityCategory };
   },
 
   data() {
     return {
       teeumFilter: false,
       page: 0,
+      communitys: [],
+      reviews: [],
+      images: [],
     };
   },
 
-  fetch() {},
+  async fetch() {
+    const communitysData = await axios.get(
+      'http://localhost:4001/v0/list/communitys',
+      {
+        headers: {
+          Authorization: `Bearer ${this.$cookiz.get('user')}`,
+        },
+      }
+    );
 
-  computed: {
-    product() {
-      return this.$store.state.products.list;
-    },
+    const reviewsData = await axios.get(
+      'http://localhost:4001/v0/list/reviews',
+      {
+        headers: {
+          Authorization: `Bearer ${this.$cookiz.get('user')}`,
+        },
+      }
+    );
+
+    const images = await axios.get('http://localhost:4001/v0/list/banner', {
+      headers: {
+        Authorization: `Bearer ${this.$cookiz.get('user')}`,
+      },
+    });
+
+    this.images = this.images.concat(images.data);
+
+    this.communitys = this.communitys.concat(communitysData.data);
+    this.reviews = this.reviews.concat(reviewsData.data);
+    return '';
   },
+
+  computed: {},
   created() {},
   mounted() {},
   methods: {

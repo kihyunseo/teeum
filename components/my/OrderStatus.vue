@@ -1,6 +1,6 @@
 <template>
   <div class="status">
-    <div class="type">{{ option.status }}</div>
+    <div class="type">{{ orderStatus.orderStatus }}</div>
     <div class="substatuses">
       <div class="substatus">
         {{ reveiwText }}
@@ -13,7 +13,11 @@
 import storeDetail from '@/data/storeDetail.json';
 export default {
   props: {
-    option: {
+    items: {
+      type: Object,
+      required: true,
+    },
+    orderStatus: {
       type: Object,
       required: true,
     },
@@ -34,7 +38,7 @@ export default {
       return !(storeDetailReview || []).find((v) => v.user.id === meId);
     },
     reveiwText() {
-      return this.review ? '리뷰등록가능' : '리뷰등록완료';
+      return this.items ? '리뷰등록가능' : '리뷰등록완료';
     },
   },
 

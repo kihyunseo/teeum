@@ -1,7 +1,7 @@
 <template>
   <div>
     <div class="slide">
-      <Slider :items="banner" />
+      <Slider :items="auction.images" />
     </div>
     <div class="content" style="padding-top: 12px">
       <AuctionInfo
@@ -18,7 +18,11 @@
       <UserInfo :items="auction.user" />
       <ProductDetail :items="auction" :type="'auction'" />
       <div class="border_bglight_gray"></div>
-      <ProductReivew :total-count="100" :items="review" type="auction" />
+      <ProductReivew
+        :total-count="reviews.length"
+        :items="reviews"
+        type="auction"
+      />
       <div class="footer_auction">
         <div class="heart" @click="likeOnClick">
           <img :src="heartIcon" alt="" />
@@ -64,14 +68,10 @@
 </template>
 
 <script>
-import banner from '@/data/banner.json';
-import auction from '@/data/auction.json';
-import review from '@/data/review.json';
+import axios from 'axios';
 export default {
   layout: 'document',
-  asyncData() {
-    return { banner, auction, review };
-  },
+  asyncData() {},
 
   data() {
     return {
@@ -79,9 +79,34 @@ export default {
       dialog: false,
       nowDate: '',
       price: 0,
+      auction: '',
+      reviews: [],
     };
   },
-  fetch() {
+  async fetch() {
+    const auctionData = await axios.get(
+      `http://localhost:4001/v0/get/auctions/${this.$route.params.id}`,
+      {
+        headers: {
+          Authorization: `Bearer ${this.$cookiz.get('user')}`,
+        },
+      }
+    );
+
+    const reviewsData = await axios.get(
+      `http://localhost:4001/v0/list/reviews`,
+      {
+        headers: {
+          Authorization: `Bearer ${this.$cookiz.get('user')}`,
+        },
+      }
+    );
+
+    this.auction = auctionData.data;
+    this.reviews = this.reviews.concat(reviewsData.data);
+
+    return '';
+
     this.price = this.auction.latestPrice + 1000;
   },
   computed: {
@@ -120,37 +145,39 @@ export default {
       this.dialog = !this.dialog;
     },
     likeOnClick() {
-      const meId = '23';
-      const auctionLike = this.auction.like;
-      const res = auctionLike.findIndex((v) => v.userId === meId);
-      if (this.like) {
-        this.auction.like.splice(res, 1);
-      } else {
-        this.auction.like.push({
-          id: '1',
-          userId: '23',
-          productId: '1',
-          date: '2022-06-12 19:00',
-        });
-      }
+      return alert('준비중');
+      // const meId = '23';
+      // const auctionLike = this.auction.like;
+      // const res = auctionLike.findIndex((v) => v.userId === meId);
+      // if (this.like) {
+      //   this.auction.like.splice(res, 1);
+      // } else {
+      //   this.auction.like.push({
+      //     id: '1',
+      //     userId: '23',
+      //     productId: '1',
+      //     date: '2022-06-12 19:00',
+      //   });
+      // }
     },
     alarmOnClick() {
-      const check = this.$moment(this.nowDate).isBefore(this.auction.startDate);
-      const meId = '23';
-      const auctionAlarm = this.auction.alarm;
-      const res = auctionAlarm.findIndex((v) => v.userId === meId);
-      if (this.alarm && check) {
-        this.auction.alarm.splice(res, 1);
-      } else if (!this.alarm) {
-        this.auction.alarm.push({
-          id: '1',
-          userId: '23',
-          productId: '1',
-          date: '2022-06-12 19:00',
-        });
-      } else {
-        alert('경매가 시작된 이후에는 취소할 수 없습니다.');
-      }
+      return alert('준비중');
+      // const check = this.$moment(this.nowDate).isBefore(this.auction.startDate);
+      // const meId = '23';
+      // const auctionAlarm = this.auction.alarm;
+      // const res = auctionAlarm.findIndex((v) => v.userId === meId);
+      // if (this.alarm && check) {
+      //   this.auction.alarm.splice(res, 1);
+      // } else if (!this.alarm) {
+      //   this.auction.alarm.push({
+      //     id: '1',
+      //     userId: '23',
+      //     productId: '1',
+      //     date: '2022-06-12 19:00',
+      //   });
+      // } else {
+      //   alert('경매가 시작된 이후에는 취소할 수 없습니다.');
+      // }
     },
     minusPrice() {
       if (this.auction.latestPrice < this.price - 1000) {
@@ -160,7 +187,20 @@ export default {
     plusPrice() {
       this.price = this.price + 1000;
     },
-    submit() {
+    async submit() {
+      // const data = { id: '1' };
+      // const res = await axios.put(
+      //   `http://localhost:4001/v0/put/auctions/${this.auction._id}`,
+      //   {
+      //     ...this.auction,
+      //     biddings: { id: 1 },
+      //   },
+      //   {
+      //     headers: {
+      //       Authorization: `Bearer ${this.$cookiz.get('user')}`,
+      //     },
+      //   }
+      // );
       const price = this.price;
     },
   },

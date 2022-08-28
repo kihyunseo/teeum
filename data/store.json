@@ -61,6 +61,7 @@
     }
   ],
   "delivery": {
+    "releaseAddress": "",
     "methods": "일반택배",
     "deliveryMoney": "2500",
     "addMoney": "6000",

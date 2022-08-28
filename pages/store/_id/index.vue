@@ -1,38 +1,40 @@
 <template>
   <div>
     <div class="slide">
-      <Slider :items="bannerData" />
+      <Slider :items="store.images" />
     </div>
     <div class="content" style="padding-top: 12px">
       <ProductDetail :items="store" :type="'store'" />
       <div class="border_bglight_gray"></div>
       <StoreReview
         :average-star="averageStar"
-        :total-count="totalCount"
+        :total-count="store.reviews.length"
         :items="store.reviews"
       />
       <ProductQna :items="store.qna" />
-      <Delivery :items="store.delivery" />
+      <Delivery :items="store" />
+
       <div class="store_footer">
         <div class="heart" @click="likeOnClick">
           <img :src="heartIcon" alt="" />
         </div>
         <div class="money">
-          <p>{{ store.price | comma }}원</p>
+          <p>{{ store.option[0].salePrice | comma }}원</p>
         </div>
         <div class="payment" @click="popupControl">구매하기</div>
       </div>
       <Popup :dialog="dialog" @popupClose="popupControl">
-        <BuyPopup :items="store.option" />
+        <BuyPopup :id="store._id" :items="store.option" />
       </Popup>
     </div>
   </div>
 </template>
 
 <script>
+import axios from 'axios';
 import banner from '@/data/banner.json';
 import productCategory from '@/data/productCategory.json';
-import store from '@/data/store.json';
+
 export default {
   layout: 'document',
   asyncData() {
@@ -43,7 +45,6 @@ export default {
     return {
       bannerData,
       productCategoryData,
-      store,
       totalCount,
       averageStar,
     };
@@ -52,10 +53,24 @@ export default {
   data() {
     return {
       dialog: false,
+      store: '',
     };
   },
 
-  async fetch() {},
+  async fetch() {
+    const { data } = await axios.get(
+      `http://localhost:4001/v0/get/stores/${this.$route.params.id}`,
+      {
+        headers: {
+          Authorization: `Bearer ${this.$cookiz.get('user')}`,
+        },
+      }
+    );
+
+    this.store = data;
+    console.log(data._id);
+    return 'a';
+  },
   computed: {
     like() {
       const meId = '23';
@@ -71,19 +86,20 @@ export default {
   mounted() {},
   methods: {
     likeOnClick() {
-      const meId = '23';
-      const like = this.store.like;
-      const res = like.findIndex((v) => v.userId === meId);
-      if (this.like) {
-        this.store.like.splice(res, 1);
-      } else {
-        this.store.like.push({
-          id: '1',
-          userId: '23',
-          productId: '1',
-          date: '2022-06-12 19:00',
-        });
-      }
+      return alert('준비중');
+      // const meId = '23';
+      // const like = this.store.like;
+      // const res = like.findIndex((v) => v.userId === meId);
+      // if (this.like) {
+      //   this.store.like.splice(res, 1);
+      // } else {
+      //   this.store.like.push({
+      //     id: '1',
+      //     userId: '23',
+      //     productId: '1',
+      //     date: '2022-06-12 19:00',
+      //   });
+      // }
     },
     popupControl() {
       this.dialog = !this.dialog;

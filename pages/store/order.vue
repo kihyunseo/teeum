@@ -2,16 +2,19 @@
   <div>
     <HistoryHeader>결제</HistoryHeader>
     <div class="content">
-      <div v-for="cartItem in 2" :key="cartItem.index" class="cart_item flex">
+      <div v-for="item in store.data" :key="item.index" class="cart_item">
         <div>
-          <ProductListSummary />
+          <!-- <ProductListSummary :items="stores" /> -->
           <div class="select_item">
-            <div v-for="item in options" :key="item.id" class="select_item_box">
+            <div class="select_item_box">
               <div class="left">
-                <p>대한누떡 200만 5세트 - 1개</p>
+                <p>
+                  {{ item.title }} / {{ item.optionTitle }} /
+                  {{ item.amount }}개
+                </p>
               </div>
               <div class="right">
-                <p>{{ (item.price * item.amount) | comma }}원</p>
+                <p>{{ (item.optionSalePrice * item.amount) | comma }}원</p>
               </div>
             </div>
           </div>
@@ -69,23 +72,20 @@
       </div>
       <div class="form">
         <p>이름</p>
-        <input type="text" placeholder="김철수" />
+        <input v-model="name" type="text" placeholder="김철수" />
         <p>이메일</p>
-        <input type="text" placeholder="example@naver.com" />
+        <input v-model="mail" type="text" placeholder="example@naver.com" />
         <p>휴대폰번호</p>
-        <input type="text" placeholder="010-1234-5678" />
+        <input v-model="tel" type="text" placeholder="010-1234-5678" />
         <p>배송지</p>
         <div class="delivery">
-          <input type="text" placeholder="우편번호" />
-          <div>주소검색</div>
+          <input v-model="postCode" type="text" placeholder="우편번호" />
+          <div @click="popupAddress">주소검색</div>
         </div>
-        <input type="text" placeholder="상세주소" />
+        <input v-model="address" type="text" placeholder="상세주소" />
       </div>
       <div class="payment_button">
-        <div @click="payment()">카드결제</div>
-        <div>휴대폰결제</div>
-        <div>카카오페이</div>
-        <div>네이버페이</div>
+        <div @click="payment()">통합결제</div>
       </div>
     </div>
     <div class="total_bg">
@@ -110,43 +110,67 @@
         <p>223,000원</p>
       </div>
     </div>
+    <Popup :dialog="addressDialog" :height="`90vh`" @popupClose="popupAddress">
+      <vue-daum-postcode @complete="oncomplete" />
+    </Popup>
   </div>
 </template>
 
 <script>
+import axios from 'axios';
 export default {
   layout: 'empty',
 
   data() {
     return {
-      postcode: '',
-      address: '',
       total: {
         price: 0,
         amount: 0,
       },
-      buyData: [],
-      selected: '',
-      options: [
-        {
-          productOptionTitle: '대한구떡 200만',
-          productOptionId: '1',
-          price: '50000',
-          salePrice: '40000',
-          productId: '1',
-          amount: 1,
-          salePercent: 10,
-        },
-      ],
       dialog: false,
+      addressDialog: false,
+      store: '',
+
+      name: '',
+      mail: '',
+      tel: '',
+      postCode: '',
+      address: '',
     };
+  },
+
+  async fetch() {
+    const { data } = await axios.get(
+      `http://localhost:4001/v0/get/payment/${this.$route.query.id}`,
+      {
+        headers: {
+          Authorization: `Bearer ${this.$cookiz.get('user')}`,
+        },
+      }
+    );
+
+    this.store = data;
+
+    return '';
   },
 
   mounted() {},
 
   methods: {
+    oncomplete(result) {
+      const buildingName = result.buildingName
+        ? `(${result.buildingName})`
+        : '';
+      this.postCode = result.zonecode;
+      this.address = result.address + buildingName;
+
+      this.popupAddress();
+    },
     popupControl() {
       this.dialog = !this.dialog;
+    },
+    popupAddress() {
+      this.addressDialog = !this.addressDialog;
     },
     couponSubmit() {
       alert('쿠폰적용');
@@ -159,11 +183,11 @@ export default {
           merchant_uid: 'merchant_' + new Date().getTime(),
           name: '주문명:결제테스트',
           amount: 1000,
-          buyer_email: 'iamport@siot.do',
-          buyer_name: '구매자이름',
-          buyer_tel: '010-1234-5678',
-          buyer_addr: '서울특별시 강남구 삼성동',
-          buyer_postcode: '123-456',
+          buyer_email: this.mail,
+          buyer_name: this.name,
+          buyer_tel: this.tel,
+          buyer_addr: this.address,
+          buyer_postcode: this.postCode,
         },
         (result_success) => {
           //성공할 때 실행 될 콜백 함수
@@ -174,6 +198,21 @@ export default {
           msg += '결제 금액 : ' + result_success.paid_amount;
           msg += '카드 승인번호 : ' + result_success.apply_num;
           alert(msg);
+
+          axios.post(
+            `http://localhost:4001/v0/post/orders`,
+            {
+              store: this.store,
+              imp: result_success,
+              status: '승인',
+              orderStatus: '결제완료',
+            },
+            {
+              headers: {
+                Authorization: `Bearer ${this.$cookiz.get('user')}`,
+              },
+            }
+          );
         },
         (result_failure) => {
           //실패시 실행 될 콜백 함수
@@ -446,8 +485,6 @@ export default {
   margin: 6px;
 }
 .payment_button {
-  display: flex;
-  gap: 6px;
   margin: 12px 0;
 }
 .payment_button > div {

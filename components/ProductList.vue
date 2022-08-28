@@ -1,11 +1,12 @@
 <template>
   <div>
     <li>
-      <nuxt-link :to="`${view}/${items.id}`">
+      <!-- {{ items }} -->
+      <nuxt-link :to="`${view}/${items._id}`">
         <div
           class="left"
           :style="{
-            'background-image': `url(${items.images[0].src})`,
+            'background-image': `url(http://localhost:4001/v0${items.images[0].thumbnailpath})`,
           }"
         ></div>
         <div class="right">
@@ -23,7 +24,7 @@
                 v-for="delivery in items.delivery"
                 :key="delivery.index"
                 class="delivery"
-                >{{ delivery.title }}</span
+                >{{ delivery }}</span
               >
             </div>
           </div>

@@ -2,14 +2,14 @@
   <div class="store_delivery">
     <div class="border_bglight_gray">
       <h2>배송</h2>
-      <p>배송: {{ items.methods | comma }}</p>
-      <p>배송비: {{ items.deliveryMoney | comma }}</p>
-      <p>도서산간 추가 배송비: {{ items.addMoney | comma }}</p>
+      <p>배송: {{ items.delivery.methods | comma }}</p>
+      <p>배송비: {{ items.delivery.deliveryMoney | comma }}</p>
+      <!-- <p>도서산간 추가 배송비: {{ items.delivery.addMoney | comma }}</p> -->
     </div>
     <div class="border_bglight_gray">
       <h2>교환/반품</h2>
-      <p>반품배송비: {{ items.returnMoney | comma }}</p>
-      <p>교환배송비: {{ items.swapMoney | comma }}</p>
+      <p>반품배송비: {{ items.storeReturn.deliveryMoney | comma }}</p>
+      <p>교환배송비: {{ items.storeReturn.deliveryMoney | comma }}</p>
     </div>
     <div class="border_bglight_gray">
       <h2>반품/교환 불가능 사유</h2>
@@ -33,13 +33,13 @@ export default {
     },
   },
   data() {
-    return {}
+    return {};
   },
 
   mounted() {},
 
   methods: {},
-}
+};
 </script>
 
 <style lang="scss" scoped>

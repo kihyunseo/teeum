@@ -46,7 +46,7 @@
             /></span>
           </div>
           <div class="right">
-            <p>{{ (item.price * item.amount) | comma }}원</p>
+            <p>{{ (item.salePrice * item.amount) | comma }}원</p>
           </div>
         </div>
       </div>
@@ -69,10 +69,16 @@
 </template>
 
 <script>
+import axios from 'axios';
+
 export default {
   props: {
     items: {
       type: Array,
+      required: true,
+    },
+    id: {
+      type: String,
       required: true,
     },
   },
@@ -96,7 +102,8 @@ export default {
 
         for (let i = 0; i < this.buyData.length; i++) {
           totalPrice +=
-            parseInt(this.buyData[i].price) * parseInt(this.buyData[i].amount);
+            parseInt(this.buyData[i].salePrice) *
+            parseInt(this.buyData[i].amount);
         }
 
         for (let i = 0; i < this.buyData.length; i++) {
@@ -115,15 +122,18 @@ export default {
   methods: {
     buyDataPush(event, selectedIndex) {
       const data = this.selected;
-      console.log(data);
       const index = this.buyData.findIndex((v) => v.title === data.title);
       if (index === -1 && data !== '') {
-        this.buyData.push(data);
+        this.buyData.push({
+          title: data.title,
+          price: data.price,
+          salePrice: data.salePrice,
+          amount: 1,
+        });
       }
     },
     changeProductAmountPlus(index) {
       const amount = this.buyData[index].amount;
-      console.log();
       this.buyData[index].amount = this.buyData[index].amount + 1;
     },
     changeProductAmountMinus(index) {
@@ -135,14 +145,47 @@ export default {
     removeProudctBuyData(index) {
       this.buyData.splice(index, 1);
     },
-    cartAdd() {
-      alert('장바구니 추가');
-      this.$router.push('/store/cart');
+    async cartAdd() {
+      const res = await axios.post(
+        'http://localhost:4001/v0/post/carts',
+        { option: this.buyData, id: this.id, status: '승인' },
+        {
+          headers: {
+            Authorization: `Bearer ${this.$cookiz.get('user')}`,
+          },
+        }
+      );
+
+      if (res) {
+        const delConfirm = confirm('장바구니 추가, 이동하시겠습니까?');
+        if (delConfirm) {
+          this.$router.push('/store/cart');
+        }
+        this.buyData = [];
+      }
     },
-    productBuy() {
+    async productBuy() {
       // console.log(this.buyData);
       // alert('상품 구매');
       // this.$router.push('/store/order');
+      // const res = await axios.post(
+      //   'http://localhost:4001/v0/post/carts',
+      //   this.buyData,
+      //   {
+      //     headers: {
+      //       Authorization: `Bearer ${cookie}`,
+      //     },
+      //   }
+      // );
+      // if (res) {
+      //   const confirm = confirm(
+      //     '장바구니에 추가 되었습니다. 이동 하시겠습니까?'
+      //   );
+      //   if (confirm) {
+      //     this.$router.push('/store/cart');
+      //   }
+      //   this.buyData = [];
+      // }
     },
   },
 };

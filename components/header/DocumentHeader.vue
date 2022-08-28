@@ -46,48 +46,49 @@
 <script>
 export default {
   data() {
-    return { dialog: false, url: '' }
+    return { dialog: false, url: '' };
   },
 
   mounted() {
-    const url = window.location.href
-    this.url = url
+    const url = window.location.href;
+    this.url = url;
   },
 
   methods: {
     popupControl() {
-      this.dialog = !this.dialog
+      this.dialog = !this.dialog;
     },
     historyBack() {
       try {
-        this.$router.push(this.$nuxt.context.from.path)
+        this.$router.push(this.$nuxt.context.from.path);
       } catch (err) {
-        console.log('back error', err)
-        this.$router.push('/')
+        console.log('back error', err);
+        this.$router.push('/');
       }
     },
     copyUrl() {
-      const urlInput = document.getElementById('urlInput')
-      urlInput.select()
-      document.execCommand('copy')
-      alert('저장되었습니다.')
-      this.dialog = !this.dialog
+      const urlInput = document.getElementById('urlInput');
+      urlInput.select();
+      document.execCommand('copy');
+      alert('저장되었습니다.');
+      this.dialog = !this.dialog;
     },
   },
-}
+};
 </script>
 
 <style lang="scss" scoped>
 .flex {
   display: flex;
   padding: 10px 20px;
-  position: absolute;
-  top: 0;
-  left: 0;
-  width: 100%;
-  z-index: 2;
+  // position: absolute;
+  // top: 0;
+  // left: 0;
+  // width: 100%;
+  // z-index: 2;
   box-sizing: border-box;
   align-items: center;
+  background-color: #3182f5;
 }
 img {
   width: 30px;

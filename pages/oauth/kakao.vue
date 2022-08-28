@@ -25,9 +25,8 @@ export default {
       const codeRes = await axios.post(`http://localhost:4000/login/kakao`, {
         code,
       });
-      this.$cookiz.set('user', codeRes.data.refreshToken);
-      // const refreshToken = this.$cookiz.get('user');
 
+      this.$cookiz.set('user', codeRes.data.accessToken);
       await this.$store.dispatch('user/loadUser');
       this.$router.push('/');
     }

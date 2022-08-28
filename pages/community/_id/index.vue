@@ -1,13 +1,10 @@
 <template>
   <div>
-    <div class="slide">
-      <Slider :items="banner" />
-    </div>
     <div class="content" style="padding-top: 12px">
       <UserInfo :items="community.user" />
       <ProductDetail :items="community" :type="`community`" />
       <div class="border_bglight_gray"></div>
-      <CommunityComment
+      <!-- <CommunityComment
         :items="community.comment"
         :heart-icon="heartIcon"
         @changeDetail="changeDetail"
@@ -19,21 +16,44 @@
         @commentAnswer="commentAnswer"
         @commentAnswerAdd="commentAnswerAdd"
         @commentAnswerMod="commentAnswerMod"
-      />
+      /> -->
     </div>
   </div>
 </template>
 
 <script>
-import banner from '@/data/banner.json';
-import community from '@/data/community.json';
+import axios from 'axios';
 export default {
   layout: 'document',
-  asyncData() {
-    return { community, banner };
-  },
   data() {
-    return { dialog: false };
+    return { dialog: false, community: '', reviews: [] };
+  },
+
+  async fetch() {
+    const CommunityData = await axios.get(
+      `http://localhost:4001/v0/get/communitys/${this.$route.params.id}`,
+      {
+        headers: {
+          Authorization: `Bearer ${this.$cookiz.get('user')}`,
+        },
+      }
+    );
+
+    const reviewsData = await axios.get(
+      `http://localhost:4001/v0/list/reviews`,
+      {
+        headers: {
+          Authorization: `Bearer ${this.$cookiz.get('user')}`,
+        },
+      }
+    );
+
+    console.log(CommunityData);
+
+    this.community = CommunityData.data;
+    this.reviews = this.reviews.concat(reviewsData.data);
+
+    return '';
   },
 
   computed: {

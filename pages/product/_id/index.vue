@@ -7,7 +7,11 @@
       <UserInfo :items="product.user" />
       <ProductDetail :items="product" :type="`product`" />
       <div class="border_bglight_gray"></div>
-      <ProductReivew :total-count="totalCount" :items="review" type="product" />
+      <ProductReivew
+        :total-count="reviews.length"
+        :items="reviews"
+        type="product"
+      />
     </div>
     <div class="footer_chat">
       <div class="heart" @click="likeOnClick">
@@ -24,19 +28,49 @@
 </template>
 
 <script>
-import product from '@/data/product.json';
+import axios from 'axios';
 import review from '@/data/review.json';
 export default {
   layout: 'document',
   asyncData() {
     const totalCount = 100;
-    return { product, totalCount, review };
+    return { totalCount, review };
   },
   data() {
-    return { dialog: false };
+    return { dialog: false, product: '', reviews: [] };
+  },
+
+  async fetch() {
+    const productData = await axios.get(
+      `http://localhost:4001/v0/get/product/${this.$route.params.id}`,
+      {
+        headers: {
+          Authorization: `Bearer ${this.$cookiz.get('user')}`,
+        },
+      }
+    );
+
+    const reviewsData = await axios.get(
+      `http://localhost:4001/v0/list/reviews`,
+      {
+        headers: {
+          Authorization: `Bearer ${this.$cookiz.get('user')}`,
+        },
+      }
+    );
+
+    console.log(reviewsData);
+
+    this.product = productData.data;
+    this.reviews = this.reviews.concat(reviewsData.data);
+
+    return '';
   },
 
   computed: {
+    params() {
+      return this.$route.id;
+    },
     like() {
       const meId = this.$store.state.user.me.id;
       const like = this.product.like;
@@ -54,17 +88,7 @@ export default {
       this.dialog = !this.dialog;
     },
     likeOnClick() {
-      const meId = this.$store.state.user.me.id;
-      const product = this.product.like;
-      const res = product.findIndex((v) => v.userId === meId);
-      if (this.like) {
-        this.product.like.splice(res, 1);
-      } else {
-        this.product.like.push({
-          userId: meId,
-          date: '2022-06-12 19:00',
-        });
-      }
+      return alert('준비중');
     },
   },
 };
