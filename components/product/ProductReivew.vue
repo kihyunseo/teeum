@@ -1,11 +1,11 @@
 <template>
   <div>
     <div class="top">
-      <div class="title font_mid">판매자 후기 ({{ totalCount }})</div>
+      <div class="title font_mid">판매자 후기 ({{ items.length }})</div>
       <div class="star-ratings">
         <div
           class="star-ratings-fill space-x-2 text-lg"
-          :style="{ width: `${averageStar} * 20}%` }"
+          :style="{ width: `${averageStar * 20}%` }"
         >
           <span>★</span><span>★</span><span>★</span><span>★</span><span>★</span>
         </div>
@@ -14,14 +14,14 @@
         </div>
       </div>
       <div v-if="arrow" class="right">
-        <nuxt-link :to="{ path: `${paramsId}/reviews` }">
+        <nuxt-link :to="{ path: `${$route.params.id}/reviews` }">
           <img src="@/assets/svg/arrow_right.svg" alt="더보기" />
         </nuxt-link>
       </div>
     </div>
     <div class="bottom">
       <div v-for="item in items" :key="item.index">
-        <div v-if="item.type === type" class="item_list border_bglight_gray">
+        <div class="item_list border_bglight_gray">
           <div class="user_info">
             <div
               v-if="item.user.image"
@@ -45,7 +45,7 @@
           </div>
           <div class="item_content">
             <p class="item_detail">
-              {{ item.detail }}
+              {{ item.content }}
             </p>
             <!-- <div class="review_image_wrap">
             <div
@@ -80,11 +80,6 @@ export default {
       required: false,
       default: 0,
     },
-    averageStar: {
-      type: Number,
-      required: false,
-      default: 0,
-    },
     type: {
       type: String,
       required: true,
@@ -95,8 +90,12 @@ export default {
   },
 
   computed: {
-    paramsId() {
-      return this.$route.params.id;
+    averageStar() {
+      const res = this.items.reduce(
+        (prev, current) => Number(prev) + Number(current.star),
+        0
+      );
+      return res;
     },
   },
 
@@ -199,5 +198,9 @@ export default {
 }
 .review_mod > span:first-child:after {
   content: ' · ';
+}
+.item_detail {
+  padding: 2px 0 0 31px;
+  font-size: 12px;
 }
 </style>

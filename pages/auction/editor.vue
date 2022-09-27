@@ -26,7 +26,7 @@
             :key="item.index"
             class="selected_image_list"
             :style="{
-              'background-image': `url(http://localhost:4001/v0${item.thumbnailpath})`,
+              'background-image': `url(${item.path})`,
             }"
           >
             <div class="close" @click="imageRemove(index)">
@@ -46,7 +46,7 @@
         <div class="address">
           <div class="left">
             <input
-              v-model="address"
+              v-model="area"
               type="text"
               placeholder="ex) 서울 강서구 화곡동"
               readonly
@@ -56,40 +56,42 @@
         </div>
         <div class="delivery">
           <div>
-            <input id="2" v-model="delivery" type="checkbox" value="택배" />
+            <input id="2" v-model="dealType" type="checkbox" value="택배" />
             <label for="2"></label>
             택배
           </div>
           <div>
-            <input id="3" v-model="delivery" type="checkbox" value="직거래" />
+            <input id="3" v-model="dealType" type="checkbox" value="직거래" />
             <label for="3"></label>
             직거래
           </div>
         </div>
         <div class="category">
           <div>
-            <select v-model="category" @change="categoryPush">
+            <select @change="categoryPush">
               <option
-                v-for="item in productCategoryData"
+                v-for="item in categorys"
                 :key="item.index"
-                :value="item.title"
+                :value="item._id"
               >
-                {{ item.title }}
+                {{ item.kor }}
               </option>
             </select>
           </div>
         </div>
         <div class="start_date">
-          <datetime
-            v-model="startDate"
-            type="datetime"
-            use12-hour
-            placeholder="경매 시작일 입력"
-          ></datetime>
+          <client-only>
+            <datetime
+              v-model="startTime"
+              type="datetime"
+              use12-hour
+              placeholder="경매 시작일 입력"
+            ></datetime>
+          </client-only>
         </div>
         <div class="start_date">
           <datetime
-            v-model="endDate"
+            v-model="endTime"
             type="datetime"
             use12-hour
             placeholder="경매 종료일 입력"
@@ -114,7 +116,7 @@
             required
           ></textarea>
         </div>
-        <button class="submit" @click="submit">등록</button>
+        <button type="button" class="submit" @click="submit">등록</button>
       </form>
       <Popup :dialog="popup" :height="`90vh`" @popupClose="popupControl">
         <vue-daum-postcode @complete="oncomplete" />
@@ -129,71 +131,103 @@ import axios from 'axios';
 import Datetime from 'vue-datetime';
 import 'vue-datetime/dist/vue-datetime.css';
 
-import productCategory from '@/data/productCategory.json';
-
 Vue.use(Datetime);
 
 export default {
   layout: 'empty',
-  asyncData() {
-    const productCategoryData = productCategory;
-    return { productCategoryData };
-  },
 
   data() {
     return {
-      title: '',
-      address: '',
-      delivery: [],
-      startPrice: '',
-      content: '',
-      images: [],
-      category: [],
       popup: false,
-      startDate: '',
+      title: '',
+      price: 0,
+      startPrice: 0,
       startTime: '',
-      endDate: '',
-      endDateTime: '',
+      endTime: '',
+      images: [],
+      content: '',
+      categories: [],
+      lookup: [],
+      dealType: [],
+      area: '',
+      status: '',
+      categorys: [],
     };
+  },
+
+  async fetch() {
+    try {
+      const categorys = await axios.get(
+        `${process.env.server}/category/auction`,
+        {
+          headers: {
+            Authorization: `Bearer ${this.$cookiz.get('user')}`,
+          },
+        }
+      );
+      this.categorys = this.categorys.concat(categorys.data);
+    } catch (error) {
+      alert(error);
+    }
+
+    if (this.$route.query.id) {
+      try {
+        const { data } = await axios.get(
+          `${process.env.server}/auction/${this.$route.query.id}`,
+          {
+            headers: {
+              Authorization: `Bearer ${this.$cookiz.get('user')}`,
+            },
+          }
+        );
+
+        this.title = data.title;
+        this.startPrice = data.startPrice;
+        this.startTime = this.$moment(data.startTime).format(
+          'YYYY-MM-DDTHH:mm'
+        );
+        this.endTime = this.$moment(data.endTime).format('YYYY-MM-DDTHH:mm');
+        this.images = data.images;
+        this.content = data.content;
+        this.categories = data.categories;
+        this.dealType = data.dealType;
+        this.area = data.area;
+        this.status = data.status;
+      } catch (error) {
+        alert(error);
+      }
+    }
   },
   computed: {},
   mounted() {},
 
   methods: {
-    categoryPush(e) {},
+    categoryPush(e) {
+      this.categories.push(e.target.value);
+    },
     onClickImageUpload() {
       this.$refs.imageInput.click();
     },
     async onChangeImages(e) {
-      let formData = new FormData();
-      for (let i = 0; i < event.target.files.length; i++)
-        formData.append('image', event.target.files[i]);
-      const { data } = await axios.post(
-        'http://localhost:4001/v0/upload/image',
-        formData,
-        {
-          headers: {
-            'Content-Type': 'multipart/form-data',
-            Authorization: `Bearer ${this.$cookiz.get('user')}`,
-          },
+      try {
+        let formData = new FormData();
+        for (let i = 0; i < event.target.files.length; i++)
+          formData.append('image', event.target.files[i]);
+        const { data } = await axios.post(
+          `${process.env.server}/image`,
+          formData,
+          {
+            headers: {
+              'Content-Type': 'multipart/form-data',
+              Authorization: `Bearer ${this.$cookiz.get('user')}`,
+            },
+          }
+        );
 
-          maxContentLength: Infinity,
-          maxBodyLength: Infinity,
-          onUploadProgress: (progress) => {
-            const { total, loaded } = progress;
-            const totalMB = total / 1024 / 1024;
-            const loadedMB = loaded / 1024 / 1024;
-            const uploaded = (loaded / total) * 100;
-            console.log('uploading', {
-              total: totalMB,
-              uploaded: loadedMB,
-              progress: uploaded,
-            });
-          },
-        }
-      );
-
-      this.images = this.images.concat(data);
+        this.images = this.images.concat(data);
+      } catch (error) {
+        alert(error);
+      }
     },
     imageRemove(index) {
       this.images.splice(index, 1);
@@ -203,45 +237,59 @@ export default {
     },
 
     async submit(e) {
-      e.preventDefault();
       const data = {
         title: this.title,
-        address: this.address,
-        delivery: this.delivery,
         startPrice: this.startPrice,
-        latestPrice: this.startPrice,
-        content: this.content,
+        startTime: this.startTime,
+        endTime: this.endTime,
         images: this.images,
-        share: this.share,
-        category: this.category,
-        status: '승인',
-        date: Date.now(),
-        upDate: Date.now(),
-        view: '0',
-        startDate: this.startDate,
-        endDate: this.endDate,
-        biddings: [],
+        content: this.content,
+        categories: this.categories,
+        lookup: [],
+        price: this.price,
+        dealType: this.dealType,
+        area: this.area,
+        // status: 'WAITING',
       };
-      const cookie = this.$cookiz.get('user');
-      const res = await axios.post(
-        `http://localhost:4001/v0/post/auctions`,
-        data,
-        {
-          headers: {
-            Authorization: `Bearer ${cookie}`,
-          },
+      if (!this.$route.query.id) {
+        try {
+          const res = await axios.post(`${process.env.server}/auction`, data, {
+            headers: {
+              Authorization: `Bearer ${this.$cookiz.get('user')}`,
+            },
+          });
+          if (res.data) {
+            alert('상품이 등록 되었습니다.');
+            this.$router.push('/my/auction/my_list');
+          }
+        } catch (error) {
+          alert(error);
         }
-      );
-      if (res) {
-        alert('상품이 등록 되었습니다.');
-        this.$router.push('/');
+      } else {
+        try {
+          const patch = await axios.patch(
+            `${process.env.server}/auction/${this.$route.query.id}`,
+            data,
+            {
+              headers: {
+                Authorization: `Bearer ${this.$cookiz.get('user')}`,
+              },
+            }
+          );
+          if (patch) {
+            alert('상품이 수정 되었습니다.');
+            return this.$router.push(`/auction/${this.$route.query.id}`);
+          }
+        } catch (error) {
+          alert(error);
+        }
       }
     },
     oncomplete(result) {
       if (result.userSelectedType === 'R') {
-        this.address = `${result.sigungu} ${result.bname}`;
+        this.area = `${result.sigungu} ${result.bname}`;
       } else {
-        this.address = result.sigungu + result.bname;
+        this.area = result.sigungu + result.bname;
       }
       this.popupControl();
     },

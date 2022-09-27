@@ -1,8 +1,5 @@
 <template>
-  <div>
-    gg
-    {{ me }}
-  </div>
+  <div></div>
 </template>
 
 <script>
@@ -12,12 +9,6 @@ export default {
     return {};
   },
   async fetch() {},
-
-  computed: {
-    me() {
-      return this.$store.state.user.me;
-    },
-  },
 
   async mounted() {
     const code = this.$route.query.code;
@@ -31,9 +22,5 @@ export default {
       this.$router.push('/');
     }
   },
-
-  methods: {},
 };
 </script>
-
-<style lang="scss" scoped></style>

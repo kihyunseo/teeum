@@ -4,7 +4,10 @@
       <nuxt-link
         :to="{
           path: `/my/teeum_mall/refund/editor`,
-          query: { storeId: items.id, storeOptionId: option.id },
+          query: {
+            orderId: items._id,
+            parentId: items.item,
+          },
         }"
       >
         교환/반품 신청
@@ -20,10 +23,6 @@
 export default {
   props: {
     items: {
-      type: Object,
-      required: true,
-    },
-    option: {
       type: Object,
       required: true,
     },

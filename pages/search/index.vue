@@ -3,16 +3,22 @@
     <HistoryHeader>검색</HistoryHeader>
     <div class="search">
       <div>
+        <input
+          v-model="search"
+          type="text"
+          placeholder="검색어를 입력 해주세요."
+          @keyup.enter="onClickSearch"
+        />
+      </div>
+      <div @click="onClickSearch">
         <img src="@/assets/svg/search.svg" alt="" />
       </div>
-      <div><input type="text" placeholder="검색어를 입력 해주세요." /></div>
     </div>
     <div class="search_category">
       <ul>
-        <li class="active"><nuxt-link :to="{ query: '' }">전체</nuxt-link></li>
         <li><nuxt-link :to="{ query: { id: 'product' } }">상품</nuxt-link></li>
         <li>
-          <nuxt-link :to="{ query: { id: 'teeum_mall' } }">티몰</nuxt-link>
+          <nuxt-link :to="{ query: { id: 'mall' } }">티몰</nuxt-link>
         </li>
         <li><nuxt-link :to="{ query: { id: 'auction' } }">경매</nuxt-link></li>
         <li>
@@ -21,7 +27,7 @@
       </ul>
     </div>
     <div class="search_res">
-      <div class="search_res_category">
+      <!-- <div class="search_res_category">
         <div><img src="@/assets/svg/product.svg" alt="" /></div>
         <div class="title">상품</div>
         <div class="counting">3412</div>
@@ -32,32 +38,76 @@
       <TeeumProductFilter
         :type="teeumFilter"
         @teeumFilter="teeumFilter = !teeumFilter"
-      />
-      <div v-for="item in productListData" :key="item.index">
-        <ul>
+      /> -->
+      <div v-for="item in data" :key="item.index">
+        <ul v-if="$route.query.id === 'product'">
           <ProductList view="product" :type="teeumFilter" :items="item" />
         </ul>
+        <ul v-if="$route.query.id === 'mall'">
+          <productList :items="item" type="store" />
+        </ul>
+        <ul v-if="$route.query.id === 'auction'">
+          <AuctionList :items="item" />
+        </ul>
+        <CommunityList v-if="$route.query.id === 'community'" :items="item" />
       </div>
     </div>
   </div>
 </template>
 
 <script>
-import productList from '@/data/productList.json';
+import axios from 'axios';
+
 export default {
-  asyncData() {
-    const productListData = productList;
-    return { productListData };
-  },
+  asyncData() {},
   data() {
     return {
-      teeumFilter: false,
+      data: [],
+      search: '',
+      // teeumFilter: false,
     };
   },
-
+  watch: {
+    '$route.query': {
+      handler(n, p) {
+        this.init();
+        // const data = await this.init();
+        // this.data = data;
+      },
+      immediate: true,
+      deep: true,
+    },
+  },
   mounted() {},
 
-  methods: {},
+  methods: {
+    onClickSearch() {
+      this.$router.push({
+        query: {
+          id: this.$route.query.id,
+          search: this.search,
+        },
+      });
+    },
+    async init() {
+      const search = this.$route.query.search
+        ? `search=${this.$route.query.search}`
+        : '';
+      try {
+        const { data } = await axios.get(
+          `${process.env.server}/${this.$route.query.id}?${search}`,
+          {
+            headers: {
+              Authorization: `Bearer ${this.$cookiz.get('user')}`,
+            },
+          }
+        );
+        this.data = data;
+      } catch (error) {
+        alert(error);
+      }
+    },
+  },
 };
 </script>
 

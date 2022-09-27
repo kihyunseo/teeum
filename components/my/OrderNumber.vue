@@ -4,11 +4,11 @@
     <div class="prime">
       <div class="name">
         <div class="date">
-          {{ $moment(items.date).format('YYYY-DD-MM HH:mm') }}
+          {{ $moment(items.createdAt).format('YYYY-DD-MM HH:mm') }}
         </div>
-        <div class="count">총 {{ items.store.data.length }}건</div>
+        <!-- <div class="count">총 {{ items.order.item.length }}건</div> -->
       </div>
-      <div class="detail">
+      <div v-if="detail" class="detail">
         <nuxt-link :to="`/my/teeum_mall/orders/${items._id}`">
           <div class="text">주문상세</div>
           <img src="@/assets/svg/arrow_right.svg" alt="" />
@@ -27,9 +27,11 @@ export default {
     },
     detail: {
       type: Boolean,
-      requried: false,
+      required: false,
+      default: false,
     },
   },
+
   data() {
     return {};
   },

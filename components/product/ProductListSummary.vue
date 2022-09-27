@@ -2,26 +2,24 @@
   <div>
     <ul>
       <li>
-        <nuxt-link to="store/1">
+        <div class="close" @click="orderRemove(index)">
+          <img src="@/assets/svg/close.svg" alt="" />
+        </div>
+        <nuxt-link to="">
           <div
             class="left"
             :style="{
-              'background-image': `url(http://localhost:4001/v0${items.images[0].thumbnailpath})`,
+              'background-image': `url(${items.iteminfo.images[0].path})`,
             }"
           ></div>
           <div class="right">
             <p class="title font_title_contents">
-              {{ items.title }}
+              {{ items.option }}
             </p>
             <p class="font_sub_text info">
-              <span class="nickname"
-                >{{ items.delivery.deliveryCompany }}
-              </span>
-              <span class="nickname"> {{ items.delivery.deliveryMoney }} </span>
+              <span class="nickname"> {{ items.count }}개</span>
+              <span class="nickname"> {{ items.totalprice | comma }}원 </span>
             </p>
-            <div class="close">
-              <img src="@/assets/svg/close.svg" alt="" />
-            </div>
           </div>
         </nuxt-link>
       </li>
@@ -36,6 +34,10 @@ export default {
       type: Object,
       required: true,
     },
+    index: {
+      type: Number,
+      required: true,
+    },
   },
 
   data() {
@@ -47,7 +49,11 @@ export default {
 
   mounted() {},
 
-  methods: {},
+  methods: {
+    orderRemove() {
+      this.$emit('orderRemove', this.index);
+    },
+  },
 };
 </script>
 
@@ -68,10 +74,8 @@ li .left {
   margin-right: 16px;
   border-radius: 8px;
 }
-li .right .close {
-  position: absolute;
-  right: 0;
-  top: 0;
+.close {
+  text-align: right;
 }
 li .right .title {
   color: $textBlack;

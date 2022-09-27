@@ -2,7 +2,7 @@
   <div class="star-ratings">
     <div
       class="star-ratings-fill space-x-2 text-lg"
-      :style="{ width: ratingToPercent + '%' }"
+      :style="{ width: rating * 20 + '%' }"
     >
       <span>★</span><span>★</span><span>★</span><span>★</span><span>★</span>
     </div>
@@ -13,6 +13,8 @@
 </template>
 
 <script>
+import axios from 'axios';
+
 export default {
   props: {
     items: {
@@ -20,15 +22,24 @@ export default {
       required: true,
     },
   },
-  computed: {
-    ratingToPercent() {
-      let sum = 0;
-      for (let i = 0; i < this.items.review.length; i++) {
-        sum = sum + this.items.review[i].star;
-      }
-      return (sum / this.items.review.length) * 20;
-    },
+  data() {
+    return {
+      rating: 0,
+    };
   },
+  async fetch() {
+    const { data } = await axios.get(
+      `http://localhost:4001/v0/list/reviews?findat=parentsId${this.items._id}`,
+      {
+        headers: {
+          Authorization: `Bearer ${this.$cookiz.get('user')}`,
+        },
+      }
+    );
+    this.rating = data[0].rating;
+  },
+
+  computed: {},
   mounted() {},
 };
 </script>

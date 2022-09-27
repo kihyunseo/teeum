@@ -4,13 +4,19 @@
       {{ items.title }}
     </h2>
     <p>
-      <span class="font_sub_text">카테고리: {{ items.category }}</span>
+      <span
+        v-for="item in category"
+        :key="item.index"
+        class="font_sub_text category"
+      >
+        {{ item.kor }}</span
+      >
     </p>
     <div class="detail" v-html="items.content"></div>
     <div class="flex">
       <div class="span_comma view">
         <span class="font_sub_text">{{
-          items.date | moment('from', 'now')
+          items.createdAt | moment('from', 'now')
         }}</span>
         <span class="font_sub_text">조회 수 {{ items.view }}</span>
       </div>
@@ -19,7 +25,7 @@
           class="font_title_contents"
           :to="{
             path: '/declaration/editor',
-            query: { type: type, id: items.id },
+            query: { type: type, id: items._id },
           }"
         >
           이 게시글 신고하기
@@ -39,6 +45,28 @@ export default {
     type: {
       type: String,
       required: true,
+    },
+  },
+  data() {
+    return {
+      categorys: [],
+    };
+  },
+  computed: {
+    category() {
+      let arr1 = this.$store.state.category.categorys;
+      let arr2 = this.items.categories;
+      let categorys = [];
+
+      arr1.forEach((v) => {
+        arr2.forEach((x) => {
+          if (v._id === x) {
+            categorys.push(v);
+          }
+        });
+      });
+
+      return categorys;
     },
   },
 };
@@ -77,5 +105,9 @@ export default {
 }
 .declaration a {
   color: $primary;
+}
+
+.category:not(:last-child):after {
+  content: ' ˙ ';
 }
 </style>

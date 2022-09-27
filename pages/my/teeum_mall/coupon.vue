@@ -37,35 +37,37 @@
           사용완료/기간만료
         </li>
       </ul>
-      <div v-if="this.active === '사용가능'">
-        <div
-          v-for="(item, index) in couponListData"
-          :key="item.index"
-          class="coupon_list"
-        >
-          <div class="left">
-            <div>
-              <h3>{{ item.maxSalePrice | comma }}원</h3>
-              <p>할인쿠폰</p>
-            </div>
-          </div>
-          <div class="right">
-            <p class="summary">{{ endDate(index) }}</p>
-            <p class="title">{{ item.title }}</p>
-            <p class="detail">{{ item.detail }}</p>
-            <p class="date">
-              {{ $moment(item.date).format('YYYY-DD-MM') }}까지
-            </p>
-          </div>
-        </div>
-      </div>
 
-      <div v-if="this.active === '사용불가'">
+      <div v-if="active === '사용가능'">
         <div
-          v-for="(item, index) in couponListData"
+          v-for="(item, index) in coupons"
           :key="item.index"
           class="coupon_list"
         >
+          <div class="left">
+            <div>
+              <h3>{{ item.sale | comma }}원</h3>
+              <p>할인쿠폰</p>
+            </div>
+          </div>
+          <div class="right">
+            <p class="summary">{{ endDate(index) }}</p>
+            <p class="title">{{ item.title }}</p>
+            <p class="detail">{{ item.detail }}</p>
+            <p class="date">
+              {{ $moment(item.maxDate).format('YYYY-MM-DD') }}까지
+            </p>
+          </div>
+        </div>
+      </div>
+      <!-- 
+      <div v-if="active === '사용불가'">
+        <div
+          v-for="(item, index) in coupons"
+          :key="item.index"
+          class="coupon_list"
+        >
+          1
           <div class="left">
             <div>
               <h3>{{ item.maxSalePrice | comma }}원</h3>
@@ -81,17 +83,32 @@
             </p>
           </div>
         </div>
-      </div>
+      </div> -->
     </div>
   </div>
 </template>
 
 <script>
-import couponList from '@/data/couponList.json';
+import axios from 'axios';
+// import couponList from '@/data/couponList.json';
+
 export default {
-  asyncData() {
-    const couponListData = couponList;
-    return { couponListData };
+  async asyncData({ query, app, store }) {
+    const { data } = await axios.get(
+      `http://localhost:4001/v0/list/coupons?provider=${store.state.user.me._id}`,
+      {
+        headers: {
+          Authorization: `Bearer ${app.$cookiz.get('user')}`,
+        },
+      }
+    );
+
+    return {
+      coupons: data,
+    };
+
+    // const couponListData = couponList;
+    // return { couponListData };
   },
   data() {
     return {
@@ -103,8 +120,8 @@ export default {
     endDate() {
       return (index) => {
         const nowDate = this.$moment();
-        const item = this.couponListData[index];
-        const check = this.$moment(nowDate).isAfter(item.endDate);
+        const item = this.coupons[index];
+        const check = this.$moment(nowDate).isAfter(item.maxDate);
         return check || item.status === '사용완료' ? '사용불가' : '사용가능';
       };
     },
@@ -115,8 +132,26 @@ export default {
     activeMenu(value) {
       this.active = value;
     },
-    addCoupon() {
-      console.log(this.couponNumber);
+    async addCoupon() {
+      const data = {
+        date: Date.now(),
+        title: '신규가입 축하 쿠폰',
+        detail: '5만원 이상 구매시 5천원 할인',
+        term: 50000,
+        sale: 5000,
+        maxDate: '2022-09-26',
+        status: '승인',
+        couponStatus: '사용전',
+      };
+      const coupon = await axios.post(
+        `http://localhost:4001/v0/post/coupons`,
+        data,
+        {
+          headers: {
+            Authorization: `Bearer ${this.$cookiz.get('user')}`,
+          },
+        }
+      );
     },
   },
 };

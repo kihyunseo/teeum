@@ -16,9 +16,7 @@
             <span class="nickname">{{ items.user.name }}</span>
             <span class="date">{{ items.date | moment('from', 'now') }}</span>
           </p>
-          <p class="price font_mid">
-            {{ items.option[0].salePrice | comma }}원
-          </p>
+          <p class="price font_mid">{{ items.price | comma }}원</p>
           <div class="bottom">
             <div class="teeum_product">
               <span class="delivery">{{ items.delivery.methods }}</span>

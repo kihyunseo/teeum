@@ -3,11 +3,16 @@
     <div class="top">
       <div class="title font_mid">질문&답변 ({{ items.length }})</div>
       <div v-if="arrow" class="right">
-        <nuxt-link :to="{ path: `${this.paramsId}/qna` }">
+        <nuxt-link :to="{ path: `${paramsId}/qna` }">
           <img src="@/assets/svg/arrow_right.svg" alt="더보기" />
         </nuxt-link>
       </div>
     </div>
+    <Comment ref="focusComment" @changeDetail="changeDetail" />
+    <div class="community_editor_button">
+      <div class="community_editor_submit" @click="submit">작성</div>
+    </div>
+
     <div
       v-for="item in items"
       :key="item.index"
@@ -41,13 +46,17 @@
 </template>
 
 <script>
+import axios from 'axios';
+
 export default {
   props: {
-    items: { type: Array, required: true },
+    items: { type: Object, required: true },
     arrow: { type: Boolean, default: true },
   },
   data() {
-    return {};
+    return {
+      detail: '',
+    };
   },
 
   computed: {
@@ -58,7 +67,27 @@ export default {
 
   mounted() {},
 
-  methods: {},
+  methods: {
+    async submit() {
+      const data = {
+        parentsId: this.items._id,
+        detail: this.detail,
+        status: '승인',
+        type: 'store',
+      };
+
+      const qna = await axios.post(`http://localhost:4001/v0/post/qna`, data, {
+        headers: {
+          Authorization: `Bearer ${this.$cookiz.get('user')}`,
+        },
+      });
+
+      if (qna) return alert('qna가 작성 되었습니다.');
+    },
+    changeDetail(value) {
+      this.detail = value;
+    },
+  },
 };
 </script>
 
@@ -109,5 +138,20 @@ export default {
 }
 .answer_list .answer_detail {
   padding-left: 29px;
+}
+
+.community_editor_button {
+  display: flex;
+  align-items: center;
+  margin-top: 12px;
+}
+.community_editor_submit {
+  margin-left: auto;
+  padding: 10px 20px;
+  border-radius: 12px;
+  background-color: $primary;
+  color: white;
+  text-align: center;
+  font-weight: bold;
 }
 </style>

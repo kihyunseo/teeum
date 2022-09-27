@@ -2,47 +2,33 @@
   <div class="my_bg">
     <HistoryHeader>티몰 상품 문의내역</HistoryHeader>
     <div class="content">
-      <MyBorderRadius v-for="item in StoreListData" :key="item.index">
-        <div class="status">{{ item.qna.status }}</div>
-        <div class="target">
-          <div class="name">
-            {{ item.title }}
-          </div>
-          <div
-            class="thumbnail"
-            :style="{
-              'background-image': `url(${item.images[0].src})`,
-            }"
-          ></div>
-        </div>
-        <div slot="" class="qnalist">
-          <div class="qna">
-            <div class="type">Q.</div>
-            <div class="text">{{ item.qna.detail }}</div>
-          </div>
-          <div class="qna">
-            <div class="type primary">A.</div>
-            <div class="text">
-              {{ item.qna.answer.detail }}
-            </div>
-          </div>
-        </div>
-      </MyBorderRadius>
+      <StoreComment
+        ref="comment"
+        :items="qnas"
+        :title="`상품 질문`"
+        @commentAdd="commentAdd"
+        @commentAnswer="commentAnswer"
+      />
     </div>
   </div>
 </template>
 
 <script>
-import StoreList from '@/data/storeList.json';
+import axios from 'axios';
 export default {
-  asyncData() {
-    const StoreListData = StoreList;
-    return { StoreListData };
-  },
   data() {
     return {
       review: false,
+      qnas: [],
     };
+  },
+  async fetch() {
+    const qnas = await axios.get(`${process.env.server}/my/comment/mall`, {
+      headers: {
+        Authorization: `Bearer ${this.$cookiz.get('user')}`,
+      },
+    });
+    this.qnas = this.qnas.concat(qnas.data);
   },
   methods: {
     reviewCon() {
@@ -61,19 +47,20 @@ export default {
 }
 .target {
   display: flex;
-  align-items: center;
+  align-items: top;
   border-bottom: 1px solid $myBt;
   margin-bottom: 12px;
   padding-bottom: 12px;
+  gap: 12px;
 }
-.target .name {
+.target .name > div:first-child {
+  margin-bottom: 6px;
 }
 .target .thumbnail {
   width: 50px;
   height: 50px;
   background-size: cover;
   flex-shrink: 0;
-  margin-left: 20px;
 }
 .qnalist .qna {
   display: flex;

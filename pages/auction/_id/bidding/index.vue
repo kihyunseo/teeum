@@ -1,16 +1,24 @@
 <template>
   <div>
     <HistoryHeader>입찰</HistoryHeader>
-    <AuctionBidding :items="auction" />
+    <AuctionBidding :items="biddings" />
   </div>
 </template>
 
 <script>
-import auction from '@/data/auction.json';
+import axios from 'axios';
+
 export default {
-  layout: 'empty',
-  asyncData() {
-    return { auction };
+  async asyncData({ params, app }) {
+    const { data } = await axios.get(
+      `${process.env.server}/bidding/${params.id}`,
+      {
+        headers: {
+          Authorization: `Bearer ${app.$cookiz.get('user')}`,
+        },
+      }
+    );
+    return { biddings: data };
   },
   data() {
     return {};

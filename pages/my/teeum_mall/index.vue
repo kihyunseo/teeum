@@ -42,9 +42,14 @@ export default {
           path: '/my/teeum_mall/coupon',
         },
         {
-          name: '교환/반품 내역',
+          name: '교환 내역',
           icon: '',
-          path: '/my/teeum_mall/refund',
+          path: '/my/teeum_mall/refund/exchangeList',
+        },
+        {
+          name: '반품 내역',
+          icon: '',
+          path: '/my/teeum_mall/refund/returnList',
         },
       ],
     };

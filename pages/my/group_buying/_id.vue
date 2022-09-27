@@ -10,56 +10,212 @@
           </div>
         </div>
         <div class="title">
-          {{ groupBuyingDetailData.title }}
+          {{ groupBuying.title }}
         </div>
         <div class="info">
-          <div>작성일:{{ groupBuyingDetailData.date }}</div>
-          <div>조회수:{{ groupBuyingDetailData.view }}</div>
+          <div>
+            작성일:{{
+              $moment(groupBuying.createdAt).format('YYYY-DD-MM H:m:s')
+            }}
+          </div>
+          <div>조회수:{{ groupBuying.view }}</div>
         </div>
-        <div class="detail" v-html="groupBuyingDetailData.detail"></div>
-        <CommunityComment :items="groupBuyingDetailData.comment" />
+        <div class="detail" v-html="groupBuying.content"></div>
+        <CommunityComment
+          ref="comment"
+          :items="comments"
+          @commentAdd="commentAdd"
+          @commentAnswer="commentAnswer"
+        />
       </MyBorderRadius>
     </div>
   </div>
 </template>
 
 <script>
-import groupBuyingDetail from '@/data/groupBuyingDetail.json';
+import axios from 'axios';
+
 export default {
-  asyncData() {
-    const groupBuyingDetailData = groupBuyingDetail;
-    return { groupBuyingDetailData };
+  async asyncData({ app, params }) {
+    const groupBuying = await axios.get(
+      `${process.env.server}/groupbuying/${params.id}`,
+      {
+        headers: {
+          Authorization: `Bearer ${app.$cookiz.get('user')}`,
+        },
+      }
+    );
+
+    const groupBuyingLikes = await axios.get(
+      `${process.env.server}/like/groupbuying/${params.id}`,
+      {
+        headers: {
+          Authorization: `Bearer ${app.$cookiz.get('user')}`,
+        },
+      }
+    );
+
+    const groupBuyingAlarm = await axios.get(
+      `${process.env.server}/alarm/groupBuying/${params.id}`,
+      {
+        headers: {
+          Authorization: `Bearer ${app.$cookiz.get('user')}`,
+        },
+      }
+    );
+
+    const reviews = await axios.get(
+      `${process.env.server}/review/groupbuying?user=${params.id}`,
+      {
+        headers: {
+          Authorization: `Bearer ${app.$cookiz.get('user')}`,
+        },
+      }
+    );
+
+    const comments = await axios.get(
+      `${process.env.server}/comment/groupbuying/${params.id}`,
+      {
+        headers: {
+          Authorization: `Bearer ${app.$cookiz.get('user')}`,
+        },
+      }
+    );
+    return {
+      groupBuying: groupBuying.data,
+      groupBuyingLikes: groupBuyingLikes.data,
+      groupBuyingAlarm: groupBuyingAlarm.data,
+      reviews: reviews.data,
+      comments: comments.data,
+    };
   },
   data() {
     return {};
   },
   computed: {
-    like() {
-      const meId = '23';
-      const auctionLike = this.groupBuyingDetailData.like;
-      return !!(auctionLike || []).find((v) => v.userId === meId);
+    likes() {
+      const meId = this.$store.state.user.me._id;
+      const likes = this.groupBuyingLikes;
+      return !!(likes || []).find((v) => v.user === meId);
     },
     heartIcon() {
-      return this.like
+      return this.likes
         ? require('@/assets/svg/Heart_fill.svg')
         : require('@/assets/svg/Heart.svg');
+    },
+    likeId() {
+      const meId = this.$store.state.user.me._id;
+      return this.likes
+        ? this.groupBuyingLikes.find((v) => v.user === meId)
+        : null;
+    },
+    alarm() {
+      const meId = this.$store.state.user.me._id;
+      const alarm = this.groupBuyingAlarm;
+      return !!(alarm || []).find((v) => v.user === meId);
+    },
+    alarmIcon() {
+      return this.alarm
+        ? require('@/assets/svg/alarm_fill.svg')
+        : require('@/assets/svg/alarm_color.svg');
+    },
+    alarmId() {
+      const meId = this.$store.state.user.me._id;
+      return this.alarm
+        ? this.groupBuyingAlarm.find((v) => v.user === meId)
+        : null;
     },
   },
   mounted() {},
   methods: {
-    likeOnClick() {
-      const meId = '23';
-      const auctionLike = this.groupBuyingDetailData.like;
-      const res = auctionLike.findIndex((v) => v.userId === meId);
-      if (this.like) {
-        this.groupBuyingDetailData.like.splice(res, 1);
-      } else {
-        this.groupBuyingDetailData.like.push({
-          id: '1',
-          userId: '23',
-          productId: '1',
-          date: '2022-06-12 19:00',
+    async likeOnClick() {
+      if (!this.likes) {
+        const { data } = await axios.post(
+          `${process.env.server}/like`,
+          {
+            model: 'groupbuying',
+            item: this.groupBuying._id,
+          },
+          {
+            headers: {
+              Authorization: `Bearer ${this.$cookiz.get('user')}`,
+            },
+          }
+        );
+
+        this.groupBuyingLikes.push({
+          model: 'groupbuying',
+          item: this.groupBuying._id,
+          user: data.user,
+          _id: data._id,
         });
+      } else {
+        // 좋아요 삭제
+        const index = this.groupBuyingLikes.findIndex(
+          (v) => v.user === this.$store.state.user.me._id
+        );
+        const { data } = await axios.delete(
+          `${process.env.server}/like/${this.likeId._id}`,
+          {
+            headers: {
+              Authorization: `Bearer ${this.$cookiz.get('user')}`,
+            },
+          }
+        );
+
+        this.groupBuyingLikes.splice(index, 1);
+      }
+    },
+    async commentAdd(content) {
+      await axios.post(
+        `${process.env.server}/comment`,
+        {
+          content,
+          images: [],
+          model: 'groupbuying',
+          item: this.$route.params.id,
+          parent: null,
+        },
+        {
+          headers: {
+            Authorization: `Bearer ${this.$cookiz.get('user')}`,
+          },
+        }
+      );
+      this.getComments();
+    },
+    async commentAnswer({ content, parent }) {
+      await axios.post(
+        `${process.env.server}/comment`,
+        {
+          content,
+          images: [],
+          model: 'groupbuying',
+          item: this.$route.params.id,
+          parent,
+        },
+        {
+          headers: {
+            Authorization: `Bearer ${this.$cookiz.get('user')}`,
+          },
+        }
+      );
+      this.getComments();
+    },
+    async getComments() {
+      try {
+        const comments = await axios.get(
+          `${process.env.server}/comment/groupbuying/${this.$route.params.id}`,
+          {
+            headers: {
+              Authorization: `Bearer ${this.$cookiz.get('user')}`,
+            },
+          }
+        );
+
+        this.comments = comments.data;
+      } catch (error) {
+        alert(error);
       }
     },
   },

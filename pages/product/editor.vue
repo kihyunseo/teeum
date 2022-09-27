@@ -26,7 +26,7 @@
             :key="item.index"
             class="selected_image_list"
             :style="{
-              'background-image': `url(http://localhost:4001/v0${item.thumbnailpath})`,
+              'background-image': `url(${item.path})`,
             }"
           >
             <div class="close" @click="imageRemove(index)">
@@ -46,7 +46,7 @@
         <div class="address">
           <div class="left">
             <input
-              v-model="address"
+              v-model="area"
               type="text"
               placeholder="ex) 서울 강서구 화곡동"
             />
@@ -55,27 +55,27 @@
         </div>
         <div class="delivery">
           <div>
-            <input id="2" v-model="delivery" type="checkbox" value="택배" />
+            <input id="2" v-model="dealType" type="checkbox" value="택배" />
             <label for="2"></label>
             택배
           </div>
           <div>
-            <input id="3" v-model="delivery" type="checkbox" value="직거래" />
+            <input id="3" v-model="dealType" type="checkbox" value="직거래" />
             <label for="3"></label>
             직거래
           </div>
         </div>
         <div class="category">
           <div>
-            <!-- <select v-model="category" @change="categoryPush">
+            <select v-model="category" @change="categoryPush">
               <option
-                v-for="item in productCategoryData"
-                :key="item.index"
-                :value="item.title"
+                v-for="item in categorys"
+                :key="item._id"
+                :value="item._id"
               >
-                {{ item.title }}
+                {{ item.kor }}
               </option>
-            </select> -->
+            </select>
           </div>
           <div class="free">
             <input id="free" v-model="share" type="checkbox" :value="`나눔`" />
@@ -114,126 +114,162 @@
 
 <script>
 import axios from 'axios';
-import productCategory from '@/data/productCategory.json';
 
 export default {
-  layout: 'empty',
-  asyncData() {
-    const productCategoryData = productCategory;
-    return { productCategoryData };
-  },
-
   data() {
     return {
       title: '',
-      address: '',
-      delivery: [],
+      area: '',
+      dealType: [],
       price: '',
       content: '',
       images: [],
-      category: [],
+      categories: [],
       share: false,
       popup: false,
+      id: '',
+      category: '',
+      categorys: [],
     };
   },
-  computed: {
-    priceShareCheck() {
-      this.price = 0;
-      return !this.share ? 0 : this.price;
-    },
+
+  async fetch() {
+    try {
+      const category = await axios.get(
+        `${process.env.server}/category/product`,
+        {
+          headers: {
+            Authorization: `Bearer ${this.$cookiz.get('user')}`,
+          },
+        }
+      );
+
+      this.categorys = category.data;
+    } catch (error) {
+      alert(error);
+    }
+
+    if (this.$route.query.id) {
+      try {
+        const { data } = await axios.get(
+          `${process.env.server}/product/${this.$route.query.id}`,
+          {
+            headers: {
+              Authorization: `Bearer ${this.$cookiz.get('user')}`,
+            },
+          }
+        );
+
+        this.title = data.title;
+        this.images = data.images;
+        this.area = data.area;
+        this.dealType = data.dealType;
+        this.categories = data.categories;
+        this.price = data.price;
+        this.content = data.content;
+      } catch (error) {
+        alert(error);
+      }
+    }
   },
+
+  computed: {},
+  watch: {},
   mounted() {},
 
   methods: {
     categoryPush(e) {
-      console.log(e.target.value);
+      this.categories.push(e.target.value);
     },
     onClickImageUpload() {
       this.$refs.imageInput.click();
     },
     async onChangeImages(e) {
-      let formData = new FormData();
-      for (let i = 0; i < event.target.files.length; i++)
-        formData.append('image', event.target.files[i]);
-      const { data } = await axios.post(
-        'http://localhost:4001/v0/upload/image',
-        formData,
-        {
-          headers: {
-            'Content-Type': 'multipart/form-data',
-            Authorization: `Bearer ${this.$cookiz.get('user')}`,
-          },
+      try {
+        let formData = new FormData();
+        for (let i = 0; i < event.target.files.length; i++)
+          formData.append('image', event.target.files[i]);
+        const { data } = await axios.post(
+          `${process.env.server}/image`,
+          formData,
+          {
+            headers: {
+              'Content-Type': 'multipart/form-data',
+              Authorization: `Bearer ${this.$cookiz.get('user')}`,
+            },
+          }
+        );
 
-          maxContentLength: Infinity,
-          maxBodyLength: Infinity,
-          onUploadProgress: (progress) => {
-            const { total, loaded } = progress;
-            const totalMB = total / 1024 / 1024;
-            const loadedMB = loaded / 1024 / 1024;
-            const uploaded = (loaded / total) * 100;
-            console.log('uploading', {
-              total: totalMB,
-              uploaded: loadedMB,
-              progress: uploaded,
-            });
-          },
-        }
-      );
-
-      this.images = this.images.concat(data);
+        this.images = this.images.concat(data);
+      } catch (error) {
+        alert(error);
+      }
     },
     imageRemove(index) {
       this.images.splice(index, 1);
     },
-    addressSearch() {
-      this.postOpen = true;
-    },
 
     async submit(e) {
-      // const res = await axios.get(
-      //   `http://localhost:4001/v0/image/62fef931d5ebd8fe76665ab1/2c46775b-8130-49f4-baa3-42763b201eaf.jpg`,
-      //   {
-      //     headers: {
-      //       Authorization: `Bearer ${this.$cookiz.get('user')}`,
-      //     },
-      //   }
-      // );
-      // console.log(res);
       e.preventDefault();
       const data = {
         title: this.title,
-        address: this.address,
-        delivery: this.delivery,
+        images: this.images,
+        area: this.area,
+        dealType: this.dealType,
+        categories: this.categories,
         price: this.price,
         content: this.content,
-        images: this.images,
-        share: this.share,
-        category: this.category,
-        status: '승인',
-        date: Date.now(),
-        upDate: Date.now(),
-        view: '0',
+        lookup: [],
+        isMallProduct: false,
       };
-      const cookie = this.$cookiz.get('user');
-      const res = await axios.post(
-        `http://localhost:4001/v0/post/product`,
-        data,
-        {
-          headers: {
-            Authorization: `Bearer ${cookie}`,
-          },
+
+      if (!this.$route.query.id) {
+        try {
+          const add = await axios.post(`${process.env.server}/product`, data, {
+            headers: {
+              Authorization: `Bearer ${this.$cookiz.get('user')}`,
+            },
+          });
+          if (add) {
+            alert('상품이 등록 되었습니다.');
+            return this.$router.push('/');
+          }
+        } catch (error) {
+          alert(error);
         }
-      );
-      if (res) {
-        alert('상품이 등록 되었습니다.');
-        this.$router.push('/');
+      } else {
+        try {
+          const patch = await axios.patch(
+            `${process.env.server}/product/${this.$route.query.id}`,
+            {
+              title: this.title,
+              images: this.images,
+              area: this.area,
+              dealType: this.dealType,
+              categories: this.categories,
+              price: this.price,
+              content: this.content,
+            },
+            {
+              headers: {
+                Authorization: `Bearer ${this.$cookiz.get('user')}`,
+              },
+            }
+          );
+          if (patch) {
+            alert('상품이 수정 되었습니다.');
+            return this.$router.push(`/product/${this.$route.query.id}`);
+          }
+        } catch (error) {
+          alert(error);
+        }
       }
     },
     oncomplete(result) {
       if (result.userSelectedType === 'R') {
-        this.address = `${result.sigungu} ${result.bname}`;
+        this.area = `${result.sigungu} ${result.bname}`;
       } else {
-        this.address = result.sigungu + result.bname;
+        this.area = result.sigungu + result.bname;
       }
       this.popupControl();
     },

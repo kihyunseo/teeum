@@ -3,40 +3,36 @@
     <HistoryHeader>장바구니</HistoryHeader>
 
     <div class="content">
-      <div
-        v-for="(item, index) in cartData"
-        :key="item.index"
-        class="cart_item"
-      >
-        <!-- <div class="checkbox">
-        <input id="1" type="checkbox" />
-        <label for="1"></label>
-      </div> -->
+      <div v-for="(item, index) in carts.items" :key="item.index">
         <div>
-          <ProductListSummary :items="item" />
+          <ProductListSummary
+            :items="item"
+            :index="index"
+            @onClickOptionRemove="onClickOptionRemove"
+          />
           <div class="select_item">
             <div class="select_item_box">
               <div class="title_close">
                 <p class="title font_title_contents">
-                  {{ item.optionTitle }}
+                  {{ item.title }}
                 </p>
               </div>
               <div class="amount_price">
                 <div class="left">
                   <span @click="changeProductAmountMinus(index)"
                     ><img
-                      :class="{ amount_disabled: item.amount <= 1 }"
+                      :class="{ amount_disabled: item.count <= 1 }"
                       src="@/assets/svg/circle_minus.svg"
                       alt=""
                   /></span>
-                  <input v-model="item.amount" type="text" />
+                  <input v-model="item.count" type="text" />
                   <span @click="changeProductAmountPlus(index)"
                     ><img src="@/assets/svg/circle_plus.svg" alt=""
                   /></span>
                 </div>
 
                 <div class="right">
-                  <p>{{ (item.optionSalePrice * item.amount) | comma }}원</p>
+                  <p>{{ (item.price * item.count) | comma }}원</p>
                 </div>
               </div>
             </div>
@@ -51,19 +47,11 @@
       </div>
       <div>
         <p>총 배송비</p>
-        <p>2,500원</p>
+        <p>{{ 10000 | comma }}원</p>
       </div>
-      <!-- <div>
-        <p>쿠폰 할인</p>
-        <p>-5,000원</p>
-      </div>
-      <div>
-        <p>마일리지 사용</p>
-        <p>-5,000원</p>
-      </div> -->
       <div class="total">
         <p>총 결제 예상 금액</p>
-        <p>223,000원</p>
+        <p>{{ totalPrice | comma }}원</p>
       </div>
     </div>
     <div class="buy">
@@ -74,13 +62,8 @@
       </div>
       <div class="mt text">전체</div>
       <div class="mt money">{{ totalPrice | comma }}원</div>
-      <div class="mt button" @click="submit">
-        구매하기 ({{ cartData.length }})
-      </div>
+      <div class="mt button" @click="submit">구매하기 ({{}})</div>
     </div>
-    <Popup :dialog="popup" :height="`90vh`" @popupClose="popupControl">
-      <vue-daum-postcode @complete="oncomplete" />
-    </Popup>
   </div>
 </template>
 
@@ -88,109 +71,97 @@
 import axios from 'axios';
 export default {
   layout: 'empty',
-
-  asyncData() {},
-
   data() {
     return {
-      buyData: [],
-      cartData: [],
-      selected: '',
+      carts: [],
+      totalPrice: 0,
+      reciever: '',
     };
   },
 
   async fetch() {
-    const { data } = await axios.get(`http://localhost:4001/v0/list/carts`, {
-      headers: {
-        Authorization: `Bearer ${this.$cookiz.get('user')}`,
-      },
-    });
-
-    if (data) {
-      for (let i = 0; i < data.length; i++) {
-        const storesData = await axios.get(
-          `http://localhost:4001/v0/get/stores/${data[i].id}`,
-          {
-            headers: {
-              Authorization: `Bearer ${this.$cookiz.get('user')}`,
-            },
-          }
-        );
-
-        for (let s = 0; s < data[i].option.length; s++) {
-          this.cartData.push({
-            id: data[i].id,
-            amount: data[i].option[s].amount,
-            optionSalePrice: data[i].option[s].salePrice,
-            optionStock: data[i].option[s].stock,
-            optionTitle: data[i].option[s].title,
-            title: storesData.data.title,
-            delivery: storesData.data.delivery,
-            images: storesData.data.images,
-          });
-        }
-      }
+    try {
+      const carts = await axios.get(`${process.env.server}/cart`, {
+        headers: {
+          Authorization: `Bearer ${this.$cookiz.get('user')}`,
+        },
+      });
+      this.carts = carts.data;
+    } catch (error) {
+      console.log(error);
     }
-    return 'a';
+
+    try {
+      const reciever = await axios.get(`${process.env.server}/my/reciever`, {
+        headers: {
+          Authorization: `Bearer ${this.$cookiz.get('user')}`,
+        },
+      });
+      this.reciever = reciever.data;
+    } catch (error) {
+      alert(error);
+    }
   },
 
-  computed: {
-    totalPrice() {
-      let totalPrice = 0;
-      for (let i = 0; i < this.cartData.length; i++) {
-        totalPrice +=
-          this.cartData[i].optionSalePrice * this.cartData[i].amount;
-      }
-      return totalPrice;
+  computed: {},
+
+  watch: {
+    carts: {
+      handler(val) {
+        let sum = 0;
+        Object.values(this.carts.items).forEach((v, index, key) => {
+          sum += Number(v.count) * Number(v.totalprice);
+        });
+        this.totalPrice = sum;
+      },
+      deep: true,
     },
   },
 
-  async mounted() {},
+  mounted() {},
 
   methods: {
     changeProductAmountPlus(index) {
-      const amount = this.cartData[index].amount;
-      this.cartData[index].amount = amount + 1;
+      const count = this.carts.items[index].count;
+      this.carts.items[index].count = count + 1;
     },
     changeProductAmountMinus(index) {
-      const amount = this.cartData[index].amount;
-      if (amount > 1) {
-        this.cartData[index].amount = amount - 1;
+      const count = this.carts.items[index].count;
+      if (count > 1) {
+        this.carts.items[index].count = count - 1;
       }
     },
-    removeProudctBuyData(index) {
-      this.options.splice(index, 1);
-    },
-    async submit() {
-      const res = await axios.post(
-        `http://localhost:4001/v0/post/payment`,
-        {
-          data: this.cartData,
-          status: '승인',
-        },
-        {
-          headers: {
-            Authorization: `Bearer ${this.$cookiz.get('user')}`,
-          },
-        }
-      );
+    async onClickOptionRemove(index) {},
 
-      this.$router.push({
-        path: `/store/order`,
-        query: {
-          id: res.data._id,
-        },
+    submit() {
+      Object.values(this.carts.items).forEach(async (v, index, key) => {
+        try {
+          const { data } = await axios.post(
+            `${process.env.server}/order/mall/${v.item}`,
+            {
+              product: v.iteminfo,
+              option: v.option,
+              count: v.count,
+              mileage: 0,
+              delivery: 2500,
+              reciever: this.reciever[0],
+              status: 'paid',
+            },
+            {
+              headers: {
+                Authorization: `Bearer ${this.$cookiz.get('user')}`,
+              },
+            }
+          );
+
+          this.$router.push({
+            path: '/store/order',
+          });
+        } catch (error) {
+          alert(error);
+        }
       });
     },
-  },
-  oncomplete(result) {
-    if (result.userSelectedType === 'R') {
-      console.log(result);
-    }
-    this.popupControl();
-  },
-  popupControl() {
-    this.popup = !this.popup;
   },
 };
 </script>
@@ -272,6 +243,7 @@ export default {
 .total_bg {
   background: $lightBlue;
   padding: 20px;
+  margin-bottom: 60px;
 }
 .total_bg p {
   font-size: 14px;

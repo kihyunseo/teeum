@@ -7,7 +7,7 @@
       </MyBorderRadius>
 
       <MyBorderRadius>
-        <div
+        <!-- <div
           v-if="productDetailData.complateReivew.buyer.nickname !== '홍길동'"
         >
           <h2>
@@ -17,7 +17,7 @@
           <div class="detail">
             {{ productDetailData.complateReivew.buyer.detail }}
           </div>
-        </div>
+        </div> -->
       </MyBorderRadius>
     </div>
   </div>

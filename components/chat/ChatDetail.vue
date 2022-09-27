@@ -2,7 +2,8 @@
   <div>
     <div class="chat_document">
       <div class="top">
-        <div class="nickname">{{ items[0].user.nickname }}</div>
+        <!-- <div class="nickname">{{ items.user.name }}</div> -->
+
         <div class="alert">
           <img src="@/assets/svg/alert.svg" alt="신고하기" />
         </div>
@@ -11,7 +12,7 @@
         </div>
       </div>
 
-      <div class="chat_detail">
+      <div ref="test" class="chat_detail">
         <div class="chat_manual">
           <div class="manual">
             <p>(필독)틔움 거래방법</p>
@@ -20,13 +21,20 @@
             </div>
           </div>
         </div>
-        <div class="scroll">
-          <div v-for="item in items" :key="item.index" class="message_wrap">
-            <div class="message_you">
+        <div id="scroll" class="scroll">
+          <div
+            v-for="(item, index) in items.logs"
+            :key="item.index"
+            class="message_wrap"
+          >
+            <div
+              v-if="item.user.name != $store.state.user.me.name"
+              class="message_you"
+            >
               <div
-                v-if="item.user.image"
+                v-if="items.user.image"
                 class="left"
-                :style="{ 'background-image': `url(${item.image})` }"
+                :style="{ 'background-image': `url(${items.user.image})` }"
               ></div>
               <div
                 v-else
@@ -36,11 +44,38 @@
                 }"
               ></div>
               <div class="right">
-                <p>{{ item.detail }}</p>
+                <p class="name">{{ item.user.name }}</p>
+                <p v-if="item.type === 'text'" class="chat_message">
+                  {{ item.content }}
+                </p>
+                <p v-if="item.type === 'image'" class="chat_image">
+                  {{ item.content }}
+                </p>
+                <div v-if="item.type === 'deal'" class="chat_image">
+                  <p>{{ item.content }}</p>
+                  <div>
+                    <button
+                      @click="
+                        reservationStatusChange(
+                          'processing',
+                          item.additionalinfo
+                        )
+                      "
+                    >
+                      맞아요
+                    </button>
+                    <button>아니요</button>
+                  </div>
+                </div>
               </div>
             </div>
-            <div v-if="item.user.nickname == '홍길동'" class="message_my">
-              <p>{{ item.detail }}</p>
+
+            <div v-else class="message_my">
+              <p v-if="item.type === 'text'">{{ item.content }}</p>
+              <p v-if="item.type === 'image'">{{ item.content }}</p>
+              <div v-if="item.type === 'deal'">
+                <p>{{ item.content }}</p>
+              </div>
             </div>
           </div>
         </div>
@@ -51,9 +86,14 @@
             <img src="@/assets/svg/circle_plus.svg" />
           </div>
           <div class="left">
-            <input v-model="detail" type="text" />
+            <input
+              v-model="content"
+              type="text"
+              @input="typeText"
+              @keyup.enter="sendMessage()"
+            />
           </div>
-          <div class="right" @click="addChat">전송</div>
+          <div class="right" @click="sendMessage()">전송</div>
         </div>
       </div>
     </div>
@@ -61,32 +101,63 @@
 </template>
 
 <script>
+import axios from 'axios';
 export default {
-  props: {
-    items: {
-      type: Array,
-      required: true,
-    },
-  },
+  props: ['items', 'index'],
 
   data() {
     return {
-      detail: '',
+      content: '',
+      target: '',
+      parent: '',
+      images: [],
+      type: '',
     };
   },
 
-  mounted() {},
+  mounted() {
+    this.focus();
+  },
 
   methods: {
+    reservationStatusChange(status, reservationId) {
+      this.$emit(
+        'reservationStatusChange',
+        status,
+        reservationId,
+        this.items._id,
+        this.items.model
+      );
+    },
+    focus() {
+      setTimeout(() => {
+        const element = this.$refs.test;
+        element.scrollTop = element.scrollHeight;
+      }, 0);
+    },
+    typeText() {
+      this.type = 'text';
+    },
+    typeImages() {
+      this.type = 'image';
+    },
     popupDialogChat() {
-      this.$emit('popupDialogChat');
+      this.$emit('popupDialogChat', 0);
     },
     popupDialogUpload() {
       this.$emit('popupDialogUpload');
     },
-    addChat() {
-      this.$emit('addChat', this.detail);
-      this.detail = '';
+    async sendMessage(id) {
+      if (!this.content) return alert('내용을 입력 해주세요.');
+      await this.$emit('sendMessage', {
+        content: this.content,
+        target: this.target,
+        parent: this.parent,
+        images: this.images,
+        type: this.type,
+      });
+      this.content = '';
+      this.focus();
     },
   },
 };
@@ -154,15 +225,24 @@ export default {
   margin-bottom: 16px;
 }
 .chat_document .message_wrap .message_you .left {
-  min-width: 25px;
-  min-height: 25px;
+  min-width: 30px;
+  min-height: 30px;
   background-size: cover;
   margin-right: 6px;
+  border-radius: 50%;
 }
 
-.chat_document .message_wrap .message_you .right {
+// .chat_document .message_wrap .message_you .right {
+// }
+.chat_document .message_wrap .message_you .right .name {
+  margin-left: 6px;
+  font-size: 11px;
+  color: $textLight;
+  margin-bottom: 6px;
+}
+.chat_document .message_wrap .message_you .right .chat_message {
   background: white;
-  padding: 12px 16px;
+  padding: 8px 12px;
   border-radius: 24px;
   display: inline-block;
 }

@@ -3,10 +3,10 @@
     <HistoryHeader>다중 참여</HistoryHeader>
     <div class="content">
       <MyBorderRadius>
-        <div v-for="(item, index) in auctionListData" :key="item.index">
+        <div v-for="(item, index) in auctions" :key="item.index">
           <ul>
             <AuctionList :items="item" />
-            <AuctionBidding :items="item" />
+            <!-- <AuctionBidding :items="item" /> -->
             <div class="bidding_submit" @click="popupControlIndex(index)">
               입찰
             </div>
@@ -34,11 +34,13 @@
           <img src="@/assets/svg/circle_minus.svg" alt="" />
         </div>
         <div class="center">
-          <input
-            v-model="price"
-            type="text"
-            :placeholder="`현재가 ${auctionListData[auctionIndex].latestPrice}원`"
-          />
+          <div class="fake_input">
+            {{
+              auctions[auctionIndex].maxPrice
+                ? auctions[auctionIndex].maxPrice
+                : auctions[auctionIndex].startPrice | comma
+            }}
+          </div>
         </div>
         <div class="right" @click="plusPrice">
           <img src="@/assets/svg/circle_plus.svg" alt="" />
@@ -53,11 +55,18 @@
 </template>
 
 <script>
-import auctionList from '@/data/auctionList.json';
+import axios from 'axios';
+
 export default {
-  asyncData() {
-    const auctionListData = auctionList;
-    return { auctionListData };
+  async asyncData({ app, store }) {
+    const { data } = await axios.get(`${process.env.server}/my/auction`, {
+      headers: {
+        Authorization: `Bearer ${app.$cookiz.get('user')}`,
+      },
+    });
+    return {
+      auctions: data,
+    };
   },
   data() {
     return {
@@ -74,22 +83,21 @@ export default {
     },
     popupControlIndex(index) {
       this.popup = !this.popup;
-      this.price = this.auctionListData[index].latestPrice + 1000;
+      this.price = this.auctions[index].maxPrice
+        ? this.auctions[index].maxPrice + 1000
+        : this.auctions[index].startPrice + 1000;
       this.auctionIndex = index;
     },
     plusPrice() {
       this.price = this.price + 1000;
     },
     minusPrice() {
-      if (
-        this.auctionListData[this.auctionIndex].latestPrice <
-        this.price - 1000
-      ) {
+      if (this.auctions[this.auctionIndex].maxPrice < this.price - 1000) {
         this.price = this.price - 1000;
       }
     },
     submit() {
-      console.log(this.auctionListData[this.auctionIndex], this.price);
+      console.log(this.auctions[this.auctionIndex], this.price);
     },
   },
 };
@@ -186,5 +194,10 @@ export default {
 }
 .popup .button div:last-child {
   background: $primary;
+}
+.popup .price .center .fake_input {
+  font-size: 20px;
+  font-weight: bold;
+  text-align: right;
 }
 </style>

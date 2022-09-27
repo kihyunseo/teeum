@@ -1,76 +1,106 @@
 <template>
   <div>
-    <Slider :items="images" />
+    <Slider :items="banners.bannerimage" />
     <div class="content">
       <MobileTopMenu />
       <div class="flex">
         <div class="left">
-          <select @change="categoryChange($event)">
-            <option>카테고리</option>
-            <option v-for="item in productCategory" :key="item.index">
-              {{ item.title }}
+          <select @change="categoryChange">
+            <option value="">전체</option>
+            <option
+              v-for="item in categorys"
+              :key="item.index"
+              :value="item._id"
+              :selected="item._id === $route.query.category"
+            >
+              {{ item.kor }}
             </option>
           </select>
         </div>
       </div>
-      <div v-for="item in stores" :key="item.index">
+      <div v-for="item in malls" :key="item.index">
         <ul>
-          <StoreList :items="item" />
+          <productList :items="item" type="store" />
         </ul>
       </div>
     </div>
+
     <!-- 인피니티 스크롤 -->
-    <!-- <client-only>
-      <InfiniteLoading @infinite="infiniteHandler"></InfiniteLoading>
-    </client-only> -->
+    <client-only>
+      <InfiniteLoading
+        ref="infiniteLoading"
+        @infinite="infiniteHandler"
+      ></InfiniteLoading>
+    </client-only>
   </div>
 </template>
 
 <script>
 import axios from 'axios';
-import banner from '@/data/banner.json';
-import productCategory from '@/data/productCategory.json';
-import store from '@/data/storeList.json';
 export default {
-  asyncData() {
-    return { banner, productCategory, store };
+  async asyncData({ app, query }) {
+    try {
+      const banner = await axios.get(
+        `${process.env.server}/banner?findat=title&find=${encodeURIComponent(
+          '메인배너'
+        )}`,
+        {
+          headers: {
+            Authorization: `Bearer ${app.$cookiz.get('user')}`,
+          },
+        }
+      );
+      return {
+        banners: banner.data[0],
+      };
+    } catch (error) {
+      console.log(error);
+    }
   },
 
   data() {
     return {
-      teeumFilter: false,
-      page: 0,
-      stores: [],
-      images: [],
+      limit: 2,
+      skip: 2,
+      categorys: [],
+      malls: [],
     };
   },
 
   async fetch() {
-    const { data } = await axios.get('http://localhost:4001/v0/list/stores', {
-      headers: {
-        Authorization: `Bearer ${this.$cookiz.get('user')}`,
-      },
-    });
-    const images = await axios.get('http://localhost:4001/v0/list/banner', {
-      headers: {
-        Authorization: `Bearer ${this.$cookiz.get('user')}`,
-      },
-    });
-
-    this.images = this.images.concat(images.data);
-
-    return (this.stores = this.stores.concat(data));
+    try {
+      const categorys = await axios.get(`${process.env.server}/category/mall`, {
+        headers: {
+          authorization: `Bearer ${this.$cookiz.get('user')}`,
+        },
+      });
+      this.categorys = this.categorys.concat(categorys.data);
+    } catch (error) {
+      alert(error);
+    }
   },
 
   computed: {},
+
+  watch: {
+    '$route.query': {
+      handler(n, p) {
+        this.$refs.infiniteLoading.$emit('$InfiniteLoading:reset');
+      },
+
+      deep: true,
+    },
+  },
+
   created() {},
   mounted() {},
   methods: {
-    infiniteHandler($state) {
+    async infiniteHandler($state) {
       try {
-        if (this.page < 10) {
-          this.store = this.store.concat(this.store);
-          this.page = this.page + 1;
+        const malls = await this.getMall();
+        if (malls.length > 0) {
+          this.malls = this.malls.concat(malls);
+          this.skip += this.limit;
           $state.loaded();
         } else {
           $state.complete();
@@ -79,9 +109,28 @@ export default {
     },
     categoryChange(event) {
       const targetValue = event.target.value;
+      this.malls = [];
+      this.skip = 0;
       this.$router.push({
-        query: { category: targetValue },
+        query: {
+          category: targetValue,
+        },
       });
+    },
+    async getMall() {
+      const categoryQuery = this.$route.query.category
+        ? `category=${this.$route.query.category}`
+        : '';
+
+      const { data } = await axios.get(
+        `${process.env.server}/mall?limit=2&skip=${this.skip}&${categoryQuery}`,
+        {
+          headers: {
+            authorization: `Bearer ${this.$cookiz.get('user')}`,
+          },
+        }
+      );
+      return data;
     },
   },
 };

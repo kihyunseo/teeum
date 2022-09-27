@@ -1,30 +1,28 @@
 <template>
   <div>
     <div class="top">
-      <UserInfo :items="myUserData" />
+      <UserInfo :items="$store.state.user.me" />
       <div class="countindex_area">
-        <nuxt-link to="/my/sell">
+        <nuxt-link to="/my/product/sell">
           <div class="count">
             <div class="name">판매내역</div>
             <div class="data">
-              {{ myHistoryListData.length }}개<span class="unit"></span>
+              {{ products.length }}개<span class="unit"></span>
             </div>
           </div>
         </nuxt-link>
-        <nuxt-link to="/my/buy">
+        <!-- <nuxt-link to="/my/product/buy">
           <div class="count">
             <div class="name">구매내역</div>
             <div class="data">
-              {{ myHistoryListData.length }}개<span class="unit"></span>
+              {{ products.length }}개<span class="unit"></span>
             </div>
           </div>
-        </nuxt-link>
+        </nuxt-link> -->
         <nuxt-link to="/my/activity_history">
           <div class="count">
             <div class="name">관심목록</div>
-            <div class="data">
-              {{ myHistoryListData.length }}개<span class="unit"></span>
-            </div>
+            <div class="data">{{ likeCount }}개<span class="unit"></span></div>
           </div>
         </nuxt-link>
       </div>
@@ -46,14 +44,21 @@
 </template>
 
 <script>
-import myHistoryList from '@/data/myHistoryList.json';
-import myUser from '@/data/myUser.json';
-
+import axios from 'axios';
 export default {
-  asyncData() {
-    const myHistoryListData = myHistoryList;
-    const myUserData = myUser;
-    return { myHistoryListData, myUserData };
+  async asyncData({ app, store }) {
+    const products = await axios.get(
+      `${process.env.server}/product?user=${store.state.user.me._id}`,
+      {
+        headers: {
+          Authorization: `Bearer ${app.$cookiz.get('user')}`,
+        },
+      }
+    );
+
+    return {
+      products: products.data,
+    };
   },
   data() {
     return {
@@ -99,7 +104,17 @@ export default {
           path: '/my/group_buying',
         },
       ],
+      likeCount: 0,
     };
+  },
+
+  async fetch() {
+    const likes = await axios.get(`${process.env.server}/my/like`, {
+      headers: {
+        Authorization: `Bearer ${this.$cookiz.get('user')}`,
+      },
+    });
+    this.likeCount = likes.data.length;
   },
 
   mounted() {},
@@ -123,8 +138,7 @@ export default {
 }
 .top {
   background: $lightBlue;
-  padding: 20px 0;
-  padding-bottom: 40px;
+  padding: 5px 20px 30px 20px;
 }
 .countindex_area {
   margin-top: 12px;
@@ -140,6 +154,7 @@ export default {
       .data {
         font-size: 22px;
         font-weight: bold;
+        margin-bottom: 5px;
         .unit {
         }
       }

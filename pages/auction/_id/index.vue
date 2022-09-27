@@ -3,31 +3,32 @@
     <div class="slide">
       <Slider :items="auction.images" />
     </div>
+
     <div class="content" style="padding-top: 12px">
       <AuctionInfo
         :items="auction"
         :alarm="alarmIcon"
         @alarmControl="alarmOnClick"
       />
-      <AuctionBidding :items="auction" />
-      <div class="bidding_more">
+      <!-- <AuctionBidding :items="biddings" /> -->
+      <!-- <div class="bidding_more">
         <nuxt-link :to="`${$route.params.id}/bidding`">
-          입찰현황 더보기
+          입찰현황 보기
         </nuxt-link>
-      </div>
+      </div> -->
       <UserInfo :items="auction.user" />
       <ProductDetail :items="auction" :type="'auction'" />
       <div class="border_bglight_gray"></div>
-      <ProductReivew
-        :total-count="reviews.length"
-        :items="reviews"
-        type="auction"
-      />
+      <ProductReivew :items="reviews" type="auction" />
       <div class="footer_auction">
         <div class="heart" @click="likeOnClick">
           <img :src="heartIcon" alt="" />
         </div>
-        <div class="auction_request">질문하기</div>
+        <div class="auction_request">
+          <nuxt-link :to="`${$route.params.id}/bidding`">
+            입찰현황 보기
+          </nuxt-link>
+        </div>
         <div class="auction_bidding" @click="popupControl">입찰하기</div>
       </div>
       <Popup class="popup" :dialog="dialog" @popupClose="popupControl">
@@ -60,7 +61,9 @@
         </div>
         <div class="button">
           <div><nuxt-link to="/chat">채팅하기</nuxt-link></div>
-          <div @click="submit"><p>입찰하기</p></div>
+          <div @click="submit">
+            <p>입찰하기</p>
+          </div>
         </div>
       </Popup>
     </div>
@@ -68,10 +71,59 @@
 </template>
 
 <script>
+import Vue from 'vue';
+import io from 'socket.io-client';
 import axios from 'axios';
+const socket = io('http://localhost:4001/', {
+  withCredentials: false,
+});
+Vue.prototype.$socket = socket;
 export default {
   layout: 'document',
-  asyncData() {},
+  async asyncData({ app, params }) {
+    const auction = await axios.get(
+      `${process.env.server}/auction/${params.id}`,
+      {
+        headers: {
+          Authorization: `Bearer ${app.$cookiz.get('user')}`,
+        },
+      }
+    );
+
+    const auctionLikes = await axios.get(
+      `${process.env.server}/like/auction/${params.id}`,
+      {
+        headers: {
+          Authorization: `Bearer ${app.$cookiz.get('user')}`,
+        },
+      }
+    );
+
+    const auctionAlarm = await axios.get(
+      `${process.env.server}/alarm/auction/${params.id}`,
+      {
+        headers: {
+          Authorization: `Bearer ${app.$cookiz.get('user')}`,
+        },
+      }
+    );
+
+    const reviews = await axios.get(
+      `${process.env.server}/review/auction?user=${auction.data.user._id}`,
+      {
+        headers: {
+          Authorization: `Bearer ${app.$cookiz.get('user')}`,
+        },
+      }
+    );
+
+    return {
+      auction: auction.data,
+      auctionLikes: auctionLikes.data,
+      auctionAlarm: auctionAlarm.data,
+      reviews: reviews.data,
+    };
+  },
 
   data() {
     return {
@@ -79,129 +131,193 @@ export default {
       dialog: false,
       nowDate: '',
       price: 0,
-      auction: '',
-      reviews: [],
     };
   },
-  async fetch() {
-    const auctionData = await axios.get(
-      `http://localhost:4001/v0/get/auctions/${this.$route.params.id}`,
-      {
-        headers: {
-          Authorization: `Bearer ${this.$cookiz.get('user')}`,
-        },
-      }
-    );
-
-    const reviewsData = await axios.get(
-      `http://localhost:4001/v0/list/reviews`,
-      {
-        headers: {
-          Authorization: `Bearer ${this.$cookiz.get('user')}`,
-        },
-      }
-    );
-
-    this.auction = auctionData.data;
-    this.reviews = this.reviews.concat(reviewsData.data);
-
-    return '';
-
-    this.price = this.auction.latestPrice + 1000;
-  },
+  fetch() {},
   computed: {
-    latestPrice() {
-      return String(this.auction.latestPrice).replace(
-        /\B(?=(\d{3})+(?!\d))/g,
-        ','
-      );
-    },
-    like() {
-      const meId = '23';
-      const auctionLike = this.auction.like;
-      return !!(auctionLike || []).find((v) => v.userId === meId);
+    likes() {
+      const meId = this.$store.state.user.me._id;
+      const likes = this.auctionLikes;
+      return !!(likes || []).find((v) => v.user === meId);
     },
     heartIcon() {
-      return this.like
+      return this.likes
         ? require('@/assets/svg/Heart_fill.svg')
         : require('@/assets/svg/Heart.svg');
     },
+    likeId() {
+      const meId = this.$store.state.user.me._id;
+      return this.likes ? this.auctionLikes.find((v) => v.user === meId) : null;
+    },
     alarm() {
-      const meId = '23';
-      const auctionAlarm = this.auction.alarm;
-      return !!(auctionAlarm || []).find((v) => v.userId === meId);
+      const meId = this.$store.state.user.me._id;
+      const alarm = this.auctionAlarm;
+      return !!(alarm || []).find((v) => v.user === meId);
     },
     alarmIcon() {
       return this.alarm
         ? require('@/assets/svg/alarm_fill.svg')
         : require('@/assets/svg/alarm_color.svg');
     },
+    alarmId() {
+      const meId = this.$store.state.user.me._id;
+      return this.alarm ? this.auctionAlarm.find((v) => v.user === meId) : null;
+    },
+  },
+  created() {
+    const res = this.$store.dispatch('category/category');
+
+    this.$socket.emit('login', `Bearer ${this.$cookiz.get('user')}`, (res) => {
+      const { data } = res;
+      if (data) {
+        this.user = data._id;
+      }
+      // console.log('로그인', data);
+    });
   },
   mounted() {
+    this.price = Number(this.auction.maxPrice)
+      ? Number(this.auction.maxPrice + 1000)
+      : this.auction.startPrice + 1000;
     this.nowDate = this.$moment().format('YYYY-MM-DD HH:mm:ss');
   },
   methods: {
     popupControl() {
       this.dialog = !this.dialog;
     },
-    likeOnClick() {
-      return alert('준비중');
-      // const meId = '23';
-      // const auctionLike = this.auction.like;
-      // const res = auctionLike.findIndex((v) => v.userId === meId);
-      // if (this.like) {
-      //   this.auction.like.splice(res, 1);
-      // } else {
-      //   this.auction.like.push({
-      //     id: '1',
-      //     userId: '23',
-      //     productId: '1',
-      //     date: '2022-06-12 19:00',
-      //   });
-      // }
+    async likeOnClick() {
+      if (!this.likes) {
+        try {
+          const { data } = await axios.post(
+            `${process.env.server}/like`,
+            {
+              model: 'auction',
+              item: this.auction._id,
+            },
+            {
+              headers: {
+                Authorization: `Bearer ${this.$cookiz.get('user')}`,
+              },
+            }
+          );
+
+          this.auctionLikes.push({
+            model: 'auction',
+            item: this.auction._id,
+            user: data.user,
+            _id: data._id,
+          });
+        } catch (error) {
+          alert(error);
+        }
+      } else {
+        try {
+          // 좋아요 삭제
+          const index = this.auctionLikes.findIndex(
+            (v) => v.user === this.$store.state.user.me._id
+          );
+          const { data } = await axios.delete(
+            `${process.env.server}/like/${this.likeId._id}`,
+            {
+              headers: {
+                Authorization: `Bearer ${this.$cookiz.get('user')}`,
+              },
+            }
+          );
+
+          this.auctionLikes.splice(index, 1);
+        } catch (error) {
+          alert(error);
+        }
+      }
     },
-    alarmOnClick() {
-      return alert('준비중');
-      // const check = this.$moment(this.nowDate).isBefore(this.auction.startDate);
-      // const meId = '23';
-      // const auctionAlarm = this.auction.alarm;
-      // const res = auctionAlarm.findIndex((v) => v.userId === meId);
-      // if (this.alarm && check) {
-      //   this.auction.alarm.splice(res, 1);
-      // } else if (!this.alarm) {
-      //   this.auction.alarm.push({
-      //     id: '1',
-      //     userId: '23',
-      //     productId: '1',
-      //     date: '2022-06-12 19:00',
-      //   });
-      // } else {
-      //   alert('경매가 시작된 이후에는 취소할 수 없습니다.');
-      // }
+
+    async alarmOnClick() {
+      if (!this.alarm) {
+        try {
+          const { data } = await axios.post(
+            `${process.env.server}/alarm`,
+            {
+              model: 'auction',
+              item: this.auction._id,
+              time: this.auction.startTime,
+            },
+            {
+              headers: {
+                Authorization: `Bearer ${this.$cookiz.get('user')}`,
+              },
+            }
+          );
+          this.auctionAlarm.push({
+            model: 'auction',
+            item: this.auction._id,
+            time: this.auction.startTime,
+            user: data.user,
+            _id: data._id,
+          });
+        } catch (error) {
+          alert(error);
+        }
+      } else {
+        try {
+          const index = this.auctionAlarm.findIndex(
+            (v) => v.user === this.$store.state.user.me._id
+          );
+          await axios.delete(
+            `${process.env.server}/alarm/${this.alarmId._id}`,
+            {
+              headers: {
+                Authorization: `Bearer ${this.$cookiz.get('user')}`,
+              },
+            }
+          );
+          this.auctionAlarm.splice(index, 1);
+        } catch (error) {
+          alert(error);
+        }
+      }
     },
     minusPrice() {
-      if (this.auction.latestPrice < this.price - 1000) {
+      if (
+        this.auction.maxPrice &&
+        this.auction.maxPrice.price < this.price - 1000
+      ) {
         this.price = this.price - 1000;
+      } else if (this.auction.startPrice < this.price - 1000) {
+        this.price = this.price - 1000;
+      } else {
+        alert('현재 경매가를 확인 해주세요.');
       }
     },
     plusPrice() {
       this.price = this.price + 1000;
     },
     async submit() {
-      // const data = { id: '1' };
-      // const res = await axios.put(
-      //   `http://localhost:4001/v0/put/auctions/${this.auction._id}`,
-      //   {
-      //     ...this.auction,
-      //     biddings: { id: 1 },
-      //   },
-      //   {
-      //     headers: {
-      //       Authorization: `Bearer ${this.$cookiz.get('user')}`,
-      //     },
-      //   }
-      // );
-      const price = this.price;
+      if (
+        !confirm(
+          '경매에 참여 후 취소할 경우 패널티가 부과됩니다. 그래도 참여 하시겠습니까?'
+        )
+      ) {
+        return;
+      }
+      try {
+        const bidding = await axios.post(
+          `${process.env.server}/bidding/${this.$route.params.id}`,
+          {
+            price: this.price,
+          },
+          {
+            headers: {
+              Authorization: `Bearer ${this.$cookiz.get('user')}`,
+            },
+          }
+        );
+        this.auction.finalBidding.price = this.price;
+
+        this.popupControl();
+      } catch (error) {
+        alert(error);
+      }
     },
   },
 };

@@ -3,27 +3,36 @@
     <HistoryHeader>티몰 교환/반품내역</HistoryHeader>
     <div class="content">
       <MyBorderRadius>
-        <OrderNumber :items="myRefundDetailData" />
-        <div
-          v-for="(option, index) in myRefundDetailData.storeOption"
-          :key="option.index"
-          class="info"
-        >
-          <OrderStatus :option="option" />
-          <MyProduct :items="myRefundDetailData" :option="option" />
+        <OrderNumber :items="order" />
+        <div class="info">
+          <OrderStatus :items="order" />
+          <MyProduct :items="order" />
           <!-- <OrderUserPaymentInfo :items="myRefundDetailData" /> -->
-          <MyProductReturn :items="myRefundDetailData" />
+          <MyProductReturn :items="order" />
         </div>
       </MyBorderRadius>
     </div>
   </div>
 </template>
 <script>
-import myRefundDetail from '@/data/myRefundDetail.json';
+import axios from 'axios';
 export default {
-  asyncData() {
-    const myRefundDetailData = myRefundDetail;
-    return { myRefundDetailData };
+  asyncData() {},
+  data() {
+    return {
+      order: '',
+    };
+  },
+  async fetch() {
+    const { data } = await axios.get(
+      `${process.env.server}/order/${this.$route.params.orderid}`,
+      {
+        headers: {
+          Authorization: `Bearer ${this.$cookiz.get('user')}`,
+        },
+      }
+    );
+    this.order = data;
   },
   computed: {},
 };

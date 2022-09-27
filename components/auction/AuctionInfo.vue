@@ -19,25 +19,26 @@
           <p>{{ items.startPrice | comma }} 원</p>
         </div>
         <div class="right">
-          <p>{{ $moment(items.startDate).format('HH:mm') }}</p>
+          <p>{{ $moment(items.startTime).format('HH:mm') }}</p>
           <p>
-            {{ $moment(items.startDate).format('YYYY') }}년
-            {{ $moment(items.startDate).format('MM') }}월
-            {{ $moment(items.startDate).format('DD') }}일
+            {{ $moment(items.startTime).format('YYYY') }}년
+            {{ $moment(items.startTime).format('MM') }}월
+            {{ $moment(items.startTime).format('DD') }}일
           </p>
         </div>
       </div>
       <div class="auction_bottom_info">
+       
         <div class="left">
           <p>현재가</p>
-          <p>{{ items.latestPrice | comma }}원</p>
+          <p> {{items.finalBidding.price ? items.finalBidding.price : items.startPrice | comma}}원</p>
         </div>
         <div class="right">
-          <p>{{ $moment(items.startDate).format('HH:mm') }}</p>
+          <p>{{ $moment(items.endTime).format('HH:mm') }}</p>
           <p>
-            {{ $moment(items.startDate).format('YYYY') }}년
-            {{ $moment(items.startDate).format('MM') }}월
-            {{ $moment(items.startDate).format('DD') }}일
+            {{ $moment(items.endTime).format('YYYY') }}년
+            {{ $moment(items.endTime).format('MM') }}월
+            {{ $moment(items.endTime).format('DD') }}일
           </p>
         </div>
       </div>

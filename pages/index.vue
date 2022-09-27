@@ -1,14 +1,19 @@
 <template>
   <div>
-    <Slider :items="images" />
+    <Slider :items="banners.bannerimage" />
     <div class="content">
       <MobileTopMenu />
       <div class="flex">
         <div class="left">
-          <select @change="categoryChange($event)">
-            <option>카테고리</option>
-            <option v-for="item in productCategory" :key="item.index">
-              {{ item.title }}
+          <select @change="categoryChange">
+            <option value="">전체</option>
+            <option
+              v-for="item in categorys"
+              :key="item.index"
+              :value="item._id"
+              :selected="item._id === $route.query.category"
+            >
+              {{ item.kor }}
             </option>
           </select>
         </div>
@@ -21,97 +26,140 @@
       </div>
       <div v-for="item in products" :key="item._id">
         <ul>
-          <ProductList
-            v-if="item.user.name !== '틔움' && !teeumFilter"
-            view="product"
-            :items="item"
-          />
-          <StoreList v-if="item.user.name === '틔움'" :items="item" />
+          <ProductList :items="item" :teeum-filter="teeumFilter" />
         </ul>
       </div>
     </div>
 
     <!-- 인피니티 스크롤 -->
-    <!-- <client-only>
-      <InfiniteLoading @infinite="infiniteHandler"></InfiniteLoading>
-    </client-only> -->
+    <client-only>
+      <InfiniteLoading
+        ref="infiniteLoading"
+        @infinite="infiniteHandler"
+      ></InfiniteLoading>
+    </client-only>
   </div>
 </template>
 
 <script>
 import axios from 'axios';
-import banner from '@/data/banner.json';
-import productCategory from '@/data/productCategory.json';
-import store from '@/data/storeList.json';
 export default {
-  asyncData() {
-    return { banner, productCategory, store };
+  async asyncData({ app, query }) {
+    try {
+      const banner = await axios.get(
+        `${process.env.server}/banner?findat=title&find=${encodeURIComponent(
+          '메인배너'
+        )}`,
+        {
+          headers: {
+            Authorization: `Bearer ${app.$cookiz.get('user')}`,
+          },
+        }
+      );
+      return {
+        banners: banner.data[0],
+      };
+    } catch (error) {
+      console.log(error);
+    }
   },
-
   data() {
     return {
       teeumFilter: false,
       page: 0,
+      productSkip: 0,
+      storeSkip: 0,
+      limit: 2,
+      query: '',
       products: [],
-      images: [],
+      categorys: [],
     };
   },
-
   async fetch() {
-    const { data } = await axios.get('http://localhost:4001/v0/list/product', {
-      headers: {
-        Authorization: `Bearer ${this.$cookiz.get('user')}`,
-      },
-    });
+    try {
+      const user = await axios.get(`${process.env.server}/my/me`, {
+        headers: {
+          Authorization: `Bearer ${this.$cookiz.get('user')}`,
+        },
+      });
+      if (!user.data.active) {
+        alert('유저 필수 정보를 입력 해주세요.');
+        this.$router.push('/user/active');
+      }
+    } catch (error) {
+      alert(error);
+    }
 
-    const images = await axios.get('http://localhost:4001/v0/list/banner', {
-      headers: {
-        Authorization: `Bearer ${this.$cookiz.get('user')}`,
-      },
-    });
+    try {
+      const category = await axios.get(
+        `${process.env.server}/category/product`,
+        {
+          headers: {
+            Authorization: `Bearer ${this.$cookiz.get('user')}`,
+          },
+        }
+      );
 
-    // console.log(images);
-
-    // const res = await axios.post(
-    //   `http://localhost:4001/v0/post/banner`,
-    //   {
-    //     path: 'https://firebasestorage.googleapis.com/v0/b/test-firebase-81571.appspot.com/o/banner.png?alt=media&token=53f07aa8-edf6-4aa3-b240-bf78bc2b7939',
-    //     status: '승인',
-    //   },
-    //   {
-    //     headers: {
-    //       Authorization: `Bearer ${this.$cookiz.get('user')}`,
-    //     },
-    //   }
-    // );
-
-    console.log(images.data);
-    this.images = this.images.concat(images.data);
-    this.products = this.products.concat(data);
-    return '';
+      this.categorys = this.categorys.concat(category.data);
+    } catch (error) {
+      alert(error);
+    }
   },
 
   computed: {},
+
+  watch: {
+    '$route.query': {
+      handler(n, p) {
+        this.$refs.infiniteLoading.$emit('$InfiniteLoading:reset');
+      },
+
+      deep: true,
+    },
+  },
+
   created() {},
-  mounted() {},
+  async mounted() {},
   methods: {
-    // infiniteHandler($state) {
-    //   try {
-    //     if (this.page < 10) {
-    //       this.product = this.product.concat(this.product);
-    //       this.product = this.product.concat(this.store);
-    //       this.page = this.page + 1;
-    //       $state.loaded();
-    //     } else {
-    //       $state.complete();
-    //     }
-    //   } catch (error) {}
-    // },
+    async infiniteHandler($state) {
+      try {
+        const products = await this.getProduct();
+        if (products.length > 0) {
+          this.products = this.products.concat(products);
+          this.productSkip += this.limit;
+          $state.loaded();
+        } else {
+          $state.complete();
+        }
+      } catch (error) {
+        $state.complete();
+        alert(error);
+      }
+    },
     categoryChange(event) {
       const targetValue = event.target.value;
+      this.products = [];
+      this.productSkip = 0;
       this.$router.push({
-        query: { category: targetValue },
+        query: {
+          category: targetValue,
+        },
       });
+    },
+    async getProduct() {
+      const categoryQuery = this.$route.query.category
+        ? `category=${this.$route.query.category}`
+        : '';
+
+      const { data } = await axios.get(
+        `${process.env.server}/product?limit=2&skip=${this.productSkip}&${categoryQuery}`,
+        {
+          headers: {
+            authorization: `Bearer ${this.$cookiz.get('user')}`,
+          },
+        }
+      );
+      return data;
     },
   },
 };

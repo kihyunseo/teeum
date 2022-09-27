@@ -1,19 +1,27 @@
 <template>
   <div class="community_list">
-    <nuxt-link :to="`/community/${items._id}`">
+    <nuxt-link
+      :to="`/community/${items._id}`"
+      :class="{ border: border === true }"
+    >
       <div class="left">
         <p>
-          {{ items.title }}
+          {{ items.title ? items.title : items.iteminfo.title }}
         </p>
-        <span>{{ items.user.name }}</span>
-        <span>{{ items.date | moment('from', 'now') }}</span>
-        <span>댓글 {{ reviews }}</span>
+        <span>{{
+          items.user.name ? items.user.name : $store.state.user.me.name
+        }}</span>
+        <span>{{ items.createdAt | moment('from', 'now') }}</span>
+        <span>댓글 {{ comment }}</span>
         <span>조회 {{ items.view }}</span>
       </div>
       <div
+        v-if="items.images"
         class="right"
         :style="{
-          'background-image': `url(${image[0]})`,
+          'background-image': `url(${
+            items.images.length ? items.images[0].path : ''
+          })`,
         }"
       ></div>
     </nuxt-link>
@@ -21,37 +29,27 @@
 </template>
 
 <script>
-const reg = '<img[^>]*src=["\']?([^>"\']+)["\']?[^>]*>';
+import axios from 'axios';
 export default {
   props: {
     items: {
       type: Object,
       required: true,
     },
-    reviews: {
-      type: Number,
-      required: true,
+    border: {
+      type: Boolean,
+      required: false,
+      default: true,
     },
   },
   data() {
-    return {};
+    return {
+      comment: 0,
+    };
   },
-  computed: {
-    image() {
-      const html = this.items.content;
-      return html.match(reg) ? html.match(reg) : ['', ''];
-    },
-    // comment() {
-    //   const length = this.items.comment.length;
-    //   let lengthSum = 0;
-    //   for (let i = 0; i < length; i++) {
-    //     lengthSum++;
-    //     lengthSum += this.items.comment[i].answer.length;
-    //   }
-    //   return lengthSum;
-    // },
-  },
-  mounted() {},
+  async fetch() {},
+  computed: {},
+  async mounted() {},
   created() {},
   methods: {},
 };
@@ -63,10 +61,13 @@ export default {
 }
 .community_list a {
   display: flex;
+
+  align-items: center;
+}
+.community_list a.border {
   margin-bottom: 12px;
   padding-bottom: 12px;
   border-bottom: 1px solid $bglightGray;
-  align-items: center;
 }
 .community_list .left {
   margin-right: 12px;

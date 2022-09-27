@@ -1,12 +1,15 @@
 <template>
   <div>
-    <li>
+    <li v-if="teeumFilter ? teeumFilter && type === 'store' : !teeumFilter">
       <!-- {{ items }} -->
-      <nuxt-link :to="`${view}/${items._id}`">
+      <nuxt-link :to="`/${type}/${items._id}`">
         <div
           class="left"
           :style="{
-            'background-image': `url(http://localhost:4001/v0${items.images[0].thumbnailpath})`,
+            'background-image':
+              items.images && items.images.length
+                ? `url(${items.images[0].path})`
+                : null,
           }"
         ></div>
         <div class="right">
@@ -15,7 +18,9 @@
           </p>
           <p class="font_sub_text info">
             <span class="nickname">{{ items.user.name }}</span>
-            <span class="date">{{ items.date | moment('from', 'now') }}</span>
+            <span class="date">{{
+              items.updatedAt | moment('from', 'now')
+            }}</span>
           </p>
           <p class="price font_mid">{{ items.price | comma }}원</p>
           <div class="bottom">
@@ -41,22 +46,17 @@ export default {
       type: Object,
       required: true,
     },
-    view: {
+    teeumFilter: {
+      type: Boolean,
+      required: false,
+      default: false,
+    },
+    type: {
       type: String,
-      required: true,
+      required: false,
+      default: 'product',
     },
   },
-
-  data() {
-    return {
-      page: 1,
-    };
-  },
-  created() {},
-
-  mounted() {},
-
-  methods: {},
 };
 </script>
 

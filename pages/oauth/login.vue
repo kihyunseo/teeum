@@ -42,7 +42,7 @@ export default {
     },
     async kakaologout() {
       const res = await axios.get(
-        'https://kauth.kakao.com/oauth/logout?client_id=ed1e75d62a0862314da1b513941ece82&logout_redirect_uri=http://localhost:8765/login'
+        'https://kauth.kakao.com/oauth/logout?client_id=ed1e75d62a0862314da1b513941ece82&logout_redirect_uri=http://localhost:8765/oauth/login'
       );
       console.log(res);
     },

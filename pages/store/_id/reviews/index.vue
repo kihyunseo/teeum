@@ -2,27 +2,30 @@
   <div>
     <HistoryHeader>리뷰</HistoryHeader>
     <div class="content" style="padding-top: 12px">
-      <ProductReivew
-        :items="store.reviews"
-        :arrow="false"
-        :total-count="totalCount"
-      />
+      <ProductReivew :items="reviews" :arrow="false" />
     </div>
   </div>
 </template>
 
 <script>
-import store from '@/data/store.json';
+import axios from 'axios';
 export default {
   layout: 'empty',
-  asyncData() {
-    const totalCount = 100;
-    return { store, totalCount };
+  data() {
+    return {
+      reviews: [],
+    };
   },
-  data() {},
-
-  computed: {},
-  mounted() {},
-  methods: {},
+  async fetch() {
+    const reviews = await axios.get(
+      `${process.env.server}/review/mall/${this.$route.params.id}`,
+      {
+        headers: {
+          Authorization: `Bearer ${this.$cookiz.get('user')}`,
+        },
+      }
+    );
+    this.reviews = reviews.data;
+  },
 };
 </script>

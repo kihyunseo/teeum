@@ -14,11 +14,12 @@
         </div>
       </div>
       <div v-if="arrow" class="right">
-        <nuxt-link :to="{ path: `${this.paramsId}/reviews` }">
+        <nuxt-link :to="{ path: `${$route.params.id}/reviews` }">
           <img src="@/assets/svg/arrow_right.svg" alt="더보기" />
         </nuxt-link>
       </div>
     </div>
+
     <div class="bottom">
       <div v-for="review in items" :key="review.index">
         <div class="item_list border_bglight_gray">
@@ -47,7 +48,7 @@
               {{ review.detail }}
             </p>
           </div>
-          <div class="answer">
+          <div v-if="review.answer" class="answer">
             <div class="review_content">
               <p class="review_detail">
                 {{ review.answer.detail }}

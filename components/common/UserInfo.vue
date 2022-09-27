@@ -1,6 +1,6 @@
 <template>
   <div class="bg">
-    <nuxt-link :to="{ path: `/my/user/${items.id}` }">
+    <nuxt-link :to="{ path: `/user/${items._id}` }">
       <div
         v-if="items.image"
         class="left"

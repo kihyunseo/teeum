@@ -1,15 +1,15 @@
 <template>
   <div>
     <ul>
-      <li v-for="item in items.biddings" :key="item.index">
+      <li v-for="item in items" :key="item.index">
         <div>
-          <p>{{ item.date }}</p>
+          <p>{{ $moment(item.date).format('YYYY-MM-DD HH:mm:ss') }}</p>
         </div>
         <div>
-          <p>{{ item.name }}</p>
+          <p>{{ item.user.name }}</p>
         </div>
         <div>
-          <p>{{ item.money | comma }}원</p>
+          <p>{{ item.price | comma }}원</p>
         </div>
       </li>
     </ul>

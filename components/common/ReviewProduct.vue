@@ -4,11 +4,11 @@
       <div
         class="left"
         :style="{
-          'background-image': `url(${items.images[0].src})`,
+          'background-image': `url(${items.iteminfo.images[0].path})`,
         }"
       ></div>
       <div class="right">
-        {{ items.title }}
+        <div>{{ items.iteminfo.title }}</div>
       </div>
     </nuxt-link>
   </div>

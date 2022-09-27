@@ -1,108 +1,297 @@
 <template>
   <div>
     <div class="slide">
-      <Slider :items="store.images" />
+      <Slider :items="mall.images" />
     </div>
-    <div class="content" style="padding-top: 12px">
-      <ProductDetail :items="store" :type="'store'" />
-      <div class="border_bglight_gray"></div>
-      <StoreReview
-        :average-star="averageStar"
-        :total-count="store.reviews.length"
-        :items="store.reviews"
-      />
-      <ProductQna :items="store.qna" />
-      <Delivery :items="store" />
 
+    <div class="content" style="padding-top: 12px">
+      <ProductDetail :items="mall" :type="'mall'" />
+      <div class="border_bglight_gray"></div>
+      <ProductReivew :items="reviews" type="mall" />
+      <CommunityComment
+        ref="comment"
+        :items="comments"
+        :title="`상품 문의`"
+        @commentAdd="commentAdd"
+        @commentAnswer="commentAnswer"
+      />
+      <!-- <ProductQna :items="qnas" /> -->
+      <!-- <Delivery :items="store" /> -->
       <div class="store_footer">
         <div class="heart" @click="likeOnClick">
           <img :src="heartIcon" alt="" />
         </div>
         <div class="money">
-          <p>{{ store.option[0].salePrice | comma }}원</p>
+          <p>{{ mall.price | comma }}원</p>
         </div>
         <div class="payment" @click="popupControl">구매하기</div>
       </div>
       <Popup :dialog="dialog" @popupClose="popupControl">
-        <BuyPopup :id="store._id" :items="store.option" />
+        <BuyPopup :items="mall" />
       </Popup>
     </div>
   </div>
 </template>
-
 <script>
 import axios from 'axios';
-import banner from '@/data/banner.json';
-import productCategory from '@/data/productCategory.json';
 
 export default {
   layout: 'document',
-  asyncData() {
-    const bannerData = banner;
-    const productCategoryData = productCategory;
-    const totalCount = 100;
-    const averageStar = 4.5;
+  async asyncData({ app, params }) {
+    const mall = await axios.get(`${process.env.server}/mall/${params.id}`, {
+      headers: {
+        Authorization: `Bearer ${app.$cookiz.get('user')}`,
+      },
+    });
+
+    const mallLikes = await axios.get(
+      `${process.env.server}/like/mall/${params.id}`,
+      {
+        headers: {
+          Authorization: `Bearer ${app.$cookiz.get('user')}`,
+        },
+      }
+    );
+
+    const reviews = await axios.get(
+      `${process.env.server}/review/mall/${params.id}?limit=3`,
+      {
+        headers: {
+          Authorization: `Bearer ${app.$cookiz.get('user')}`,
+        },
+      }
+    );
+
+    const comments = await axios.get(
+      `${process.env.server}/comment/mall/${params.id}?limit=3`,
+      {
+        headers: {
+          Authorization: `Bearer ${app.$cookiz.get('user')}`,
+        },
+      }
+    );
+
     return {
-      bannerData,
-      productCategoryData,
-      totalCount,
-      averageStar,
+      mall: mall.data,
+      mallLikes: mallLikes.data,
+      reviews: reviews.data,
+      comments: comments.data,
     };
   },
 
   data() {
     return {
       dialog: false,
-      store: '',
+      mall: '',
     };
   },
-
-  async fetch() {
-    const { data } = await axios.get(
-      `http://localhost:4001/v0/get/stores/${this.$route.params.id}`,
-      {
-        headers: {
-          Authorization: `Bearer ${this.$cookiz.get('user')}`,
-        },
-      }
-    );
-
-    this.store = data;
-    console.log(data._id);
-    return 'a';
-  },
   computed: {
-    like() {
-      const meId = '23';
-      const like = this.store.like;
-      return !!(like || []).find((v) => v.userId === meId);
+    likes() {
+      const meId = this.$store.state.user.me._id;
+      const likes = this.mallLikes;
+      return !!(likes || []).find((v) => v.user === meId);
     },
     heartIcon() {
-      return this.like
+      return this.likes
         ? require('@/assets/svg/Heart_fill.svg')
         : require('@/assets/svg/Heart.svg');
     },
+    likeId() {
+      const meId = this.$store.state.user.me._id;
+      return this.likes ? this.mallLikes.find((v) => v.user === meId) : null;
+    },
   },
-  mounted() {},
+  created() {
+    const res = this.$store.dispatch('category/category');
+
+    // 댓글 작성시
+    this.$nuxt.$on('commentAnswer', async ({ parent, content }) => {
+      try {
+        await axios.post(
+          `${process.env.server}/comment`,
+          {
+            content,
+            parent,
+            images: [],
+            model: 'mall',
+            item: this.$route.params.id,
+          },
+          {
+            headers: {
+              Authorization: `Bearer ${this.$cookiz.get('user')}`,
+            },
+          }
+        );
+        console.log('음');
+        this.getComments();
+      } catch (error) {
+        console.log(error);
+      }
+    });
+
+    // 댓글 수정시
+    this.$nuxt.$on('editorMod', async ({ id, content, images }) => {
+      try {
+        await axios.patch(
+          `${process.env.server}/comment/${id}`,
+          {
+            content,
+            images: [],
+          },
+          {
+            headers: {
+              Authorization: `Bearer ${this.$cookiz.get('user')}`,
+            },
+          }
+        );
+        this.getComments();
+      } catch (error) {
+        console.log(error);
+      }
+    });
+
+    // 댓글 삭제시
+    this.$nuxt.$on('commentDelete', async (id) => {
+      try {
+        await axios.delete(`${process.env.server}/comment/${id}`, {
+          headers: {
+            Authorization: `Bearer ${this.$cookiz.get('user')}`,
+          },
+        });
+        this.getComments();
+        f;
+      } catch (error) {
+        console.log(error);
+      }
+    });
+  },
+  // async mounted() {
+  //   try {
+  //     await axios.post(
+  //       `${process.env.server}/review`,
+  //       {
+  //         content: 'gg잘 거래했어요 ㅋㅋgg',
+  //         selections: ['응답이 빨라요', '매너가 좋아요'],
+  //         star: 5,
+  //         model: 'mall',
+  //         item: this.$route.params.id,
+  //         order: '',
+  //       },
+  //       {
+  //         headers: {
+  //           Authorization: `Bearer ${this.$cookiz.get('user')}`,
+  //         },
+  //       }
+  //     );
+  //   } catch (error) {
+  //     alert(error);
+  //   }
+  // },
   methods: {
-    likeOnClick() {
-      return alert('준비중');
-      // const meId = '23';
-      // const like = this.store.like;
-      // const res = like.findIndex((v) => v.userId === meId);
-      // if (this.like) {
-      //   this.store.like.splice(res, 1);
-      // } else {
-      //   this.store.like.push({
-      //     id: '1',
-      //     userId: '23',
-      //     productId: '1',
-      //     date: '2022-06-12 19:00',
-      //   });
-      // }
+    async likeOnClick() {
+      if (!this.likes) {
+        try {
+          const { data } = await axios.post(
+            `${process.env.server}/like`,
+            {
+              model: 'mall',
+              item: this.mall._id,
+            },
+            {
+              headers: {
+                Authorization: `Bearer ${this.$cookiz.get('user')}`,
+              },
+            }
+          );
+          this.mallLikes.push({
+            model: 'mall',
+            item: this.mall._id,
+            user: data.user,
+            _id: data._id,
+          });
+        } catch (error) {
+          alert(error);
+        }
+      } else {
+        // 좋아요 삭제
+        try {
+          const index = this.mallLikes.findIndex(
+            (v) => v.user === this.$store.state.user.me._id
+          );
+          await axios.delete(`${process.env.server}/like/${this.likeId._id}`, {
+            headers: {
+              Authorization: `Bearer ${this.$cookiz.get('user')}`,
+            },
+          });
+          this.mallLikes.splice(index, 1);
+        } catch (error) {
+          alert(error);
+        }
+      }
+    },
+    async commentAdd(content) {
+      try {
+        await axios.post(
+          `${process.env.server}/comment`,
+          {
+            content,
+            images: [],
+            model: 'mall',
+            item: this.$route.params.id,
+            parent: null,
+            type: 'qna',
+          },
+          {
+            headers: {
+              Authorization: `Bearer ${this.$cookiz.get('user')}`,
+            },
+          }
+        );
+        this.getComments();
+      } catch (error) {
+        alert(error);
+      }
+    },
+    async commentAnswer({ content, parent }) {
+      try {
+        await axios.post(
+          `${process.env.server}/comment`,
+          {
+            content,
+            images: [],
+            model: 'mall',
+            item: this.$route.params.id,
+            parent,
+          },
+          {
+            headers: {
+              Authorization: `Bearer ${this.$cookiz.get('user')}`,
+            },
+          }
+        );
+        this.getComments();
+      } catch (error) {
+        alert(error);
+      }
     },
     popupControl() {
       this.dialog = !this.dialog;
+    },
+    async getComments() {
+      try {
+        const comments = await axios.get(
+          `${process.env.server}/comment/mall/${this.$route.params.id}`,
+          {
+            headers: {
+              Authorization: `Bearer ${this.$cookiz.get('user')}`,
+            },
+          }
+        );
+
+        this.comments = comments.data;
+      } catch (error) {
+        alert(error);
+      }
     },
   },
 };

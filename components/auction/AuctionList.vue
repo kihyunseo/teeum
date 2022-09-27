@@ -4,7 +4,10 @@
       <div
         class="left"
         :style="{
-          'background-image': `url(http://localhost:4001/v0${items.images[0].thumbnailpath})`,
+          'background-image':
+            items.images && items.images.length
+              ? `url(${items.images[0].path})`
+              : null,
         }"
       ></div>
       <div class="right">
@@ -25,7 +28,11 @@
               <p>현재가</p>
             </div>
             <div class="right">
-              <p>{{ items.latestPrice | comma }}원</p>
+              <p>
+                {{
+                  items.maxprice ? items.maxprice : items.startPrice | comma
+                }}원
+              </p>
             </div>
           </div>
         </div>
@@ -33,24 +40,24 @@
         <div class="date">
           <p
             v-if="
-              $moment(nowDate).isAfter(items.startDate) &&
-              $moment(nowDate).isBefore(items.endDate)
+              $moment(nowDate).isAfter(items.startTime) &&
+              $moment(nowDate).isBefore(items.endTime)
             "
             class="active"
           >
-            {{ $moment(items.endDate).fromNow(true) }}
+            {{ $moment(items.endTime).fromNow(true) }}
             후 종료 (
-            {{ $moment(items.endDate).format('YYYY-MM-DD HH:mm') }} )
+            {{ $moment(items.endTime).format('YYYY-MM-DD HH:mm') }} )
           </p>
-          <p v-if="$moment(nowDate).isBefore(items.startDate)">
-            {{ $moment(items.startDate).fromNow(true) }}
+          <p v-if="$moment(nowDate).isBefore(items.startTime)">
+            {{ $moment(items.startTime).fromNow(true) }}
             후 오픈 (
-            {{ $moment(items.startDate).format('YYYY-MM-DD HH:mm') }} )
+            {{ $moment(items.startTime).format('YYYY-MM-DD HH:mm') }} )
           </p>
-          <p v-if="$moment(nowDate).isAfter(items.endDate)">
-            {{ $moment(items.startDate).fromNow(true) }}
+          <p v-if="$moment(nowDate).isAfter(items.endTime)">
+            {{ $moment(items.startTime).fromNow(true) }}
             전 종료됨 (
-            {{ $moment(items.startDate).format('YYYY-MM-DD HH:mm') }} )
+            {{ $moment(items.startTime).format('YYYY-MM-DD HH:mm') }} )
           </p>
         </div>
       </div>
@@ -75,9 +82,6 @@ export default {
 
   mounted() {
     this.nowDate = this.$moment().format('YYYY-MM-DD HH:mm:ss');
-    const isAfter = this.$moment(this.nowDate).isAfter(this.items.startDate);
-
-    // moment('2010-10-20').isBetween('2010-10-19', '2010-10-25')
   },
 
   methods: {},

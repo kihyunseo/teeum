@@ -1,8 +1,8 @@
 <template>
   <div class="status">
-    <div class="type">{{ orderStatus.orderStatus }}</div>
+    <div class="type">{{ items.status }}</div>
     <div class="substatuses">
-      <div class="substatus">
+      <div v-if="" class="substatus">
         {{ reveiwText }}
       </div>
     </div>
@@ -10,35 +10,34 @@
 </template>
 
 <script>
-import storeDetail from '@/data/storeDetail.json';
+import axios from 'axios';
 export default {
   props: {
     items: {
       type: Object,
       required: true,
     },
-    orderStatus: {
-      type: Object,
-      required: true,
-    },
   },
   data() {
     return {
-      storeDetailData: '',
+      review: '',
     };
   },
-  fetch() {
-    this.storeDetailData = storeDetail;
+  async fetch() {
+    const review = await axios.get(
+      `${process.env.server}/review/${this.items.model}/${this.items.item}?user=${this.$store.state.user.me._id}`,
+      {
+        headers: {
+          Authorization: `Bearer ${this.$cookiz.get('user')}`,
+        },
+      }
+    );
+    this.reivew = review.data;
   },
 
   computed: {
-    review() {
-      const meId = '23';
-      const storeDetailReview = this.storeDetailData.review;
-      return !(storeDetailReview || []).find((v) => v.user.id === meId);
-    },
     reveiwText() {
-      return this.items ? '리뷰등록가능' : '리뷰등록완료';
+      return this.review ? '리뷰등록완료' : '리뷰등록가능';
     },
   },
 
@@ -51,6 +50,7 @@ export default {
 <style lang="scss" scoped>
 .status {
   display: flex;
+  margin-top: 12px;
 }
 .status .type {
   color: $textLight;

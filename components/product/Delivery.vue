@@ -2,7 +2,7 @@
   <div class="store_delivery">
     <div class="border_bglight_gray">
       <h2>배송</h2>
-      <p>배송: {{ items.delivery.methods | comma }}</p>
+      <p>배송: {{ items.delivery.methods }}</p>
       <p>배송비: {{ items.delivery.deliveryMoney | comma }}</p>
       <!-- <p>도서산간 추가 배송비: {{ items.delivery.addMoney | comma }}</p> -->
     </div>

@@ -1,9 +1,9 @@
 <template>
   <div class="my_bg">
-    <HistoryHeader>티몰 리뷰</HistoryHeader>
+    <HistoryHeader>티몰 리뷰 작성</HistoryHeader>
     <div class="content">
       <MyBorderRadius style="margin-top: 12px">
-        <ReviewProduct :items="myReviewDetailData" />
+        <MyProduct :items="order" />
         <div class="review_query">이 상품의 품질에 대해 만족하시나요?</div>
         <div class="star">
           <div v-for="(item, index) in 5" :key="item.index" class="star_flex">
@@ -28,26 +28,58 @@
 </template>
 
 <script>
-import myReviewDetail from '@/data/myReviewDetail.json';
+import axios from 'axios';
+
 export default {
-  asyncData() {
-    const myReviewDetailData = myReviewDetail;
-    return { myReviewDetailData };
+  async asyncData({ app, query }) {
+    const { data } = await axios.get(
+      `${process.env.server}/order/${query.orderId}`,
+      {
+        headers: {
+          Authorization: `Bearer ${app.$cookiz.get('user')}`,
+        },
+      }
+    );
+    return {
+      order: data,
+    };
   },
   data() {
     return {
       review: false,
       star: 5,
       content: '',
+      returnStore: '',
     };
   },
+  async fetch() {},
+  created() {},
   methods: {
     starAdd(value) {
       this.star = value;
     },
-    submit() {
-      console.log(this.content);
-      console.log(this.star);
+    async submit() {
+      const data = {
+        content: this.content,
+        start: this.star,
+        model: 'mall',
+        item: this.$route.query.itemId,
+      };
+
+      try {
+        const add = await axios.post(`${process.env.server}/review`, data, {
+          headers: {
+            Authorization: `Bearer ${this.$cookiz.get('user')}`,
+          },
+        });
+
+        if (Object.keys(add.data)) {
+          alert('리뷰가 등록 되었습니다.');
+          return this.$router.push('/');
+        }
+      } catch (error) {
+        alert(error);
+      }
     },
   },
 };

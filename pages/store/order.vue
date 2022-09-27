@@ -2,32 +2,41 @@
   <div>
     <HistoryHeader>결제</HistoryHeader>
     <div class="content">
-      <div v-for="item in store.data" :key="item.index" class="cart_item">
-        <div>
-          <!-- <ProductListSummary :items="stores" /> -->
-          <div class="select_item">
-            <div class="select_item_box">
-              <div class="left">
-                <p>
-                  {{ item.title }} / {{ item.optionTitle }} /
-                  {{ item.amount }}개
-                </p>
-              </div>
-              <div class="right">
-                <p>{{ (item.optionSalePrice * item.amount) | comma }}원</p>
-              </div>
+      <div v-for="(item, index) in orders" :key="item.index">
+        <ProductListSummary
+          :items="item"
+          :index="index"
+          @orderRemove="orderRemove"
+        />
+        <div class="select_item">
+          <div class="select_item_box">
+            <div class="left">
+              <p>
+                {{ item.iteminfo.title }} / {{ item.option }} /
+                {{ item.count }}개
+              </p>
+            </div>
+            <div class="right">
+              <p>{{ item.totalprice | comma }}원</p>
             </div>
           </div>
         </div>
       </div>
+
       <div class="mileage">
-        <div class="mileage_available">사용가능 마일리지: 1,300</div>
+        <div class="mileage_available">
+          사용가능 마일리지: {{ $store.state.user.me.mileage | comma }}
+        </div>
         <div class="mileage_wrap">
-          <input type="text" placeholder="사용할 마일리지 입력" />
-          <p class="mileage_max">최대</p>
+          <input
+            v-model="mileage"
+            type="text"
+            placeholder="사용할 마일리지 입력"
+          />
+          <p class="mileage_max" @click="mileageApply">최대</p>
         </div>
       </div>
-      <div class="coupon">
+      <!-- <div class="coupon">
         <h2 class="coupon_text" @click="popupControl">쿠폰 추가</h2>
         <Popup :dialog="dialog" @popupClose="popupControl">
           <h2 class="title">쿠폰 추가</h2>
@@ -69,7 +78,7 @@
           </div>
           <div class="coupon_submit" @click="couponSubmit">쿠폰 적용</div>
         </Popup>
-      </div>
+      </div> -->
       <div class="form">
         <p>이름</p>
         <input v-model="name" type="text" placeholder="김철수" />
@@ -91,11 +100,11 @@
     <div class="total_bg">
       <div>
         <p>총 상품가</p>
-        <p>220,000원</p>
+        <p>{{}}원</p>
       </div>
       <div>
         <p>총 배송비</p>
-        <p>3,000원</p>
+        <p>{{}}원</p>
       </div>
       <div>
         <p>쿠폰 할인</p>
@@ -107,7 +116,7 @@
       </div>
       <div class="total">
         <p>총 결제 예상 금액</p>
-        <p>223,000원</p>
+        <p>{{}}원</p>
       </div>
     </div>
     <Popup :dialog="addressDialog" :height="`90vh`" @popupClose="popupAddress">
@@ -130,33 +139,45 @@ export default {
       dialog: false,
       addressDialog: false,
       store: '',
-
+      mileage: '',
       name: '',
       mail: '',
       tel: '',
       postCode: '',
       address: '',
+      orders: [],
     };
   },
-
   async fetch() {
     const { data } = await axios.get(
-      `http://localhost:4001/v0/get/payment/${this.$route.query.id}`,
+      `${process.env.server}/order/user/${this.$store.state.user.me._id}?status=0`,
       {
         headers: {
           Authorization: `Bearer ${this.$cookiz.get('user')}`,
         },
       }
     );
-
-    this.store = data;
-
-    return '';
+    this.orders = this.orders.concat(data);
   },
-
+  computed: {},
   mounted() {},
 
   methods: {
+    async orderRemove(index) {
+      try {
+        const { data } = await axios.delete(
+          `${process.env.server}/order/${this.orders[index]._id}`,
+          {
+            headers: {
+              Authorization: `Bearer ${this.$cookiz.get('user')}`,
+            },
+          }
+        );
+        this.orders.splice(index, 1);
+      } catch (error) {
+        alert(error);
+      }
+    },
     oncomplete(result) {
       const buildingName = result.buildingName
         ? `(${result.buildingName})`
@@ -173,23 +194,39 @@ export default {
       this.addressDialog = !this.addressDialog;
     },
     couponSubmit() {
-      alert('쿠폰적용');
+      alert('준비중');
+    },
+    mileageApply() {
+      const mileage = this.$store.state.user.me.mileage;
+      // const totalPrice = this.storePrice + this.deliveryPrice;
+      // if (mileage > totalPrice) {
+      //   this.mileage = totalPrice - 1000;
+      // } else {
+      //   this.mileage = mileage;
+      // }
     },
     payment() {
-      this.$IMP().request_pay(
-        {
-          pg: 'html5_inicis',
-          pay_method: 'card',
-          merchant_uid: 'merchant_' + new Date().getTime(),
-          name: '주문명:결제테스트',
-          amount: 1000,
-          buyer_email: this.mail,
-          buyer_name: this.name,
-          buyer_tel: this.tel,
-          buyer_addr: this.address,
-          buyer_postcode: this.postCode,
+      const orderId = this.orders.map((v) => {
+        return v._id;
+      });
+      const data = {
+        pg: 'html5_inicis',
+        pay_method: 'card',
+        merchant_uid: `${this.$store.state.user.me._id}${new Date().getTime()}`,
+        name: '주문명:결제테스트',
+        amount: 100,
+        buyer_email: 'pedraila5@naver.com',
+        buyer_name: '서기현',
+        buyer_tel: '01032112605',
+        buyer_addr: '서울 서대문구 연희동 51-129',
+        buyer_postcode: '03725',
+        custom_data: {
+          id: orderId,
         },
-        (result_success) => {
+      };
+      this.$IMP().request_pay(
+        data,
+        async (result_success) => {
           //성공할 때 실행 될 콜백 함수
           console.log(result_success);
           let msg = '결제가 완료되었습니다.';
@@ -199,21 +236,23 @@ export default {
           msg += '카드 승인번호 : ' + result_success.apply_num;
           alert(msg);
 
-          axios.post(
-            `http://localhost:4001/v0/post/orders`,
-            {
-              store: this.store,
-              imp: result_success,
-              status: '승인',
-              orderStatus: '결제완료',
-            },
-            {
-              headers: {
-                Authorization: `Bearer ${this.$cookiz.get('user')}`,
+          try {
+            const res = await axios.patch(
+              `${process.env.server}/order`,
+              {
+                merchantid: result_success.merchant_uid,
               },
-            }
-          );
+              {
+                headers: {
+                  Authorization: `Bearer ${this.$cookiz.get('user')}`,
+                },
+              }
+            );
+          } catch (error) {
+            alert(error);
+          }
         },
+
         (result_failure) => {
           //실패시 실행 될 콜백 함수
           let msg = '결제에 실패하였습니다.';

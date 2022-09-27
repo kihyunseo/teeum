@@ -2,12 +2,12 @@
   <div class="my_bg">
     <HistoryHeader>공지사항</HistoryHeader>
     <div class="content">
-      <MyBorderRadius v-for="item in noticeListData" :key="item.index">
-        <nuxt-link :to="`notice/${item.id}`" class="notice">
+      <MyBorderRadius v-for="item in notices" :key="item.index">
+        <nuxt-link :to="`notice/${item._id}`" class="notice">
           <div class="left">
             <p>{{ item.title }}</p>
             <span>
-              {{ '2022-06-18' | moment('from', 'now') }}
+              {{ $moment(item.createdAt).format('YYYY-MM-DD H:m:s') }}
             </span>
             <span> 조회 {{ item.view }} </span>
           </div>
@@ -21,11 +21,18 @@
 </template>
 
 <script>
-import noticeList from '@/data/noticeList.json';
+import axios from 'axios';
+
 export default {
-  asyncData() {
-    const noticeListData = noticeList;
-    return { noticeListData };
+  async asyncData({ app }) {
+    const { data } = await axios.get(`${process.env.server}/notice`, {
+      headers: {
+        Authorization: `Bearer ${app.$cookiz.get('user')}`,
+      },
+    });
+    return {
+      notices: data,
+    };
   },
   data() {
     return {};

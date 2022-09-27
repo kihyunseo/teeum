@@ -1,20 +1,20 @@
 <template>
   <div class="product">
-    <nuxt-link :to="`/my/teeum_mall/${link}/${id._id}`">
+    <nuxt-link :to="`/my/teeum_mall/${link}/${items._id}`">
       <div
         class="thumbnail"
         :style="{
-          'background-image': `url(http://localhost:4001/v0${items.images[0].thumbnailpath})`,
+          'background-image': `url(${items.iteminfo.images[0].path})`,
         }"
       ></div>
       <div class="text">
-        <div class="name">{{ items.optionTitle }}</div>
+        <div class="name">{{ items.iteminfo.title }}</div>
         <div class="price">
-          <div class="won">{{ items.optionSalePrice | comma }}원</div>
-          <div class="count">{{ items.amount }}개</div>
+          <div class="won">{{ items.totalprice | comma }}원</div>
+          <div class="count">{{ items.count }}개</div>
         </div>
         <div class="options">
-          <div class="option">옵션: {{ items.optionTitle }}</div>
+          <div class="option">옵션: {{ items.option }}</div>
         </div>
       </div>
     </nuxt-link>
@@ -33,12 +33,6 @@ export default {
       type: String,
       required: false,
       default: 'orders',
-    },
-
-    id: {
-      type: Object,
-      required: false,
-      default: '',
     },
   },
 

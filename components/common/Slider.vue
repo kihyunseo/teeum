@@ -9,16 +9,8 @@
       >
         <SwiperSlide v-for="item in items" :key="item.index">
           <div class="slide_box">
-            <!-- 링크 있을시 -->
-            <nuxt-link v-if="item.link" :to="item.link">
-              <img :src="`http://localhost:4001/v0${item.path}`" alt="이미지" />
-            </nuxt-link>
             <!-- 링크 없을시 -->
-            <img
-              v-else
-              :src="`http://localhost:4001/v0${item.path}`"
-              alt="이미지"
-            />
+            <img :src="`${item.path}`" alt="이미지" />
           </div>
         </SwiperSlide>
       </Swiper>

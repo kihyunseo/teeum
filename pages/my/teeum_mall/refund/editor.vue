@@ -1,68 +1,78 @@
 <template>
   <div class="my_bg">
     <HistoryHeader>티몰 교환/반품신청</HistoryHeader>
-    <div class="items">
+    <div class="content">
       <MyBorderRadius>
-        <MyProduct
-          :items="myOrderDetailData"
-          :option="myOrderDetailData.storeOption[refundOptionId]"
-        />
+        <MyProduct :items="order" />
+      </MyBorderRadius>
+      <MyBorderRadius>
+        <div class="form">
+          <div class="input">
+            <input
+              v-model="title"
+              type="text"
+              placeholder="반품 사유 (한줄로 명확하게)"
+            />
+            <textarea
+              v-model="detail"
+              class="document"
+              placeholder="반품 내용"
+            />
+          </div>
+          <div class="btns">
+            <div class="btn primary" @click="submit('exchange')">교환신청</div>
+            <div class="btn" @click="submit('return')">반품신청</div>
+          </div>
+        </div>
       </MyBorderRadius>
     </div>
-    <MyBorderRadius>
-      <div class="form">
-        <div class="input">
-          <input
-            v-model="title"
-            type="text"
-            placeholder="반품 사유 (한줄로 명확하게)"
-          />
-          <textarea v-model="detail" class="document" placeholder="반품 내용" />
-        </div>
-        <div class="btns">
-          <div class="btn primary" @click="submit('교환신청')">교환신청</div>
-          <div class="btn" @click="submit('반품신청')">반품신청</div>
-        </div>
-      </div>
-    </MyBorderRadius>
   </div>
 </template>
 
 <script>
-import myOrderDetail from '@/data/myOrderDetail.json';
+import axios from 'axios';
 export default {
-  asyncData() {
-    const myOrderDetailData = myOrderDetail;
-    return { myOrderDetailData };
+  async asyncData({ app, store, query }) {
+    const { data } = await axios.get(
+      `${process.env.server}/order/${query.orderId}`,
+      {
+        headers: {
+          Authorization: `Bearer ${app.$cookiz.get('user')}`,
+        },
+      }
+    );
+    return { order: data };
   },
   data() {
     return {
       title: '',
       detail: '',
+      returnStore: '',
     };
   },
   fetch() {
-    if (!this.refundOptionId) {
+    if (!this.$route.query.orderId) {
       this.$router.push('/');
     }
   },
-  computed: {
-    refundOptionId() {
-      return this.$route.query.storeOptionId;
-    },
-    refundSotreId() {
-      return this.$route.query.storeId;
-    },
-  },
+  computed: {},
+  created() {},
   mounted() {},
   methods: {
-    submit(value) {
-      console.log(this.refundSotreId);
-      console.log(this.refundOptionId);
-      console.log(this.title);
-      console.log(this.detail);
-      console.log(value);
-      this.$router.push('1');
+    async submit(status) {
+      const data = {
+        status,
+      };
+      const refund = await axios.patch(
+        `${process.env.server}/order/${this.order._id}`,
+        data,
+        {
+          headers: {
+            Authorization: `Bearer ${this.$cookiz.get('user')}`,
+          },
+        }
+      );
+      this.$router.push(`/my/teeum_mall/refund/${status}List`);
     },
   },
 };

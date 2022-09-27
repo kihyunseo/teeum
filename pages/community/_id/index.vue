@@ -4,19 +4,33 @@
       <UserInfo :items="community.user" />
       <ProductDetail :items="community" :type="`community`" />
       <div class="border_bglight_gray"></div>
-      <!-- <CommunityComment
-        :items="community.comment"
-        :heart-icon="heartIcon"
-        @changeDetail="changeDetail"
-        @likeOnClick="likeOnClick"
-        @commentRemove="commentRemove"
-        @commentAnswerRemove="commentAnswerRemove"
+      <CommunityComment
+        ref="comment"
+        :items="comments"
         @commentAdd="commentAdd"
-        @commentMod="commentMod"
         @commentAnswer="commentAnswer"
-        @commentAnswerAdd="commentAnswerAdd"
-        @commentAnswerMod="commentAnswerMod"
-      /> -->
+      />
+    </div>
+
+    <div class="community_footer">
+      <div class="heart" @click="likeOnClick">
+        <img :src="heartIcon" alt="하트" />
+      </div>
+      <div class="comment">
+        <div class="mod">
+          <nuxt-link
+            :to="{
+              path: '/community/editor',
+              query: {
+                id: $route.params.id,
+              },
+            }"
+          >
+            수정
+          </nuxt-link>
+        </div>
+        <!-- <div class="comment_focus" @click="commentMove">댓글달기</div> -->
+      </div>
     </div>
   </div>
 </template>
@@ -25,169 +39,318 @@
 import axios from 'axios';
 export default {
   layout: 'document',
-  data() {
-    return { dialog: false, community: '', reviews: [] };
+  async asyncData({ app, params }) {
+    const community = await axios.get(
+      `${process.env.server}/community/${params.id}`,
+      {
+        headers: {
+          Authorization: `Bearer ${app.$cookiz.get('user')}`,
+        },
+      }
+    );
+
+    const comments = await axios.get(
+      `${process.env.server}/comment/community/${params.id}`,
+      {
+        headers: {
+          Authorization: `Bearer ${app.$cookiz.get('user')}`,
+        },
+      }
+    );
+
+    const communityLike = await axios.get(
+      `${process.env.server}/like/community/${params.id}`,
+      {
+        headers: {
+          Authorization: `Bearer ${app.$cookiz.get('user')}`,
+        },
+      }
+    );
+
+    return {
+      community: community.data,
+      comments: comments.data,
+      communityLike: communityLike.data,
+    };
   },
-
-  async fetch() {
-    const CommunityData = await axios.get(
-      `http://localhost:4001/v0/get/communitys/${this.$route.params.id}`,
-      {
-        headers: {
-          Authorization: `Bearer ${this.$cookiz.get('user')}`,
-        },
-      }
-    );
-
-    const reviewsData = await axios.get(
-      `http://localhost:4001/v0/list/reviews`,
-      {
-        headers: {
-          Authorization: `Bearer ${this.$cookiz.get('user')}`,
-        },
-      }
-    );
-
-    console.log(CommunityData);
-
-    this.community = CommunityData.data;
-    this.reviews = this.reviews.concat(reviewsData.data);
-
-    return '';
+  data() {
+    return { dialog: false };
   },
 
   computed: {
-    like() {
-      const meId = this.$store.state.user.me.id;
-      const like = this.community.like;
-      return !!(like || []).find((v) => v.userId === meId);
+    likes() {
+      const meId = this.$store.state.user.me._id;
+      const likes = this.communityLike;
+      return !!(likes || []).find((v) => v.user === meId);
     },
     heartIcon() {
-      return this.like
+      return this.likes
         ? require('@/assets/svg/Heart_fill.svg')
         : require('@/assets/svg/Heart.svg');
     },
+    likeId() {
+      const meId = this.$store.state.user.me._id;
+      return this.likes
+        ? this.communityLike.find((v) => v.user === meId)
+        : null;
+    },
+  },
+  async created() {
+    // 댓글 작성시
+    this.$nuxt.$on('commentAnswer', async ({ parent, content }) => {
+      try {
+        await axios.post(
+          `${process.env.server}/comment`,
+          {
+            content,
+            parent,
+            images: [],
+            model: 'community',
+            item: this.$route.params.id,
+          },
+          {
+            headers: {
+              Authorization: `Bearer ${this.$cookiz.get('user')}`,
+            },
+          }
+        );
+      } catch (error) {
+        alert(error);
+      }
+
+      try {
+        const comments = await axios.get(
+          `${process.env.server}/comment/community/${this.$route.params.id}`,
+          {
+            headers: {
+              Authorization: `Bearer ${this.$cookiz.get('user')}`,
+            },
+          }
+        );
+
+        this.comments = comments.data;
+      } catch (error) {
+        alert(error);
+      }
+    });
+
+    // 댓글 수정시
+    this.$nuxt.$on('editorMod', async ({ id, content, images }) => {
+      try {
+        await axios.patch(
+          `${process.env.server}/comment/${id}`,
+          {
+            content,
+            images: [],
+          },
+          {
+            headers: {
+              Authorization: `Bearer ${this.$cookiz.get('user')}`,
+            },
+          }
+        );
+      } catch (error) {
+        console.log(error);
+      }
+
+      try {
+        const comments = await axios.get(
+          `${process.env.server}/comment/community/${this.$route.params.id}`,
+          {
+            headers: {
+              Authorization: `Bearer ${this.$cookiz.get('user')}`,
+            },
+          }
+        );
+
+        this.comments = comments.data;
+      } catch (error) {
+        alert(error);
+      }
+    });
+
+    // 댓글 삭제시
+    this.$nuxt.$on('commentDelete', async (id) => {
+      try {
+        await axios.delete(`${process.env.server}/comment/${id}`, {
+          headers: {
+            Authorization: `Bearer ${this.$cookiz.get('user')}`,
+          },
+        });
+      } catch (error) {
+        alert(error);
+      }
+
+      try {
+        const comments = await axios.get(
+          `${process.env.server}/comment/community/${this.$route.params.id}`,
+          {
+            headers: {
+              Authorization: `Bearer ${this.$cookiz.get('user')}`,
+            },
+          }
+        );
+
+        this.comments = comments.data;
+      } catch (error) {
+        alert(error);
+      }
+    });
+  },
+  created() {
+    const res = this.$store.dispatch('category/category');
   },
   mounted() {},
   methods: {
-    popupControl() {
-      this.dialog = !this.dialog;
+    async commentAdd(content) {
+      try {
+        await axios.post(
+          `${process.env.server}/comment`,
+          {
+            content,
+            images: [],
+            model: 'community',
+            item: this.$route.params.id,
+            parent: null,
+          },
+          {
+            headers: {
+              Authorization: `Bearer ${this.$cookiz.get('user')}`,
+            },
+          }
+        );
+      } catch (error) {
+        alert(error);
+      }
+
+      try {
+        const comments = await axios.get(
+          `${process.env.server}/comment/community/${this.$route.params.id}`,
+          {
+            headers: {
+              Authorization: `Bearer ${this.$cookiz.get('user')}`,
+            },
+          }
+        );
+
+        this.comments = comments.data;
+      } catch (error) {
+        alert(error);
+      }
     },
-    likeOnClick() {
-      const meId = this.$store.state.user.me.id;
-      const like = this.community.like;
-      const res = like.findIndex((v) => v.userId === meId);
-      if (this.like) {
-        this.community.like.splice(res, 1);
-      } else {
-        this.community.like.push({
-          userId: meId,
-          date: '2022-06-12 19:00',
+    // async commentAnswer({ content, parent }) {
+    //   try {
+    //     await axios.post(
+    //       `${process.env.server}/comment`,
+    //       {
+    //         content,
+    //         images: [],
+    //         model: 'community',
+    //         item: this.$route.params.id,
+    //         parent,
+    //       },
+    //       {
+    //         headers: {
+    //           Authorization: `Bearer ${this.$cookiz.get('user')}`,
+    //         },
+    //       }
+    //     );
+    //   } catch (error) {
+    //     alert(error);
+    //   }
+
+    //   try {
+    //     const comments = await axios.get(
+    //       `${process.env.server}/comment/community/${this.$route.params.id}`,
+    //       {
+    //         headers: {
+    //           Authorization: `Bearer ${this.$cookiz.get('user')}`,
+    //         },
+    //       }
+    //     );
+
+    //     this.comments = comments.data;
+    //   } catch (error) {
+    //     alert(error);
+    //   }
+    // },
+
+    async likeOnClick() {
+      if (!this.likes) {
+        const { data } = await axios.post(
+          `${process.env.server}/like`,
+          {
+            model: 'community',
+            item: this.community._id,
+          },
+          {
+            headers: {
+              Authorization: `Bearer ${this.$cookiz.get('user')}`,
+            },
+          }
+        );
+
+        this.communityLike.push({
+          model: 'community',
+          item: this.community._id,
+          user: data.user,
+          _id: data._id,
         });
-      }
-    },
-    changeDetail({ item, val, index }) {
-      if (!index) {
-        console.log('새로발행');
       } else {
-        console.log('수정발행');
+        // 좋아요 삭제
+        const index = this.communityLike.findIndex(
+          (v) => v.user === this.$store.state.user.me._id
+        );
+        const { data } = await axios.delete(
+          `${process.env.server}/like/${this.likeId._id}`,
+          {
+            headers: {
+              Authorization: `Bearer ${this.$cookiz.get('user')}`,
+            },
+          }
+        );
+
+        this.communityLike.splice(index, 1);
       }
-    },
-    commentRemove(index) {
-      this.community.comment.splice(index, 1);
-      // this.community.comment[index].splice(index, 1);
-    },
-    commentAdd(value) {
-      // 댓글 작성시
-      this.community.comment.push({
-        detail: value,
-        date: '2022-06-12 19:00',
-        update: '2022-06-12 19:00',
-        user: {
-          id: '62fef931d5ebd8fe76665ab1',
-          name: '서기현',
-          level: 1,
-          image:
-            'http://k.kakaocdn.net/dn/bsxjRw/btrJXBn9Qf4/H7x1GJuAfpMCBAhNRerL3k/img_110x110.jpg',
-        },
-      });
-    },
-    commentMod({ index, value }) {
-      // 댓글 수정시
-      this.community.comment[index].detail = value;
-    },
-    commentAnswer({ index, value }) {
-      // 댓글 > 댓글 작성시
-      this.community.comment[index].answer.push({
-        detail: value,
-        date: '2022-06-12 19:00',
-        update: '2022-06-12 19:00',
-        user: {
-          id: '62fef931d5ebd8fe76665ab1',
-          name: '서기현',
-          level: 1,
-          image:
-            'http://k.kakaocdn.net/dn/bsxjRw/btrJXBn9Qf4/H7x1GJuAfpMCBAhNRerL3k/img_110x110.jpg',
-        },
-      });
-    },
-    commentAnswerAdd({ index, indexAnswer, value, user }) {
-      // 댓글 > 댓글 > 댓글 작성
-      this.community.comment[index].answer.push({
-        detail: value,
-        date: '2022-06-12 19:00',
-        update: '2022-06-12 19:00',
-        user: {
-          id: '62fef931d5ebd8fe76665ab1',
-          name: '서기현',
-          level: 1,
-          image:
-            'http://k.kakaocdn.net/dn/bsxjRw/btrJXBn9Qf4/H7x1GJuAfpMCBAhNRerL3k/img_110x110.jpg',
-        },
-      });
-    },
-    commentAnswerRemove(index, indexAnswer) {
-      // 댓글 > 댓글 삭제
-      this.community.comment[index].answer.splice(indexAnswer, 1);
-    },
-    commentAnswerMod({ index, indexAnswer, value }) {
-      // 댓글 > 댓글 수정
-      this.community.comment[index].answer[indexAnswer].detail = value;
     },
   },
 };
 </script>
 
 <style lang="scss" scoped>
-.footer_chat {
+.community_footer {
+  display: flex;
   position: fixed;
   bottom: 0;
   left: 0;
-  width: 100%;
-  display: flex;
-  padding: 16px 20px;
-  box-sizing: border-box;
-  background: white;
+  background-color: white;
+  padding: 12px 20px;
   border-top: 1px solid $bglightGray;
+  width: 100%;
   align-items: center;
-  z-index: 2;
+  box-sizing: border-box;
 }
-.footer_chat .money {
-  margin-left: 12px;
-  font-size: 20px;
-  font-weight: bold;
-  margin-top: -4px;
-}
-.footer_chat .chat_apply {
+.community_footer > div.comment {
   margin-left: auto;
+  display: flex;
 }
 
-.footer_chat .chat_apply a {
-  background: $primary;
-  padding: 10px 20px;
-  color: white;
+.community_footer > .comment div.mod a {
+  padding: 10px 35px;
   border-radius: 12px;
-  box-sizing: border-box;
+  margin-right: 10px;
+  background-color: $primary;
+  color: white;
+  font-weight: bold;
   display: block;
+}
+
+.community_footer > .comment div.comment_focus {
+  margin-left: auto;
+  padding: 10px 35px;
+  border-radius: 12px;
+  background-color: $primary;
+  color: white;
+  font-weight: bold;
 }
 </style>

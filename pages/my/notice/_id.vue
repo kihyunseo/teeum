@@ -4,24 +4,36 @@
     <div class="content">
       <MyBorderRadius>
         <div class="title">
-          {{ noticeDetailData.title }}
+          {{ notice.title }}
         </div>
         <div class="info">
-          <div>작성일:{{ noticeDetailData.date }}</div>
-          <div>조회수:{{ noticeDetailData.view }}</div>
+          <div>
+            작성일:{{ $moment(notice.createdAt).format('YYYY-DD-MM H:m:s') }}
+          </div>
+          <div>조회수:{{ notice.view }}</div>
         </div>
-        <div class="detail" v-html="noticeDetailData.detail"></div>
+        <div class="detail" v-html="notice.content"></div>
       </MyBorderRadius>
     </div>
   </div>
 </template>
 
 <script>
-import noticeDetail from '@/data/noticeDetail.json';
+import axios from 'axios';
+
 export default {
-  asyncData() {
-    const noticeDetailData = noticeDetail;
-    return { noticeDetailData };
+  async asyncData({ app, params }) {
+    const { data } = await axios.get(
+      `${process.env.server}/notice/${params.id}`,
+      {
+        headers: {
+          Authorization: `Bearer ${app.$cookiz.get('user')}`,
+        },
+      }
+    );
+    return {
+      notice: data,
+    };
   },
   data() {
     return {};

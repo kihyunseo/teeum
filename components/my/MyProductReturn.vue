@@ -12,7 +12,7 @@
     <div class="block">
       <div class="name">환불 완료</div>
       <div class="data">
-        <div class="item">1,330,800원</div>
+        <div class="item">{{ items.totalprice | comma }}원</div>
       </div>
     </div>
     <div class="block">
@@ -26,14 +26,20 @@
 
 <script>
 export default {
+  props: {
+    items: {
+      type: Object,
+      required: true,
+    },
+  },
   data() {
-    return {}
+    return {};
   },
 
   mounted() {},
 
   methods: {},
-}
+};
 </script>
 
 <style lang="scss" scoped>

@@ -10,12 +10,11 @@
       >
         <option class="option_select" value="">옵션을 선택 해주세요.</option>
         <option
-          v-for="item in items"
+          v-for="(item, key, index) in items.options"
           :key="item.index"
           :value="item"
-          :data="item"
         >
-          {{ item.title }}
+          {{ item.name }}
         </option>
       </select>
     </div>
@@ -27,26 +26,26 @@
         class="select_item_box"
       >
         <div class="title_close">
-          <p class="title font_title_contents">{{ item.title }}</p>
+          <p class="title font_title_contents">{{ item.name }}</p>
           <div class="close" @click="removeProudctBuyData(index)">
             <img src="@/assets/svg/close.svg" alt="" />
           </div>
         </div>
         <div class="amount_price">
           <div class="left">
-            <span @click="changeProductAmountMinus(index)"
+            <span @click="changeProductAmountMinus(index, item.name)"
               ><img
                 :class="{ amount_disabled: item.amount <= 1 }"
                 src="@/assets/svg/circle_minus.svg"
                 alt=""
             /></span>
             <input v-model="item.amount" type="text" />
-            <span @click="changeProductAmountPlus(index)"
+            <span @click="changeProductAmountPlus(index, item.name)"
               ><img src="@/assets/svg/circle_plus.svg" alt=""
             /></span>
           </div>
           <div class="right">
-            <p>{{ (item.salePrice * item.amount) | comma }}원</p>
+            <p>{{ ((items.price + item.price) * item.amount) | comma }}원</p>
           </div>
         </div>
       </div>
@@ -74,11 +73,7 @@ import axios from 'axios';
 export default {
   props: {
     items: {
-      type: Array,
-      required: true,
-    },
-    id: {
-      type: String,
+      type: Object,
       required: true,
     },
   },
@@ -101,9 +96,8 @@ export default {
         let totalAmount = 0;
 
         for (let i = 0; i < this.buyData.length; i++) {
-          totalPrice +=
-            parseInt(this.buyData[i].salePrice) *
-            parseInt(this.buyData[i].amount);
+          const price = this.items.price + this.buyData[i].price;
+          totalPrice += parseInt(price) * parseInt(this.buyData[i].amount);
         }
 
         for (let i = 0; i < this.buyData.length; i++) {
@@ -120,23 +114,39 @@ export default {
   mounted() {},
 
   methods: {
+    async getStore() {
+      const { data } = await axios.get(
+        `http://localhost:4001/v0/get/stores/${this.$route.params.id}`,
+        {
+          headers: {
+            Authorization: `Bearer ${this.$cookiz.get('user')}`,
+          },
+        }
+      );
+      return data;
+    },
     buyDataPush(event, selectedIndex) {
       const data = this.selected;
-      const index = this.buyData.findIndex((v) => v.title === data.title);
-      if (index === -1 && data !== '') {
+      const overlapCheck = !!this.buyData.find((v) => v.name === data.name);
+      if (!overlapCheck) {
         this.buyData.push({
-          title: data.title,
+          name: data.name,
           price: data.price,
-          salePrice: data.salePrice,
+          quantity: data.quantity,
           amount: 1,
         });
       }
     },
-    changeProductAmountPlus(index) {
+    changeProductAmountPlus(index, name) {
       const amount = this.buyData[index].amount;
-      this.buyData[index].amount = this.buyData[index].amount + 1;
+      const quantity = this.items.options[name].quantity;
+      if (quantity >= amount) {
+        this.buyData[index].amount = amount + 1;
+      } else {
+        alert('재고가 부족합니다.');
+      }
     },
-    changeProductAmountMinus(index) {
+    changeProductAmountMinus(index, name) {
       const amount = this.buyData[index].amount;
       if (amount > 1) {
         this.buyData[index].amount = this.buyData[index].amount - 1;
@@ -146,14 +156,22 @@ export default {
       this.buyData.splice(index, 1);
     },
     async cartAdd() {
-      const res = await axios.post(
-        'http://localhost:4001/v0/post/carts',
-        { option: this.buyData, id: this.id, status: '승인' },
-        {
-          headers: {
-            Authorization: `Bearer ${this.$cookiz.get('user')}`,
-          },
-        }
+      const res = await this.buyData.map(
+        async (v, i) =>
+          await axios.post(
+            `${process.env.server}/cart`,
+            {
+              model: 'mall',
+              item: this.items._id,
+              option: v.name,
+              count: v.amount,
+            },
+            {
+              headers: {
+                Authorization: `Bearer ${this.$cookiz.get('user')}`,
+              },
+            }
+          )
       );
 
       if (res) {
@@ -164,29 +182,7 @@ export default {
         this.buyData = [];
       }
     },
-    async productBuy() {
-      // console.log(this.buyData);
-      // alert('상품 구매');
-      // this.$router.push('/store/order');
-      // const res = await axios.post(
-      //   'http://localhost:4001/v0/post/carts',
-      //   this.buyData,
-      //   {
-      //     headers: {
-      //       Authorization: `Bearer ${cookie}`,
-      //     },
-      //   }
-      // );
-      // if (res) {
-      //   const confirm = confirm(
-      //     '장바구니에 추가 되었습니다. 이동 하시겠습니까?'
-      //   );
-      //   if (confirm) {
-      //     this.$router.push('/store/cart');
-      //   }
-      //   this.buyData = [];
-      // }
-    },
+    async productBuy() {},
   },
 };
 </script>

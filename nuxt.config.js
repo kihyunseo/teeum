@@ -48,6 +48,7 @@ export default {
     { src: '@/plugins/daumAddressSearch.js', mode: 'client' },
     { src: '@/plugins/quill.js', mode: 'client' },
     { src: '@/plugins/iamport.js', ssr: false, injectAs: 'IMP' },
+    { src: '@/plugins/axios.js' },
   ],
 
   // Auto import components: https://go.nuxtjs.dev/config-components
@@ -67,6 +68,7 @@ export default {
   buildModules: [
     // https://go.nuxtjs.dev/eslint
     // '@nuxtjs/eslint-module',
+    '@nuxtjs/dotenv',
   ],
   styleResources: {
     scss: ['@/assets/scss/*.scss'],
@@ -82,6 +84,10 @@ export default {
     ['cookie-universal-nuxt', { alias: 'cookiz' }],
   ],
 
+  router: {
+    middleware: ['auth'],
+  },
+
   // Axios module configuration: https://go.nuxtjs.dev/config-axios
   axios: {
     // Workaround to avoid enforcing hard-coded localhost:3000: https://github.com/nuxt-community/axios-module/issues/308
@@ -93,8 +99,5 @@ export default {
 
   server: {
     port: 8765,
-  },
-  router: {
-    middleware: ['auth'],
   },
 };

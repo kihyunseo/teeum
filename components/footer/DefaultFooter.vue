@@ -8,7 +8,7 @@
         </nuxt-link>
       </li>
       <li>
-        <nuxt-link to="/search">
+        <nuxt-link to="/search?id=product&search=">
           <img src="@/assets/svg/search.svg" alt="" />
           <p>검색</p>
         </nuxt-link>
@@ -65,14 +65,14 @@ export default {
   data() {
     return {
       popup: false,
-    }
+    };
   },
   methods: {
     popupControl() {
-      this.popup = !this.popup
+      this.popup = !this.popup;
     },
   },
-}
+};
 </script>
 
 <style lang="scss" scoped>

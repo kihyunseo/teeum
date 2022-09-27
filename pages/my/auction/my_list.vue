@@ -3,47 +3,35 @@
     <HistoryHeader>경매</HistoryHeader>
     <div class="content">
       <ul class="my_category">
-        <li
-          :class="{ active: category === '전체' }"
-          @click="activeMenu('전체')"
-        >
-          전체
+        <li>
+          <nuxt-link :to="{ query: { status: '' } }">전체</nuxt-link>
         </li>
-        <li
-          :class="{ active: category === '경매중' }"
-          @click="activeMenu('경매중')"
-        >
-          경매중
+        <li>
+          <nuxt-link :to="{ query: { status: 'sell' } }">승인</nuxt-link>
         </li>
-        <li
-          :class="{ active: category === '승인대기' }"
-          @click="activeMenu('승인대기')"
-        >
-          승인대기
+        <li>
+          <nuxt-link :to="{ query: { status: 'wait' } }">승인대기</nuxt-link>
         </li>
-        <li
-          :class="{ active: category === '보완요청' }"
-          @click="activeMenu('보완요청')"
-        >
-          보완요청
+        <li>
+          <nuxt-link :to="{ query: { status: 'return' } }">보완요청</nuxt-link>
         </li>
-        <li
-          :class="{ active: category === '판매중지' }"
-          @click="activeMenu('판매중지')"
-        >
-          판매중지
+        <li>
+          <nuxt-link :to="{ query: { status: 'denied' } }">판매중지</nuxt-link>
         </li>
       </ul>
       <MyBorderRadius>
-        <div v-for="(item, index) in auctionList" :key="item.index">
+        <div v-for="(item, index) in auctions" :key="item.index">
           <ul>
             <AuctionList :items="item" />
             <div class="admin_replay_title">상태:{{ item.status }}</div>
+            {{
+              item.adjustments
+            }}
             <div v-if="item.adminComment">
               <p class="admin_replay_title">보완 사유</p>
               <div
                 v-for="comment in item.adminComment"
-                :key="comment.id"
+                :key="comment._id"
                 class="admin_replay"
               >
                 {{ comment.detail }}
@@ -52,13 +40,13 @@
             </div>
             <div class="auction_button">
               <nuxt-link
-                :to="{ path: `/auction/editor`, query: { id: item.id } }"
+                :to="{ path: `/auction/editor`, query: { id: item._id } }"
                 class="mod"
                 >수정
               </nuxt-link>
 
               <nuxt-link
-                :to="{ path: `/auction/${item.id}/bidding` }"
+                :to="{ path: `/auction/${item._id}/bidding` }"
                 class="bid_list"
                 >입찰내역 보기
               </nuxt-link>
@@ -71,31 +59,48 @@
 </template>
 
 <script>
-import auctionList from '@/data/auctionList.json';
-export default {
-  asyncData() {
-    return { auctionList };
-  },
+import axios from 'axios';
 
+export default {
   data() {
     return {
-      category: '전체',
       dialog: false,
+      auctions: [],
     };
+  },
+
+  async fetch() {
+    await this.init();
+  },
+
+  watch: {
+    '$route.query': {
+      handler(n, p) {
+        this.init();
+      },
+      immediate: true,
+      deep: true,
+    },
   },
 
   mounted() {},
   methods: {
-    activeMenu(value) {
-      this.category = value;
-    },
-
-    popupControl() {
-      this.dialog = !this.dialog;
-    },
-    reapply(index) {
-      if (this.auctionListData[index].status === '보완요청') {
-        console.log(this.auctionListData[index]);
+    async init() {
+      const statusQuery = this.$route.query.status
+        ? `findat=status&find=${this.$route.query.status}`
+        : '';
+      try {
+        const { data } = await axios.get(
+          `${process.env.server}/my/auction?${statusQuery}`,
+          {
+            headers: {
+              Authorization: `Bearer ${this.$cookiz.get('user')}`,
+            },
+          }
+        );
+        this.auctions = data;
+      } catch (error) {
+        alert(error);
       }
     },
   },
